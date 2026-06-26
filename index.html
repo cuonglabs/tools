@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google Sheet DB Demo</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+input,button{
+    padding:8px;
+    margin:4px;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+th,td{
+    border:1px solid #ccc;
+    padding:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Google Sheet Database Demo</h2>
+
+<input id="name" placeholder="Name">
+<input id="value" placeholder="Value">
+
+<button onclick="addRecord()">Add</button> <button onclick="loadData()">Refresh</button>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Value</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="tbody"></tbody>
+</table>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbXXXXXXXXXXXXXXXXXXXX/exec";
+
+// thay URL trên bằng URL Apps Script của bạn
+
+async function loadData(){
+
+    const res = await fetch(
+        API_URL + "?action=list"
+    );
+
+    const data = await res.json();
+
+    const tbody =
+        document.getElementById("tbody");
+
+    tbody.innerHTML = "";
+
+    data.forEach(row=>{
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${row.ID}</td>
+            <td>${row.Name}</td>
+            <td>${row.Value}</td>
+            <td>
+                <button
+                    onclick="deleteRecord('${row.ID}')">
+                    Delete
+                </button>
+            </td>
+        </tr>`;
+    });
+}
+
+async function addRecord(){
+
+    const name =
+        document.getElementById("name").value;
+
+    const value =
+        document.getElementById("value").value;
+
+    const res = await fetch(
+        API_URL,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                action:"add",
+                name:name,
+                value:value
+            })
+        }
+    );
+
+    console.log(await res.json());
+
+    loadData();
+}
+
+async function deleteRecord(id){
+
+    await fetch(
+        API_URL,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                action:"delete",
+                id:id
+            })
+        }
+    );
+
+    loadData();
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
