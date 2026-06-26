@@ -20,7 +20,7 @@
 </head>
 <body>
 
-    <h2>Google Sheet Database R1</h2>
+    <h2>Google Sheet Database Demo</h2>
 
     <div class="form-group">
         <input type="hidden" id="edit-id"> <input id="name" placeholder="Name">
@@ -35,14 +35,13 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Name</th>
                 <th>Value</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody id="tbody">
-            <tr><td colspan="4">Loading data...</td></tr>
+            <tr><td colspan="3">Loading data...</td></tr>
         </tbody>
     </table>
 
@@ -66,7 +65,6 @@
 
             data.forEach(row => {
                 // 1. Dùng đúng tên cột IN HOA từ Google Sheet: row.NAME, row.VALUE
-                console.log(row);
                 const itemName = row.NAME || "";
                 const itemValue = row.VALUE || "";
 
@@ -76,7 +74,6 @@
 
                 tbody.innerHTML += `
                 <tr>
-                    <td>${row.ID}</td>
                     <td>${itemName}</td>
                     <td>${itemValue}</td>
                     <td class="action-btns">
