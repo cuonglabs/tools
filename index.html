@@ -1,138 +1,179 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Google Sheet DB Demo</title>
-
-<style>
-body{
-    font-family:Arial,sans-serif;
-    max-width:900px;
-    margin:auto;
-    padding:20px;
-}
-input,button{
-    padding:8px;
-    margin:4px;
-}
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-}
-th,td{
-    border:1px solid #ccc;
-    padding:8px;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google Sheet DB Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        input, button { padding: 8px; margin-right: 4px; }
+        button { cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .btn-edit { background-color: #ffc107; border: none; padding: 5px 10px; }
+        .btn-delete { background-color: #dc3545; color: white; border: none; padding: 5px 10px; }
+        .action-btns { display: flex; gap: 5px; }
+        #status { margin-left: 10px; font-weight: bold; color: green; }
+    </style>
 </head>
-
 <body>
 
-<h2>Google Sheet Database Demo</h2>
+    <h2>Google Sheet Database Demo</h2>
 
-<input id="name" placeholder="Name">
-<input id="value" placeholder="Value">
+    <div class="form-group">
+        <input type="hidden" id="edit-id"> <input id="name" placeholder="Name">
+        <input id="value" placeholder="Value">
+        
+        <button id="btn-save" onclick="saveData()">Add Record</button>
+        <button onclick="resetForm()">Cancel</button>
+        <button onclick="loadData()">Refresh Data</button>
+        <span id="status"></span>
+    </div>
 
-<button onclick="addRecord()">Add</button> <button onclick="loadData()">Refresh</button>
-
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Value</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="tbody"></tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+            <tr><td colspan="4">Loading data...</td></tr>
+        </tbody>
+    </table>
 
 <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
+    // 1. READ (Lấy dữ liệu)
+    async function loadData() {
+        showStatus("Loading...");
+        try {
+            const res = await fetch(API_URL + "?action=list");
+            const data = await res.json();
+            const tbody = document.getElementById("tbody");
+            tbody.innerHTML = "";
 
-// thay URL trên bằng URL Apps Script của bạn
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4">No data found.</td></tr>`;
+                showStatus("");
+                return;
+            }
 
-async function loadData(){
+            data.forEach(row => {
+                // Thoát các ký tự đặc biệt để tránh lỗi nháy đơn/kép khi truyền vào function
+                const safeName = row.Name ? row.Name.replace(/'/g, "\\'") : "";
+                const safeValue = row.Value ? row.Value.replace(/'/g, "\\'") : "";
 
-    const res = await fetch(
-        API_URL + "?action=list"
-    );
-
-    const data = await res.json();
-
-    const tbody =
-        document.getElementById("tbody");
-
-    tbody.innerHTML = "";
-
-    data.forEach(row=>{
-
-        tbody.innerHTML += `
-        <tr>
-            <td>${row.ID}</td>
-            <td>${row.Name}</td>
-            <td>${row.Value}</td>
-            <td>
-                <button
-                    onclick="deleteRecord('${row.ID}')">
-                    Delete
-                </button>
-            </td>
-        </tr>`;
-    });
-}
-
-async function addRecord(){
-
-    const name =
-        document.getElementById("name").value;
-
-    const value =
-        document.getElementById("value").value;
-
-    const res = await fetch(
-        API_URL,
-        {
-            method:"POST",
-            body:JSON.stringify({
-                action:"add",
-                name:name,
-                value:value
-            })
+                tbody.innerHTML += `
+                <tr>
+                    <td>${row.ID}</td>
+                    <td>${row.Name}</td>
+                    <td>${row.Value}</td>
+                    <td class="action-btns">
+                        <button class="btn-edit" onclick="editRecord('${row.ID}', '${safeName}', '${safeValue}')">Edit</button>
+                        <button class="btn-delete" onclick="deleteRecord('${row.ID}')">Delete</button>
+                    </td>
+                </tr>`;
+            });
+            showStatus("");
+        } catch (error) {
+            showStatus("Error loading data", "red");
         }
-    );
+    }
 
-    console.log(await res.json());
+    // 2. CREATE & UPDATE (Thêm mới hoặc Cập nhật)
+    async function saveData() {
+        const id = document.getElementById("edit-id").value;
+        const name = document.getElementById("name").value;
+        const value = document.getElementById("value").value;
 
-    loadData();
-}
-
-async function deleteRecord(id){
-
-    await fetch(
-        API_URL,
-        {
-            method:"POST",
-            body:JSON.stringify({
-                action:"delete",
-                id:id
-            })
+        if (!name || !value) {
+            alert("Vui lòng nhập đầy đủ Name và Value");
+            return;
         }
-    );
 
+        const isUpdating = id !== "";
+        const action = isUpdating ? "update" : "add";
+        const payload = { action, name, value };
+        if (isUpdating) payload.id = id;
+
+        showStatus(isUpdating ? "Updating..." : "Adding...");
+        document.getElementById("btn-save").disabled = true;
+
+        try {
+            const res = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await res.json();
+            if (result.success) {
+                resetForm();
+                loadData();
+                showStatus("Success!");
+                setTimeout(() => showStatus(""), 2000);
+            } else {
+                showStatus("Error: " + result.error, "red");
+            }
+        } catch (error) {
+            showStatus("Network Error", "red");
+        } finally {
+            document.getElementById("btn-save").disabled = false;
+        }
+    }
+
+    // 3. Chuẩn bị dữ liệu để Sửa (Đẩy dữ liệu lên Form)
+    function editRecord(id, name, value) {
+        document.getElementById("edit-id").value = id;
+        document.getElementById("name").value = name;
+        document.getElementById("value").value = value;
+        document.getElementById("btn-save").innerText = "Update Record";
+    }
+
+    // 4. DELETE (Xóa)
+    async function deleteRecord(id) {
+        if (!confirm("Bạn có chắc chắn muốn xóa record này?")) return;
+
+        showStatus("Deleting...");
+        try {
+            const res = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "delete", id: id })
+            });
+            const result = await res.json();
+            if (result.success) {
+                loadData();
+            } else {
+                alert("Error deleting: " + result.error);
+            }
+        } catch (error) {
+            showStatus("Error deleting data", "red");
+        }
+    }
+
+    // Tiện ích: Reset Form
+    function resetForm() {
+        document.getElementById("edit-id").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("value").value = "";
+        document.getElementById("btn-save").innerText = "Add Record";
+    }
+
+    // Tiện ích: Hiển thị trạng thái
+    function showStatus(text, color = "green") {
+        const el = document.getElementById("status");
+        el.innerText = text;
+        el.style.color = color;
+    }
+
+    // Khởi chạy khi load trang
     loadData();
-}
-
-loadData();
 
 </script>
-
 </body>
 </html>
