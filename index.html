@@ -627,8 +627,7 @@ function showDashboard() {
         greetingString = `Chào người dùng <strong>${capitalizedUser}</strong>`;
     }
     
-    document.getElementById("userInfo").innerHTML = 
-        `${greetingString} | Vai trò: <span class="badge bg-info text-dark">${role}</span>`;
+    document.getElementById("userInfo").innerHTML = greetingString;
 
     if (role === "admin") {
         document.getElementById("adminPanel").style.display = "block";
