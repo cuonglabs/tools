@@ -1,481 +1,290 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>CuongLabs Database</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<style>
-body{
-    background:#f4f6f8;
-}
-.card{
-    margin-top:20px;
-}
-#dashboard{
-    display:none;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CuongLabs Database Manager</title>
+    <link href="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css](https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css)" rel="stylesheet">
+    <style>
+        body { background: #f4f6f8; padding-top: 30px; padding-bottom: 5px; }
+        .card { margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: none; }
+        #dashboard { display: none; }
+        .loading-status { font-style: italic; color: #6c757d; font-size: 14px; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="container" style="max-width: 950px;">
 
-```
-<div id="loginCard" class="card">
-
-    <div class="card-body">
-
-        <h3>Login</h3>
-
-        <input
-            id="username"
-            class="form-control mb-2"
-            placeholder="Username">
-
-        <input
-            id="password"
-            type="password"
-            class="form-control mb-2"
-            placeholder="Password">
-
-        <button
-            class="btn btn-primary"
-            onclick="login()">
-
-            Login
-
-        </button>
-
-    </div>
-
-</div>
-
-<div id="dashboard">
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <div class="d-flex justify-content-between">
-
-                <h3>
-
-                    Dashboard
-
-                </h3>
-
-                <button
-                    class="btn btn-danger"
-                    onclick="logout()">
-
-                    Logout
-
-                </button>
-
+    <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 80px;">
+        <div class="card-body p-4">
+            <h3 class="card-title text-center mb-4">Hệ Thống Đăng Nhập</h3>
+            <div class="mb-3">
+                <input id="username" class="form-control" placeholder="Tên đăng nhập">
             </div>
-
-            <div id="userInfo"></div>
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <h4>Add Data</h4>
-
-            <input
-                id="name"
-                class="form-control mb-2"
-                placeholder="Name">
-
-            <input
-                id="value"
-                class="form-control mb-2"
-                placeholder="Value">
-
-            <button
-                class="btn btn-success"
-                onclick="addData()">
-
-                Add
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <div
-        id="adminPanel"
-        class="card"
-        style="display:none">
-
-        <div class="card-body">
-
-            <h4>Create User</h4>
-
-            <input
-                id="newUser"
-                class="form-control mb-2"
-                placeholder="Username">
-
-            <input
-                id="newPass"
-                class="form-control mb-2"
-                placeholder="Password">
-
-            <select
-                id="newRole"
-                class="form-select mb-2">
-
-                <option value="user">
-                    user
-                </option>
-
-                <option value="admin">
-                    admin
-                </option>
-
-            </select>
-
-            <button
-                class="btn btn-warning"
-                onclick="createUser()">
-
-                Create User
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <div class="d-flex justify-content-between">
-
-                <h4>Data</h4>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="loadData()">
-
-                    Refresh
-
-                </button>
-
+            <div class="mb-4">
+                <input id="password" type="password" class="form-control" placeholder="Mật khẩu">
             </div>
+            <button class="btn btn-primary w-100" onclick="login()">Đăng Nhập</button>
+        </div>
+    </div>
 
-            <table
-                class="table table-striped">
+    <div id="dashboard">
+        
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div id="userInfo" class="fs-5"></div>
+                <button class="btn btn-danger btn-sm" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
 
-                <thead>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title h5 mb-3">Thêm Dữ Liệu Mới</h4>
+                <div class="row g-2">
+                    <div class="col-md-5">
+                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)">
+                    </div>
+                    <div class="col-md-5">
+                        <input id="value" class="form-control" placeholder="Giá trị (Value)">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-success w-100" onclick="addData()">Thêm Mới</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <tr>
-                    <th>ID</th>
-                    <th>Created</th>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>User</th>
-                    <th>Action</th>
-                </tr>
+        <div id="adminPanel" class="card border-warning" style="display:none">
+            <div class="card-body">
+                <h4 class="card-title h5 text-warning mb-3">Tạo Tài Khoản Thành Viên Mới</h4>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input id="newUser" class="form-control" placeholder="Username mới">
+                    </div>
+                    <div class="col-md-4">
+                        <input id="newPass" type="password" class="form-control" placeholder="Password mới">
+                    </div>
+                    <div class="col-md-2">
+                        <select id="newRole" class="form-select">
+                            <option value="user">User thường</option>
+                            <option value="admin">Quản trị viên (Admin)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo User</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                </thead>
-
-                <tbody id="tbody">
-                </tbody>
-
-            </table>
-
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title h5 m-0">Danh Sách Dữ Liệu</h4>
+                    <div>
+                        <span id="loadStatus" class="loading-status me-2"></span>
+                        <button class="btn btn-outline-primary btn-sm" onclick="loadData()">Làm mới dữ liệu</button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Thời gian tạo</th>
+                                <th>Name</th>
+                                <th>Value</th>
+                                <th>Người tạo</th>
+                                <th style="width: 90px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            <tr><td colspan="6" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>
-
-</div>
-```
-
 </div>
 
 <script>
+const API_URL = "[https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec](https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec)";
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
-
-function getToken(){
-
-    return localStorage
-        .getItem("token");
-
+function getToken() {
+    return localStorage.getItem("token") || "";
 }
 
-function logout(){
-
+function logout() {
     localStorage.clear();
-
     location.reload();
-
 }
 
-async function api(data){
-
-    const res =
-        await fetch(
-            API_URL,
-            {
-                method:"POST",
-                body:JSON.stringify(data)
-            }
-        );
-
-    return await res.json();
-
-}
-
-async function login(){
-
-    const username =
-        document.getElementById(
-            "username"
-        ).value;
-
-    const password =
-        document.getElementById(
-            "password"
-        ).value;
-
-    const result =
-        await api({
-            action:"login",
-            username,
-            password
+async function api(data) {
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify(data)
         });
+        return await res.json();
+    } catch (e) {
+        return { success: false, error: "Không thể kết nối đến máy chủ API" };
+    }
+}
 
-    if(!result.success){
+async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
 
-        alert(
-            result.error
-        );
-
+    if(!username || !password) {
+        alert("Vui lòng nhập đầy đủ thông tin tài khoản!");
         return;
-
     }
 
-    localStorage.setItem(
-        "token",
-        result.token
-    );
+    const result = await api({ action: "login", username, password });
 
-    localStorage.setItem(
-        "role",
-        result.role
-    );
+    if (!result.success) {
+        alert(result.error);
+        return;
+    }
 
-    localStorage.setItem(
-        "username",
-        result.username
-    );
+    localStorage.setItem("token", result.token);
+    localStorage.setItem("role", result.role);
+    localStorage.setItem("username", result.username);
 
     showDashboard();
-
 }
 
-async function loadData(){
+async function loadData() {
+    document.getElementById("loadStatus").innerText = "Đang đồng bộ...";
+    const result = await api({ action: "list", token: getToken() });
 
-    const result =
-        await api({
-            action:"list",
-            token:getToken()
-        });
+    // Trường hợp token hết hạn hoặc lỗi xác thực từ backend
+    if (result.success === false) {
+        alert("Phiên làm việc hết hạn hoặc lỗi: " + result.error);
+        logout();
+        return;
+    }
 
-    const tbody =
-        document.getElementById(
-            "tbody"
-        );
-
+    const tbody = document.getElementById("tbody");
     tbody.innerHTML = "";
 
-    result.forEach(row=>{
+    const rows = result.data || [];
+    if(rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Cơ sở dữ liệu đang trống.</td></tr>`;
+        document.getElementById("loadStatus").innerText = "";
+        return;
+    }
 
+    const myRole = localStorage.getItem("role");
+
+    rows.forEach(row => {
         let btn = "";
+        if (myRole === "admin") {
+            btn = `<button class="btn btn-sm btn-danger" onclick="deleteData('${row.ID}')">Xóa</button>`;
+        } else {
+            btn = `<span class="badge bg-secondary">No key</span>`;
+        }
 
-        if(
-            localStorage.getItem(
-                "role"
-            )==="admin"
-        ){
-
-            btn =
-            `<button
-                class="btn btn-sm btn-danger"
-                onclick="deleteData('${row.ID}')">
-                Delete
-            </button>`;
-
+        // Format lại thời gian đọc từ Sheet cho đẹp mắt nếu có
+        let dateStr = row.Created;
+        if(dateStr && !isNaN(Date.parse(dateStr))) {
+            dateStr = new Date(dateStr).toLocaleString('vi-VN');
         }
 
         tbody.innerHTML += `
         <tr>
-            <td>${row.ID||""}</td>
-            <td>${row.Created||""}</td>
-            <td>${row.Name||""}</td>
-            <td>${row.Value||""}</td>
-            <td>${row.CreatedBy||""}</td>
+            <td class="text-muted" style="font-size:12px;">${row.ID || ""}</td>
+            <td>${dateStr || ""}</td>
+            <td><strong>${row.Name || ""}</strong></td>
+            <td>${row.Value || ""}</td>
+            <td><span class="badge bg-light text-dark border">${row.CreatedBy || "N/A"}</span></td>
             <td>${btn}</td>
-        </tr>
-        `;
-
+        </tr>`;
     });
-
+    document.getElementById("loadStatus").innerText = "Đã cập nhật";
 }
 
-async function addData(){
+async function addData() {
+    const nameEl = document.getElementById("name");
+    const valueEl = document.getElementById("value");
+    
+    const name = nameEl.value.trim();
+    const value = valueEl.value.trim();
 
-    const name =
-        document.getElementById(
-            "name"
-        ).value;
+    if(!name || !value) {
+        alert("Vui lòng nhập cả Name và Value!");
+        return;
+    }
 
-    const value =
-        document.getElementById(
-            "value"
-        ).value;
+    const result = await api({ action: "add", token: getToken(), name, value });
 
-    const result =
-        await api({
-            action:"add",
-            token:getToken(),
-            name,
-            value
-        });
-
-    if(result.success){
-
+    if(result.success) {
+        nameEl.value = "";
+        valueEl.value = "";
         loadData();
+    } else {
+        alert("Lỗi thêm dữ liệu: " + result.error);
+    }
+}
 
+async function deleteData(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn dòng dữ liệu này?")) return;
+
+    const result = await api({ action: "delete", token: getToken(), id });
+
+    if(result.success) {
+        loadData();
+    } else {
+        alert("Lỗi khi xóa: " + result.error);
+    }
+}
+
+async function createUser() {
+    const userEl = document.getElementById("newUser");
+    const passEl = document.getElementById("newPass");
+    const role = document.getElementById("newRole").value;
+
+    const username = userEl.value.trim();
+    const password = passEl.value;
+
+    if(!username || !password) {
+        alert("Vui lòng không để trống ô tài khoản mới!");
+        return;
     }
 
+    const result = await api({ action: "createUser", token: getToken(), username, password, role });
+
+    if(result.success) {
+        alert("Tạo tài khoản thành viên thành công!");
+        userEl.value = "";
+        passEl.value = "";
+    } else {
+        alert("Lỗi: " + result.error);
+    }
 }
 
-async function deleteData(id){
+function showDashboard() {
+    document.getElementById("loginCard").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
 
-    if(
-        !confirm(
-            "Delete?"
-        )
-    ) return;
+    document.getElementById("userInfo").innerHTML = 
+        `Chào, <strong>${localStorage.getItem("username")}</strong> | Quyền: <span class="badge bg-info text-dark">${localStorage.getItem("role")}</span>`;
 
-    await api({
-        action:"delete",
-        token:getToken(),
-        id
-    });
-
-    loadData();
-
-}
-
-async function createUser(){
-
-    const username =
-        document.getElementById(
-            "newUser"
-        ).value;
-
-    const password =
-        document.getElementById(
-            "newPass"
-        ).value;
-
-    const role =
-        document.getElementById(
-            "newRole"
-        ).value;
-
-    const result =
-        await api({
-            action:"createUser",
-            token:getToken(),
-            username,
-            password,
-            role
-        });
-
-    alert(
-        result.success
-        ? "Created"
-        : result.error
-    );
-
-}
-
-function showDashboard(){
-
-    document.getElementById(
-        "loginCard"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "dashboard"
-    ).style.display =
-        "block";
-
-    document.getElementById(
-        "userInfo"
-    ).innerHTML =
-
-        "<b>User:</b> " +
-
-        localStorage.getItem(
-            "username"
-        ) +
-
-        " | <b>Role:</b> " +
-
-        localStorage.getItem(
-            "role"
-        );
-
-    if(
-        localStorage.getItem(
-            "role"
-        )==="admin"
-    ){
-
-        document.getElementById(
-            "adminPanel"
-        ).style.display =
-            "block";
-
+    if (localStorage.getItem("role") === "admin") {
+        document.getElementById("adminPanel").style.display = "block";
     }
 
     loadData();
-
 }
 
-if(
-    localStorage.getItem(
-        "token"
-    )
-){
-
+// Khởi chạy hệ thống kiểm tra phiên đăng nhập hiện tại khi vừa tải trang
+if (localStorage.getItem("token")) {
     showDashboard();
-
 }
-
 </script>
-
 </body>
 </html>
