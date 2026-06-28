@@ -3,16 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Google Sheet DB Demo</title>
+    <title>Google Sheet DB Secured</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        input, button { padding: 8px; margin-right: 4px; }
-        button { cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background-color: #f9f9f9; }
+        .hidden { display: none !important; }
+        
+        /* Giao diện Login Form */
+        .login-container { max-width: 350px; margin: 100px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        .login-container input { width: 90%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        .login-container button { width: 96%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        
+        /* Giao diện App Chính */
+        .form-group { margin-bottom: 15px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        input, button { padding: 8px; margin-right: 4px; border-radius: 4px; border: 1px solid #ccc; }
+        button { cursor: pointer; background: #007bff; color: white; border: none; }
+        button:hover { opacity: 0.9; }
+        .btn-cancel { background-color: #6c757d; }
+        .btn-logout { background-color: #343a40; float: right; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background-color: #f4f4f4; }
-        .btn-edit { background-color: #ffc107; border: none; padding: 5px 10px; }
+        .btn-edit { background-color: #ffc107; color: black; border: none; padding: 5px 10px; }
         .btn-delete { background-color: #dc3545; color: white; border: none; padding: 5px 10px; }
         .action-btns { display: flex; gap: 5px; }
         #status { margin-left: 10px; font-weight: bold; color: green; }
@@ -20,55 +32,122 @@
 </head>
 <body>
 
-    <h2>Google Sheet Database Demo</h2>
-
-    <div class="form-group">
-        <input type="hidden" id="edit-id"> <input id="name" placeholder="Name">
-        <input id="value" placeholder="Value">
-        
-        <button id="btn-save" onclick="saveData()">Add Record</button>
-        <button onclick="resetForm()">Cancel</button>
-        <button onclick="loadData()">Refresh Data</button>
-        <span id="status"></span>
+    <div id="login-screen" class="login-container">
+        <h3>Hệ Thống Bảo Mật</h3>
+        <p style="font-size: 13px; color: #666;">Vui lòng nhập Token để truy cập dữ liệu</p>
+        <input type="password" id="token-input" placeholder="Nhập API Token...">
+        <button onclick="handleLogin()">Đăng Nhập</button>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Value</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="tbody">
-            <tr><td colspan="3">Loading data...</td></tr>
-        </tbody>
-    </table>
+    <div id="app-screen" class="hidden">
+        <h2 style="display: inline-block;">Google Sheet Database Manager</h2>
+        <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+
+        <div class="form-group">
+            <input type="hidden" id="edit-id"> 
+            <input id="name" placeholder="Name">
+            <input id="value" placeholder="Value">
+            
+            <button id="btn-save" onclick="saveData()">Add Record</button>
+            <button class="btn-cancel" onclick="resetForm()">Cancel</button>
+            <button style="background-color: #17a2b8;" onclick="loadData()">Refresh Data</button>
+            <span id="status"></span>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <tr><td colspan="3">Loading data...</td></tr>
+            </tbody>
+        </table>
+    </div>
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
 
-    // 1. READ (Lấy dữ liệu)
+    // Hàm lấy token hiện tại được lưu trong trình duyệt
+    function getToken() {
+        return localStorage.getItem("api_session_token") || "";
+    }
+
+    // Xử lý sự kiện đăng nhập
+    async function handleLogin() {
+        const token = document.getElementById("token-input").value.trim();
+        if (!token) return alert("Vui lòng không để trống Token!");
+
+        try {
+            // Gửi request test thử xem token đúng hay sai
+            const res = await fetch(`${API_URL}?action=login&token=${token}`);
+            const result = await res.json();
+
+            if (result.success) {
+                localStorage.setItem("api_session_token", token); // Lưu token vào bộ nhớ máy
+                initApp(); // Chuyển sang màn hình chính
+            } else {
+                alert("Mã Token không chính xác!");
+            }
+        } catch (error) {
+            alert("Lỗi kết nối hoặc API chưa được Deploy đúng cách!");
+        }
+    }
+
+    // Xử lý đăng xuất
+    function handleLogout() {
+        localStorage.removeItem("api_session_token"); // Xóa sạch token khỏi máy
+        document.getElementById("app-screen").classList.add("hidden");
+        document.getElementById("login-screen").classList.remove("hidden");
+        document.getElementById("token-input").value = "";
+    }
+
+    // Kiểm tra trạng thái phiên làm việc khi load trang
+    function initApp() {
+        const token = getToken();
+        if (token) {
+            // Nếu có token sẵn, ẩn login và hiện màn hình chính, tiến hành load dữ liệu
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("app-screen").classList.remove("hidden");
+            loadData();
+        } else {
+            // Nếu chưa login, hiện form nhập token
+            document.getElementById("login-screen").classList.remove("hidden");
+            document.getElementById("app-screen").classList.add("hidden");
+        }
+    }
+
+    // 1. READ (Tải dữ liệu kèm Token bảo mật)
     async function loadData() {
         showStatus("Loading...");
+        const token = getToken();
         try {
-            const res = await fetch(API_URL + "?action=list");
+            const res = await fetch(`${API_URL}?action=list&token=${token}`);
             const data = await res.json();
+            
+            // Nếu Token bị hết hạn hoặc sai trên server
+            if (data.success === false && data.error.includes("Unauthorized")) {
+                alert("Phiên đăng nhập hết hạn hoặc Token đã bị đổi!");
+                handleLogout();
+                return;
+            }
+
             const tbody = document.getElementById("tbody");
             tbody.innerHTML = "";
 
             if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4">No data found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3">No data found.</td></tr>`;
                 showStatus("");
                 return;
             }
 
             data.forEach(row => {
-                // 1. Dùng đúng tên cột IN HOA từ Google Sheet: row.NAME, row.VALUE
                 const itemName = row.NAME || "";
                 const itemValue = row.VALUE || "";
 
-                // 2. Ép kiểu về String trước khi dùng .replace() để tránh lỗi khi đọc số (VD: 1234)
                 const safeName = String(itemName).replace(/'/g, "\\'");
                 const safeValue = String(itemValue).replace(/'/g, "\\'");
 
@@ -84,12 +163,11 @@
             });
             showStatus("");
         } catch (error) {
-            console.error(error); // In lỗi ra console để dễ debug
             showStatus("Error loading data", "red");
         }
     }
 
-    // 2. CREATE & UPDATE (Thêm mới hoặc Cập nhật)
+    // 2. CREATE & UPDATE (Gửi dữ liệu đính kèm Token trong Body)
     async function saveData() {
         const id = document.getElementById("edit-id").value;
         const name = document.getElementById("name").value;
@@ -102,7 +180,9 @@
 
         const isUpdating = id !== "";
         const action = isUpdating ? "update" : "add";
-        const payload = { action, name, value };
+        
+        // Đóng gói payload có sẵn token phiên làm việc
+        const payload = { action, name, value, token: getToken() };
         if (isUpdating) payload.id = id;
 
         showStatus(isUpdating ? "Updating..." : "Adding...");
@@ -130,7 +210,7 @@
         }
     }
 
-    // 3. Chuẩn bị dữ liệu để Sửa (Đẩy dữ liệu lên Form)
+    // 3. Đẩy dữ liệu lên Form để Sửa
     function editRecord(id, name, value) {
         document.getElementById("edit-id").value = id;
         document.getElementById("name").value = name;
@@ -138,18 +218,15 @@
         document.getElementById("btn-save").innerText = "Update Record";
     }
 
-    // 4. DELETE (Xóa)
+    // 4. DELETE (Xóa dữ liệu đính kèm Token trong Body)
     async function deleteRecord(id) {
         if (!confirm("Bạn có chắc chắn muốn xóa record này?")) return;
 
         showStatus("Deleting...");
-        try {      
-            const action = "delete";
-            const payload = { action };
-            payload.id = id;
+        try {
             const res = await fetch(API_URL, {
                 method: "POST",
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ action: "delete", id: id, token: getToken() }) // Truyền Token vào đây
             });
             const result = await res.json();
             if (result.success) {
@@ -162,7 +239,6 @@
         }
     }
 
-    // Tiện ích: Reset Form
     function resetForm() {
         document.getElementById("edit-id").value = "";
         document.getElementById("name").value = "";
@@ -170,16 +246,14 @@
         document.getElementById("btn-save").innerText = "Add Record";
     }
 
-    // Tiện ích: Hiển thị trạng thái
     function showStatus(text, color = "green") {
         const el = document.getElementById("status");
         el.innerText = text;
         el.style.color = color;
     }
 
-    // Khởi chạy khi load trang
-    loadData();
-
+    // Chạy kiểm tra đăng nhập ngay khi mở trang web
+    initApp();
 </script>
 </body>
 </html>
