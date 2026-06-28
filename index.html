@@ -11,7 +11,6 @@
         #dashboard { display: none; }
         .loading-status { font-style: italic; color: #6c757d; font-size: 14px; }
         
-        /* 3. CSS CHO HIỆU ỨNG LOADING OVERLAY CHỜ SERVER MƯỢT MÀ */
         #loadingOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -56,12 +55,12 @@
         <div class="card-body p-4">
             <h3 class="card-title text-center mb-4">Hệ Thống Đăng Nhập</h3>
             <div class="mb-3">
-                <input id="username" class="form-control" placeholder="Tên đăng nhập">
+                <input id="username" class="form-control" placeholder="Tên đăng nhập" onkeydown="handleLoginKey(event)">
             </div>
             <div class="mb-4">
-                <input id="password" type="password" class="form-control" placeholder="Mật khẩu">
+                <input id="password" type="password" class="form-control" placeholder="Mật khẩu" onkeydown="handleLoginKey(event)">
             </div>
-            <button class="btn btn-primary w-100" onclick="login()">Đăng Nhập</button>
+            <button id="btn-login" class="btn btn-primary w-100" onclick="login()">Đăng Nhập</button>
         </div>
     </div>
 
@@ -92,7 +91,7 @@
                             <div class="mb-3">
                                 <input id="newPassUser" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
                             </div>
-                            <button class="btn btn-primary btn-sm w-100" onclick="changePassword()">Cập nhật mật khẩu</button>
+                            <button id="btn-changepass" class="btn btn-primary btn-sm w-100" onclick="changePassword()">Cập nhật mật khẩu</button>
                         </div>
                         
                         <div class="col-md-7">
@@ -109,7 +108,7 @@
                                 <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Giá trị - Value (Cách nhau bằng dấu phẩy)</label>
                                 <input id="cfgSuggestValues" class="form-control form-control-sm" placeholder="Hoạt động, Tạm dừng">
                             </div>
-                            <button class="btn btn-success btn-sm float-end" onclick="saveUserConfigs(false)">Lưu cấu hình tiện ích</button>
+                            <button id="btn-saveconfig" class="btn btn-success btn-sm float-end" onclick="saveUserConfigs(false)">Lưu cấu hình tiện ích</button>
                         </div>
                     </div>
                 </div>
@@ -140,7 +139,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo User</button>
+                        <button id="btn-createuser" class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo User</button>
                     </div>
                 </div>
 
@@ -154,7 +153,7 @@
                         <input id="resetNewPass" type="password" class="form-control" placeholder="Mật khẩu mới cấp lại">
                     </div>
                     <div class="col-md-2">
-                        <button class="btn btn-danger w-100" onclick="resetPasswordByAdmin()">Cấp mật khẩu mới</button>
+                        <button id="btn-resetpass" class="btn btn-danger w-100" onclick="resetPasswordByAdmin()">Cấp mật khẩu mới</button>
                     </div>
                 </div>
             </div>
@@ -166,18 +165,18 @@
                 <input type="hidden" id="editId"> 
                 <div class="row g-2">
                     <div class="col-md-4">
-                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)" list="datalistNames">
+                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)" list="datalistNames" onkeydown="handleSaveKey(event)">
                         <datalist id="datalistNames"></datalist>
                     </div>
                     <div class="col-md-4">
-                        <input id="value" class="form-control" placeholder="Giá trị (Value)" list="datalistValues">
+                        <input id="value" class="form-control" placeholder="Giá trị (Value)" list="datalistValues" onkeydown="handleSaveKey(event)">
                         <datalist id="datalistValues"></datalist>
                     </div>
                     <div class="col-md-2">
                         <button id="btn-submit" class="btn btn-success w-100" onclick="saveData()">Thêm Mới</button>
                     </div>
                     <div class="col-md-2" id="cancel-col" style="display:none;">
-                        <button class="btn btn-secondary w-100" onclick="cancelEdit()">Hủy Sửa</button>
+                        <button id="btn-cancel" class="btn btn-secondary w-100" onclick="cancelEdit()">Hủy Sửa</button>
                     </div>
                 </div>
             </div>
@@ -189,7 +188,7 @@
                     <h4 class="card-title h5 m-0">Danh sách dữ liệu</h4>
                     <div>
                         <span id="loadStatus" class="loading-status me-2"></span>
-                        <button class="btn btn-outline-primary btn-sm" onclick="loadData(true)">Làm mới dữ liệu</button>
+                        <button id="btn-refresh" class="btn btn-outline-primary btn-sm" onclick="loadData(true)">Làm mới dữ liệu</button>
                     </div>
                 </div>
                 
@@ -213,6 +212,17 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
 
+// 1. HÀM TRUNG TÂM PHÒNG CHỐNG TẤN CÔNG XSS ĐỘC HẠI ĐÚNG CHUẨN OWASP
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function getToken() {
     return localStorage.getItem("token") || "";
 }
@@ -222,7 +232,7 @@ function logout() {
     location.reload();
 }
 
-// 3. HÀM CHẠY ANIMATION CHỜ (WAITING) VÀ HIỂN THỊ THÔNG BÁO (SUCCESS TOAST)
+// 3. TỐI ƯU HÀM LOADING: TỰ ĐỘNG KHÓA (DISABLE) NÚT BẤM KHI CHỜ PHẢN HỒI SERVER
 function toggleLoading(show, message = "Đang xử lý...") {
     const overlay = document.getElementById("loadingOverlay");
     const msgEl = document.getElementById("loadingMessage");
@@ -232,6 +242,16 @@ function toggleLoading(show, message = "Đang xử lý...") {
     } else {
         overlay.style.display = "none";
     }
+
+    // Tự động tìm tất cả button chính để chống spam double-click
+    const ActionButtons = [
+        "btn-login", "btn-submit", "btn-cancel", "btn-refresh", 
+        "btn-changepass", "btn-saveconfig", "btn-createuser", "btn-resetpass"
+    ];
+    ActionButtons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = show;
+    });
 }
 
 function showToast(message, type = "success") {
@@ -250,6 +270,14 @@ function showToast(message, type = "success") {
     toastBody.innerText = message;
     const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
     toast.show();
+}
+
+// HỖ TRỢ ĐIỀU KHIỂN PHÍM TẮT ENTER CHO NGƯỜI DÙNG CHUYÊN NGHIỆP
+function handleLoginKey(e) {
+    if (e.key === "Enter") login();
+}
+function handleSaveKey(e) {
+    if (e.key === "Enter") saveData();
 }
 
 async function api(data) {
@@ -323,34 +351,43 @@ async function loadData(isManualClick = false) {
         return;
     }
 
+    // 2. TỐI ƯU HIỆU NĂNG: SỬ DỤNG BIẾN CHUỖI TẠM BUFFER ĐỂ TRÁNH TRÌNH DUYỆT BỊ REFLOW LIÊN TỤC
+    let htmlContentBuffer = "";
+
     rows.forEach(row => {
         let dateStr = row.Created;
         if(dateStr && !isNaN(Date.parse(dateStr))) {
             dateStr = new Date(dateStr).toLocaleString('vi-VN');
         }
 
-        const safeName = String(row.Name || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const safeValue = String(row.Value || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        // Toàn bộ chuỗi hiển thị ra màn hình hoặc truyền vào hàm JS đều được bọc màng lọc chống XSS
+        const cleanName = escapeHtml(row.Name);
+        const cleanValue = escapeHtml(row.Value);
+        const cleanCreatedBy = escapeHtml(row.CreatedBy);
 
         let rowHtml = `
         <tr>
-            <td><strong>${row.Name || ""}</strong></td>
-            <td>${row.Value || ""}</td>
-            <td>${dateStr || ""}</td>
-            <td><span class="badge bg-light text-dark border">${row.CreatedBy || "N/A"}</span></td>
+            <td><strong>${cleanName}</strong></td>
+            <td>${cleanValue}</td>
+            <td>${escapeHtml(dateStr)}</td>
+            <td><span class="badge bg-light text-dark border">${cleanCreatedBy || "N/A"}</span></td>
         `;
 
         if (myRole === "admin") {
+            // Dữ liệu an toàn tuyệt đối khi truyền vào hàm inline onClick
             rowHtml += `
             <td>
-                <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${row.ID}', '${safeName}', '${safeValue}')">Sửa</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteData('${row.ID}')">Xóa</button>
+                <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${escapeHtml(row.ID)}', '${cleanName}', '${cleanValue}')">Sửa</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteData('${escapeHtml(row.ID)}')">Xóa</button>
             </td>`;
         }
 
         rowHtml += `</tr>`;
-        tbody.innerHTML += rowHtml;
+        htmlContentBuffer += rowHtml; 
     });
+    
+    // Đẩy chuỗi tổng hợp vào DOM một lần duy nhất
+    tbody.innerHTML = htmlContentBuffer;
     
     updateTimestamp();
     if(isManualClick) showToast("Làm mới dữ liệu thành công!", "success");
@@ -384,7 +421,7 @@ function cancelEdit() {
     document.getElementById("editId").value = "";
     document.getElementById("name").value = "";
     document.getElementById("value").value = "";
-    document.getElementById("form-title").innerText = "Thêm Dữ Liệu Mới";
+    document.getElementById("form-title").innerText = "Thêm dữ liệu mới";
     
     const btnSubmit = document.getElementById("btn-submit");
     btnSubmit.innerText = "Thêm Mới";
@@ -414,7 +451,6 @@ async function saveData() {
     if(result.success) {
         showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Thêm mới bản ghi thành công!", "success");
         
-        // 2. KHỐI TỰ ĐỘNG LƯU NAME/VALUE MỚI VÀO CONFIGS KHI THÊM MỚI CHƯA TỒN TẠI
         if (!isEdit) {
             let currentNames = document.getElementById("cfgSuggestNames").value.split(",").map(x => x.trim()).filter(x => x !== "");
             let currentValues = document.getElementById("cfgSuggestValues").value.split(",").map(x => x.trim()).filter(x => x !== "");
@@ -432,7 +468,6 @@ async function saveData() {
             if (isConfigChanged) {
                 document.getElementById("cfgSuggestNames").value = currentNames.join(", ");
                 document.getElementById("cfgSuggestValues").value = currentValues.join(", ");
-                // Gọi lưu configs âm thầm lên Database (truyền tham số true để chạy ngầm)
                 await saveUserConfigs(true);
             }
         }
@@ -538,7 +573,6 @@ async function loadUserConfigs(isSilent = false) {
     if (!result.success) return;
     const configs = result.configs || {};
 
-    // --- Xử lý liên kết URL nhanh ---
     const urls = configs.urls || [];
     const container = document.getElementById("quickLinksContainer");
     const cardBlock = document.getElementById("quickLinksCard");
@@ -552,7 +586,7 @@ async function loadUserConfigs(isSilent = false) {
             const a = document.createElement("a");
             a.href = item.url; a.target = "_blank";
             a.className = "btn btn-xs btn-outline-dark pt-0 pb-0 ps-2 pe-2 small bg-white border shadow-sm";
-            a.style.style = "font-size: 13px;"; a.innerText = item.title;
+            a.style.fontSize = "13px"; a.innerText = item.title;
             container.appendChild(a);
         });
         document.getElementById("cfgUrls").value = rawTextareaValue.trim();
@@ -561,21 +595,19 @@ async function loadUserConfigs(isSilent = false) {
         document.getElementById("cfgUrls").value = "";
     }
 
-    // --- Xử lý danh sách gợi ý nhập liệu (Datalist) ---
     const names = configs.suggestedNames || [];
     const datalistNames = document.getElementById("datalistNames");
     datalistNames.innerHTML = "";
-    names.forEach(n => { datalistNames.innerHTML += `<option value="${n}">`; });
+    names.forEach(n => { datalistNames.innerHTML += `<option value="${escapeHtml(n)}">`; });
     document.getElementById("cfgSuggestNames").value = names.join(", ");
 
     const values = configs.suggestedValues || [];
     const datalistValues = document.getElementById("datalistValues");
     datalistValues.innerHTML = "";
-    values.forEach(v => { datalistValues.innerHTML += `<option value="${v}">`; });
+    values.forEach(v => { datalistValues.innerHTML += `<option value="${escapeHtml(v)}">`; });
     document.getElementById("cfgSuggestValues").value = values.join(", ");
 }
 
-// 2. HÀM UPDATE CONFIGS HỖ TRỢ THAM SỐ CHẠY NGẦM (SILENT) KHÔNG GÂY LÀM PHIỀN USER
 async function saveUserConfigs(isSilent = false) {
     const rawUrls = document.getElementById("cfgUrls").value.split("\n");
     const rawNames = document.getElementById("cfgSuggestNames").value.split(",");
@@ -604,7 +636,6 @@ async function saveUserConfigs(isSilent = false) {
 
     if (result.success) {
         if (!isSilent) showToast("Cập nhật bộ nhớ cấu hình thành công!", "success");
-        // Gọi tải lại configs chạy ngầm để map data ra Datalist gợi ý ngay lập tức
         loadUserConfigs(true); 
     } else {
         if (!isSilent) showToast("Không thể lưu cấu hình: " + result.error, "danger");
@@ -615,16 +646,15 @@ function showDashboard() {
     document.getElementById("loginCard").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
 
-    // 1. CHUẨN HÓA KIỂU CHÀO, VIẾT HOA CHỮ ĐẦU CỦA USERNAME ĐÚNG VAI TRÒ
     const username = localStorage.getItem("username") || "";
     const role = localStorage.getItem("role") || "";
     const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
     
     let greetingString = "";
     if (role === "admin") {
-        greetingString = `Chào quản trị viên <strong>${capitalizedUser}</strong>`;
+        greetingString = `Chào quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`;
     } else {
-        greetingString = `Chào người dùng <strong>${capitalizedUser}</strong>`;
+        greetingString = `Chào người dùng <strong>${escapeHtml(capitalizedUser)}</strong>`;
     }
     
     document.getElementById("userInfo").innerHTML = greetingString;
@@ -635,7 +665,6 @@ function showDashboard() {
         document.getElementById("adminPanel").style.display = "none";
     }
 
-    // Luồng khởi tạo ban đầu đồng bộ mượt với hiệu ứng chờ toàn màn hình
     toggleLoading(true, "Đang thiết lập không gian làm việc...");
     Promise.all([loadData(false), loadUserConfigs(true)]).then(() => {
         toggleLoading(false);
