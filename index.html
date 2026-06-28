@@ -134,12 +134,12 @@
                     </div>
                     <div class="col-md-2">
                         <select id="newRole" class="form-select">
-                            <option value="user">Người dùng thông thường</option>
+                            <option value="user">Nhân viên</option>
                             <option value="admin">Quản trị viên</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button id="btn-createuser" class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo User</button>
+                        <button id="btn-createuser" class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo tài khoản</button>
                     </div>
                 </div>
 
@@ -150,10 +150,10 @@
                         <input id="resetTargetUser" class="form-control" placeholder="Username cần khôi phục">
                     </div>
                     <div class="col-md-5">
-                        <input id="resetNewPass" type="password" class="form-control" placeholder="Mật khẩu mới cấp lại">
+                        <input id="resetNewPass" type="password" class="form-control" placeholder="Mật khẩu mới">
                     </div>
                     <div class="col-md-2">
-                        <button id="btn-resetpass" class="btn btn-danger w-100" onclick="resetPasswordByAdmin()">Cấp mật khẩu mới</button>
+                        <button id="btn-resetpass" class="btn btn-danger w-100" onclick="resetPasswordByAdmin()">Cấp lại mới</button>
                     </div>
                 </div>
             </div>
@@ -333,7 +333,7 @@ async function loadData(isManualClick = false) {
 
     const myRole = localStorage.getItem("role");
     const tableHeader = document.getElementById("tableHeader");
-    let headerHtml = `<th>Name</th><th>Value</th><th>Thời gian tạo</th><th>Người tạo</th>`;
+    let headerHtml = `<th>Tên</th><th>Giá trị</th><th>Thời gian tạo</th><th>Người tạo</th>`;
     if (myRole === "admin") {
         headerHtml += `<th style="width: 130px;">Thao tác</th>`;
     }
