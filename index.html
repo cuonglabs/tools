@@ -38,23 +38,6 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title h5 mb-3">Thêm Dữ Liệu Mới</h4>
-                <div class="row g-2">
-                    <div class="col-md-5">
-                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)">
-                    </div>
-                    <div class="col-md-5">
-                        <input id="value" class="form-control" placeholder="Giá trị (Value)">
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-success w-100" onclick="addData()">Thêm Mới</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="adminPanel" class="card border-warning" style="display:none">
             <div class="card-body">
                 <h4 class="card-title h5 text-warning mb-3">Tạo Tài Khoản Thành Viên Mới</h4>
@@ -80,6 +63,26 @@
 
         <div class="card">
             <div class="card-body">
+                <h4 class="card-title h5 mb-3" id="form-title">Thêm Dữ Liệu Mới</h4>
+                <input type="hidden" id="editId"> <div class="row g-2">
+                    <div class="col-md-4">
+                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)">
+                    </div>
+                    <div class="col-md-4">
+                        <input id="value" class="form-control" placeholder="Giá trị (Value)">
+                    </div>
+                    <div class="col-md-2">
+                        <button id="btn-submit" class="btn btn-success w-100" onclick="saveData()">Thêm Mới</button>
+                    </div>
+                    <div class="col-md-2" id="cancel-col" style="display:none;">
+                        <button class="btn btn-secondary w-100" onclick="cancelEdit()">Hủy Sửa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="card-title h5 m-0">Danh Sách Dữ Liệu</h4>
                     <div>
@@ -91,17 +94,11 @@
                 <div class="table-responsive">
                     <table class="table table-striped table-hover align-middle">
                         <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Thời gian tạo</th>
-                                <th>Name</th>
-                                <th>Value</th>
-                                <th>Người tạo</th>
-                                <th style="width: 90px;">Thao tác</th>
-                            </tr>
+                            <tr id="tableHeader">
+                                </tr>
                         </thead>
                         <tbody id="tbody">
-                            <tr><td colspan="6" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
+                            <tr><td id="empty-row" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -162,53 +159,118 @@ async function loadData() {
     document.getElementById("loadStatus").innerText = "Đang đồng bộ...";
     const result = await api({ action: "list", token: getToken() });
 
-    // Trường hợp token hết hạn hoặc lỗi xác thực từ backend
     if (result.success === false) {
         alert("Phiên làm việc hết hạn hoặc lỗi: " + result.error);
         logout();
         return;
     }
 
+    const myRole = localStorage.getItem("role");
+    
+    // Cập nhật cấu trúc Header tùy thuộc vào Role (Admin thì hiện cột Thao Tác, User thường ẩn hoàn toàn)
+    const tableHeader = document.getElementById("tableHeader");
+    let headerHtml = `
+        <th>Name</th>
+        <th>Value</th>
+        <th>Thời gian tạo</th>
+        <th>Người tạo</th>
+    `;
+    if (myRole === "admin") {
+        headerHtml += `<th style="width: 130px;">Thao tác</th>`;
+    }
+    tableHeader.innerHTML = headerHtml;
+
     const tbody = document.getElementById("tbody");
     tbody.innerHTML = "";
 
     const rows = result.data || [];
+    const totalCols = (myRole === "admin") ? 5 : 4;
+
     if(rows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Cơ sở dữ liệu đang trống.</td></tr>`;
-        document.getElementById("loadStatus").innerText = "";
+        tbody.innerHTML = `<tr><td colspan="${totalCols}" class="text-center text-muted">Cơ sở dữ liệu đang trống.</td></tr>`;
+        updateTimestamp();
         return;
     }
 
-    const myRole = localStorage.getItem("role");
-
     rows.forEach(row => {
-        let btn = "";
-        if (myRole === "admin") {
-            btn = `<button class="btn btn-sm btn-danger" onclick="deleteData('${row.ID}')">Xóa</button>`;
-        } else {
-            btn = `<span class="badge bg-secondary">No key</span>`;
-        }
-
-        // Format lại thời gian đọc từ Sheet cho đẹp mắt nếu có
         let dateStr = row.Created;
         if(dateStr && !isNaN(Date.parse(dateStr))) {
             dateStr = new Date(dateStr).toLocaleString('vi-VN');
         }
 
-        tbody.innerHTML += `
+        // Tạo chuỗi an toàn để truyền dữ liệu vào hàm onclick của nút Sửa
+        const safeName = String(row.Name || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeValue = String(row.Value || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        let rowHtml = `
         <tr>
-            <td class="text-muted" style="font-size:12px;">${row.ID || ""}</td>
-            <td>${dateStr || ""}</td>
             <td><strong>${row.Name || ""}</strong></td>
             <td>${row.Value || ""}</td>
+            <td>${dateStr || ""}</td>
             <td><span class="badge bg-light text-dark border">${row.CreatedBy || "N/A"}</span></td>
-            <td>${btn}</td>
-        </tr>`;
+        `;
+
+        // Chỉ chèn cột TD Thao tác nếu tài khoản là admin
+        if (myRole === "admin") {
+            rowHtml += `
+            <td>
+                <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${row.ID}', '${safeName}', '${safeValue}')">Sửa</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteData('${row.ID}')">Xóa</button>
+            </td>`;
+        }
+
+        rowHtml += `</tr>`;
+        tbody.innerHTML += rowHtml;
     });
-    document.getElementById("loadStatus").innerText = "Đã cập nhật";
+    
+    updateTimestamp();
 }
 
-async function addData() {
+// Hàm ghi nhận và hiển thị mốc thời gian cập nhật động
+function updateTimestamp() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const MM = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    document.getElementById("loadStatus").innerText = `Đã cập nhật lúc ${hh}:${mm} ${dd}/${MM}/${yyyy}`;
+}
+
+// Kích hoạt giao diện sửa và nạp dữ liệu lên Form
+function startEdit(id, name, value) {
+    document.getElementById("editId").value = id;
+    document.getElementById("name").value = name;
+    document.getElementById("value").value = value;
+    
+    document.getElementById("form-title").innerText = "Chỉnh Sửa Dữ Liệu";
+    
+    const btnSubmit = document.getElementById("btn-submit");
+    btnSubmit.innerText = "Cập nhật";
+    btnSubmit.className = "btn btn-warning w-100 text-dark";
+    
+    document.getElementById("cancel-col").style.display = "block";
+    document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
+}
+
+// Hủy bỏ chế độ sửa, đưa form về trạng thái Thêm Mới ban đầu
+function cancelEdit() {
+    document.getElementById("editId").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("value").value = "";
+    
+    document.getElementById("form-title").innerText = "Thêm Dữ Liệu Mới";
+    
+    const btnSubmit = document.getElementById("btn-submit");
+    btnSubmit.innerText = "Thêm Mới";
+    btnSubmit.className = "btn btn-success w-100";
+    
+    document.getElementById("cancel-col").style.display = "none";
+}
+
+// Xử lý hợp nhất cả 2 tác vụ Thêm (Add) và Sửa (Update) gửi lên Server
+async function saveData() {
+    const id = document.getElementById("editId").value;
     const nameEl = document.getElementById("name");
     const valueEl = document.getElementById("value");
     
@@ -220,14 +282,19 @@ async function addData() {
         return;
     }
 
-    const result = await api({ action: "add", token: getToken(), name, value });
+    const isEdit = id !== "";
+    const action = isEdit ? "update" : "add";
+    
+    const payload = { action, token: getToken(), name, value };
+    if (isEdit) payload.id = id;
+
+    const result = await api(payload);
 
     if(result.success) {
-        nameEl.value = "";
-        valueEl.value = "";
+        cancelEdit();
         loadData();
     } else {
-        alert("Lỗi thêm dữ liệu: " + result.error);
+        alert("Lỗi khi xử lý dữ liệu: " + result.error);
     }
 }
 
@@ -274,14 +341,16 @@ function showDashboard() {
     document.getElementById("userInfo").innerHTML = 
         `Chào, <strong>${localStorage.getItem("username")}</strong> | Quyền: <span class="badge bg-info text-dark">${localStorage.getItem("role")}</span>`;
 
+    // Phân quyền cho khối Admin Panel
     if (localStorage.getItem("role") === "admin") {
         document.getElementById("adminPanel").style.display = "block";
+    } else {
+        document.getElementById("adminPanel").style.display = "none";
     }
 
     loadData();
 }
 
-// Khởi chạy hệ thống kiểm tra phiên đăng nhập hiện tại khi vừa tải trang
 if (localStorage.getItem("token")) {
     showDashboard();
 }
