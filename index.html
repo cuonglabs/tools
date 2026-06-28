@@ -99,7 +99,7 @@
                             <h5 class="h6 text-success mb-3">🛠️ Thiết Lập Bộ Nhớ Gợi Ý & URL Nhanh</h5>
                             <div class="mb-2">
                                 <label class="form-label small mb-1 text-muted">Danh sách URL (Định dạng: Tên|Link - mỗi dòng 1 link)</label>
-                                <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="Google|https://google.com"></textarea>
+                                <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="CuongLabs|https://cuonglabs.github.io/tools"></textarea>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Tên - Name (Cách nhau bằng dấu phẩy)</label>
@@ -292,7 +292,7 @@ async function login() {
 
 async function loadData(isManualClick = false) {
     document.getElementById("loadStatus").innerText = "Đang đồng bộ...";
-    if(isManualClick) toggleLoading(true, "Đang tải dữ liệu từ Google Sheet...");
+    if(isManualClick) toggleLoading(true, "Đang tải dữ liệu từ máy chủ...");
 
     const result = await api({ action: "list", token: getToken() });
     if(isManualClick) toggleLoading(false);
