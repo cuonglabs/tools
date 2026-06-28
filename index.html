@@ -1,259 +1,481 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Google Sheet DB Secured</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background-color: #f9f9f9; }
-        .hidden { display: none !important; }
-        
-        /* Giao diện Login Form */
-        .login-container { max-width: 350px; margin: 100px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
-        .login-container input { width: 90%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
-        .login-container button { width: 96%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        
-        /* Giao diện App Chính */
-        .form-group { margin-bottom: 15px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        input, button { padding: 8px; margin-right: 4px; border-radius: 4px; border: 1px solid #ccc; }
-        button { cursor: pointer; background: #007bff; color: white; border: none; }
-        button:hover { opacity: 0.9; }
-        .btn-cancel { background-color: #6c757d; }
-        .btn-logout { background-color: #343a40; float: right; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .btn-edit { background-color: #ffc107; color: black; border: none; padding: 5px 10px; }
-        .btn-delete { background-color: #dc3545; color: white; border: none; padding: 5px 10px; }
-        .action-btns { display: flex; gap: 5px; }
-        #status { margin-left: 10px; font-weight: bold; color: green; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>CuongLabs Database</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+    background:#f4f6f8;
+}
+.card{
+    margin-top:20px;
+}
+#dashboard{
+    display:none;
+}
+</style>
+
 </head>
+
 <body>
 
-    <div id="login-screen" class="login-container">
-        <h3>Hệ Thống Bảo Mật</h3>
-        <p style="font-size: 13px; color: #666;">Vui lòng nhập Token để truy cập dữ liệu</p>
-        <input type="password" id="token-input" placeholder="Nhập API Token...">
-        <button onclick="handleLogin()">Đăng Nhập</button>
+<div class="container">
+
+```
+<div id="loginCard" class="card">
+
+    <div class="card-body">
+
+        <h3>Login</h3>
+
+        <input
+            id="username"
+            class="form-control mb-2"
+            placeholder="Username">
+
+        <input
+            id="password"
+            type="password"
+            class="form-control mb-2"
+            placeholder="Password">
+
+        <button
+            class="btn btn-primary"
+            onclick="login()">
+
+            Login
+
+        </button>
+
     </div>
 
-    <div id="app-screen" class="hidden">
-        <h2 style="display: inline-block;">Google Sheet Database Manager</h2>
-        <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+</div>
 
-        <div class="form-group">
-            <input type="hidden" id="edit-id"> 
-            <input id="name" placeholder="Name">
-            <input id="value" placeholder="Value">
-            
-            <button id="btn-save" onclick="saveData()">Add Record</button>
-            <button class="btn-cancel" onclick="resetForm()">Cancel</button>
-            <button style="background-color: #17a2b8;" onclick="loadData()">Refresh Data</button>
-            <span id="status"></span>
+<div id="dashboard">
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between">
+
+                <h3>
+
+                    Dashboard
+
+                </h3>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="logout()">
+
+                    Logout
+
+                </button>
+
+            </div>
+
+            <div id="userInfo"></div>
+
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="tbody">
-                <tr><td colspan="3">Loading data...</td></tr>
-            </tbody>
-        </table>
     </div>
 
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
+    <div class="card">
 
-    // Hàm lấy token hiện tại được lưu trong trình duyệt
-    function getToken() {
-        return localStorage.getItem("api_session_token") || "";
-    }
+        <div class="card-body">
 
-    // Xử lý sự kiện đăng nhập
-    async function handleLogin() {
-        const token = document.getElementById("token-input").value.trim();
-        if (!token) return alert("Vui lòng không để trống Token!");
+            <h4>Add Data</h4>
 
-        try {
-            // Gửi request test thử xem token đúng hay sai
-            const res = await fetch(`${API_URL}?action=login&token=${token}`);
-            const result = await res.json();
+            <input
+                id="name"
+                class="form-control mb-2"
+                placeholder="Name">
 
-            if (result.success) {
-                localStorage.setItem("api_session_token", token); // Lưu token vào bộ nhớ máy
-                initApp(); // Chuyển sang màn hình chính
-            } else {
-                alert("Mã Token không chính xác!");
-            }
-        } catch (error) {
-            alert("Lỗi kết nối hoặc API chưa được Deploy đúng cách!");
-        }
-    }
+            <input
+                id="value"
+                class="form-control mb-2"
+                placeholder="Value">
 
-    // Xử lý đăng xuất
-    function handleLogout() {
-        localStorage.removeItem("api_session_token"); // Xóa sạch token khỏi máy
-        document.getElementById("app-screen").classList.add("hidden");
-        document.getElementById("login-screen").classList.remove("hidden");
-        document.getElementById("token-input").value = "";
-    }
+            <button
+                class="btn btn-success"
+                onclick="addData()">
 
-    // Kiểm tra trạng thái phiên làm việc khi load trang
-    function initApp() {
-        const token = getToken();
-        if (token) {
-            // Nếu có token sẵn, ẩn login và hiện màn hình chính, tiến hành load dữ liệu
-            document.getElementById("login-screen").classList.add("hidden");
-            document.getElementById("app-screen").classList.remove("hidden");
-            loadData();
-        } else {
-            // Nếu chưa login, hiện form nhập token
-            document.getElementById("login-screen").classList.remove("hidden");
-            document.getElementById("app-screen").classList.add("hidden");
-        }
-    }
+                Add
 
-    // 1. READ (Tải dữ liệu kèm Token bảo mật)
-    async function loadData() {
-        showStatus("Loading...");
-        const token = getToken();
-        try {
-            const res = await fetch(`${API_URL}?action=list&token=${token}`);
-            const data = await res.json();
-            
-            // Nếu Token bị hết hạn hoặc sai trên server
-            if (data.success === false && data.error.includes("Unauthorized")) {
-                alert("Phiên đăng nhập hết hạn hoặc Token đã bị đổi!");
-                handleLogout();
-                return;
-            }
+            </button>
 
-            const tbody = document.getElementById("tbody");
-            tbody.innerHTML = "";
+        </div>
 
-            if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3">No data found.</td></tr>`;
-                showStatus("");
-                return;
-            }
+    </div>
 
-            data.forEach(row => {
-                const itemName = row.NAME || "";
-                const itemValue = row.VALUE || "";
+    <div
+        id="adminPanel"
+        class="card"
+        style="display:none">
 
-                const safeName = String(itemName).replace(/'/g, "\\'");
-                const safeValue = String(itemValue).replace(/'/g, "\\'");
+        <div class="card-body">
 
-                tbody.innerHTML += `
+            <h4>Create User</h4>
+
+            <input
+                id="newUser"
+                class="form-control mb-2"
+                placeholder="Username">
+
+            <input
+                id="newPass"
+                class="form-control mb-2"
+                placeholder="Password">
+
+            <select
+                id="newRole"
+                class="form-select mb-2">
+
+                <option value="user">
+                    user
+                </option>
+
+                <option value="admin">
+                    admin
+                </option>
+
+            </select>
+
+            <button
+                class="btn btn-warning"
+                onclick="createUser()">
+
+                Create User
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between">
+
+                <h4>Data</h4>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="loadData()">
+
+                    Refresh
+
+                </button>
+
+            </div>
+
+            <table
+                class="table table-striped">
+
+                <thead>
+
                 <tr>
-                    <td>${itemName}</td>
-                    <td>${itemValue}</td>
-                    <td class="action-btns">
-                        <button class="btn-edit" onclick="editRecord('${row.ID}', '${safeName}', '${safeValue}')">Edit</button>
-                        <button class="btn-delete" onclick="deleteRecord('${row.ID}')">Delete</button>
-                    </td>
-                </tr>`;
-            });
-            showStatus("");
-        } catch (error) {
-            showStatus("Error loading data", "red");
-        }
-    }
+                    <th>ID</th>
+                    <th>Created</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>User</th>
+                    <th>Action</th>
+                </tr>
 
-    // 2. CREATE & UPDATE (Gửi dữ liệu đính kèm Token trong Body)
-    async function saveData() {
-        const id = document.getElementById("edit-id").value;
-        const name = document.getElementById("name").value;
-        const value = document.getElementById("value").value;
+                </thead>
 
-        if (!name || !value) {
-            alert("Vui lòng nhập đầy đủ Name và Value");
-            return;
-        }
+                <tbody id="tbody">
+                </tbody>
 
-        const isUpdating = id !== "";
-        const action = isUpdating ? "update" : "add";
-        
-        // Đóng gói payload có sẵn token phiên làm việc
-        const payload = { action, name, value, token: getToken() };
-        if (isUpdating) payload.id = id;
+            </table>
 
-        showStatus(isUpdating ? "Updating..." : "Adding...");
-        document.getElementById("btn-save").disabled = true;
+        </div>
 
-        try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
-            
-            const result = await res.json();
-            if (result.success) {
-                resetForm();
-                loadData();
-                showStatus("Success!");
-                setTimeout(() => showStatus(""), 2000);
-            } else {
-                showStatus("Error: " + result.error, "red");
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
+
+function getToken(){
+
+    return localStorage
+        .getItem("token");
+
+}
+
+function logout(){
+
+    localStorage.clear();
+
+    location.reload();
+
+}
+
+async function api(data){
+
+    const res =
+        await fetch(
+            API_URL,
+            {
+                method:"POST",
+                body:JSON.stringify(data)
             }
-        } catch (error) {
-            showStatus("Network Error", "red");
-        } finally {
-            document.getElementById("btn-save").disabled = false;
+        );
+
+    return await res.json();
+
+}
+
+async function login(){
+
+    const username =
+        document.getElementById(
+            "username"
+        ).value;
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+    const result =
+        await api({
+            action:"login",
+            username,
+            password
+        });
+
+    if(!result.success){
+
+        alert(
+            result.error
+        );
+
+        return;
+
+    }
+
+    localStorage.setItem(
+        "token",
+        result.token
+    );
+
+    localStorage.setItem(
+        "role",
+        result.role
+    );
+
+    localStorage.setItem(
+        "username",
+        result.username
+    );
+
+    showDashboard();
+
+}
+
+async function loadData(){
+
+    const result =
+        await api({
+            action:"list",
+            token:getToken()
+        });
+
+    const tbody =
+        document.getElementById(
+            "tbody"
+        );
+
+    tbody.innerHTML = "";
+
+    result.forEach(row=>{
+
+        let btn = "";
+
+        if(
+            localStorage.getItem(
+                "role"
+            )==="admin"
+        ){
+
+            btn =
+            `<button
+                class="btn btn-sm btn-danger"
+                onclick="deleteData('${row.ID}')">
+                Delete
+            </button>`;
+
         }
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${row.ID||""}</td>
+            <td>${row.Created||""}</td>
+            <td>${row.Name||""}</td>
+            <td>${row.Value||""}</td>
+            <td>${row.CreatedBy||""}</td>
+            <td>${btn}</td>
+        </tr>
+        `;
+
+    });
+
+}
+
+async function addData(){
+
+    const name =
+        document.getElementById(
+            "name"
+        ).value;
+
+    const value =
+        document.getElementById(
+            "value"
+        ).value;
+
+    const result =
+        await api({
+            action:"add",
+            token:getToken(),
+            name,
+            value
+        });
+
+    if(result.success){
+
+        loadData();
+
     }
 
-    // 3. Đẩy dữ liệu lên Form để Sửa
-    function editRecord(id, name, value) {
-        document.getElementById("edit-id").value = id;
-        document.getElementById("name").value = name;
-        document.getElementById("value").value = value;
-        document.getElementById("btn-save").innerText = "Update Record";
+}
+
+async function deleteData(id){
+
+    if(
+        !confirm(
+            "Delete?"
+        )
+    ) return;
+
+    await api({
+        action:"delete",
+        token:getToken(),
+        id
+    });
+
+    loadData();
+
+}
+
+async function createUser(){
+
+    const username =
+        document.getElementById(
+            "newUser"
+        ).value;
+
+    const password =
+        document.getElementById(
+            "newPass"
+        ).value;
+
+    const role =
+        document.getElementById(
+            "newRole"
+        ).value;
+
+    const result =
+        await api({
+            action:"createUser",
+            token:getToken(),
+            username,
+            password,
+            role
+        });
+
+    alert(
+        result.success
+        ? "Created"
+        : result.error
+    );
+
+}
+
+function showDashboard(){
+
+    document.getElementById(
+        "loginCard"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "dashboard"
+    ).style.display =
+        "block";
+
+    document.getElementById(
+        "userInfo"
+    ).innerHTML =
+
+        "<b>User:</b> " +
+
+        localStorage.getItem(
+            "username"
+        ) +
+
+        " | <b>Role:</b> " +
+
+        localStorage.getItem(
+            "role"
+        );
+
+    if(
+        localStorage.getItem(
+            "role"
+        )==="admin"
+    ){
+
+        document.getElementById(
+            "adminPanel"
+        ).style.display =
+            "block";
+
     }
 
-    // 4. DELETE (Xóa dữ liệu đính kèm Token trong Body)
-    async function deleteRecord(id) {
-        if (!confirm("Bạn có chắc chắn muốn xóa record này?")) return;
+    loadData();
 
-        showStatus("Deleting...");
-        try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({ action: "delete", id: id, token: getToken() }) // Truyền Token vào đây
-            });
-            const result = await res.json();
-            if (result.success) {
-                loadData();
-            } else {
-                alert("Error deleting: " + result.error);
-            }
-        } catch (error) {
-            showStatus("Error deleting data", "red");
-        }
-    }
+}
 
-    function resetForm() {
-        document.getElementById("edit-id").value = "";
-        document.getElementById("name").value = "";
-        document.getElementById("value").value = "";
-        document.getElementById("btn-save").innerText = "Add Record";
-    }
+if(
+    localStorage.getItem(
+        "token"
+    )
+){
 
-    function showStatus(text, color = "green") {
-        const el = document.getElementById("status");
-        el.innerText = text;
-        el.style.color = color;
-    }
+    showDashboard();
 
-    // Chạy kiểm tra đăng nhập ngay khi mở trang web
-    initApp();
+}
+
 </script>
+
 </body>
 </html>
