@@ -10,10 +10,45 @@
         .card { margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: none; }
         #dashboard { display: none; }
         .loading-status { font-style: italic; color: #6c757d; font-size: 14px; }
-        .quick-link-btn { margin-right: 5px; margin-bottom: 5px; }
+        
+        /* 3. CSS CHO HIỆU ỨNG LOADING OVERLAY CHỜ SERVER MƯỢT MÀ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(33, 37, 41, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
+        }
+        .spinner-box {
+            background: #fff;
+            padding: 25px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+
+<div id="loadingOverlay">
+    <div class="spinner-box">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+        <div id="loadingMessage" class="fw-bold text-secondary fs-6">Đang kết nối server...</div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
+    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body fw-bold" id="toastBody">Thao tác thành công!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 
 <div class="container" style="max-width: 950px;">
 
@@ -46,7 +81,7 @@
 
         <div class="collapse" id="settingsCollapse">
             <div class="card border-info">
-                <div class="card-header bg-info bg-opacity-10 text-dark font-weight-bold">Cài Đặt Tài Khoản & Tiện Ích Cấu Hình</div>
+                <div class="card-header bg-info bg-opacity-10 text-dark fw-bold">Cài Đặt Tài Khoản & Tiện Ích Cấu Hình</div>
                 <div class="card-body">
                     <div class="row g-4">
                         <div class="col-md-5 border-end">
@@ -63,18 +98,18 @@
                         <div class="col-md-7">
                             <h5 class="h6 text-success mb-3">🛠️ Thiết Lập Bộ Nhớ Gợi Ý & URL Nhanh</h5>
                             <div class="mb-2">
-                                <label class="form-label small mb-1 text-muted">Danh sách URL hay truy cập (Định dạng: Tên|Link - mỗi dòng 1 link)</label>
-                                <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="Google|https://google.com&#10;CuongLabs|https://cuonglabs.com"></textarea>
+                                <label class="form-label small mb-1 text-muted">Danh sách URL (Định dạng: Tên|Link - mỗi dòng 1 link)</label>
+                                <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="Google|https://google.com"></textarea>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Tên - Name (Cách nhau bằng dấu phẩy)</label>
-                                <input id="cfgSuggestNames" class="form-control form-control-sm" placeholder="Sản phẩm A, Thiết bị B, Dịch vụ C">
+                                <input id="cfgSuggestNames" class="form-control form-control-sm" placeholder="Sản phẩm A, Thiết bị B">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Giá trị - Value (Cách nhau bằng dấu phẩy)</label>
-                                <input id="cfgSuggestValues" class="form-control form-control-sm" placeholder="Hoạt động, Tạm dừng, 150000, 200000">
+                                <input id="cfgSuggestValues" class="form-control form-control-sm" placeholder="Hoạt động, Tạm dừng">
                             </div>
-                            <button class="btn btn-success btn-sm float-end" onclick="saveUserConfigs()">Lưu cấu hình tiện ích</button>
+                            <button class="btn btn-success btn-sm float-end" onclick="saveUserConfigs(false)">Lưu cấu hình tiện ích</button>
                         </div>
                     </div>
                 </div>
@@ -83,7 +118,7 @@
 
         <div id="quickLinksCard" class="card" style="display:none;">
             <div class="card-body p-2 bg-light d-flex align-items-center flex-wrap">
-                <span class="me-2 small text-muted font-weight-bold">🔗 Truy cập nhanh:</span>
+                <span class="me-2 small text-muted fw-bold">🔗 Truy cập nhanh:</span>
                 <div id="quickLinksContainer" class="d-flex flex-wrap gap-1"></div>
             </div>
         </div>
@@ -154,7 +189,7 @@
                     <h4 class="card-title h5 m-0">Danh Sách Dữ Liệu</h4>
                     <div>
                         <span id="loadStatus" class="loading-status me-2"></span>
-                        <button class="btn btn-outline-primary btn-sm" onclick="loadData()">Làm mới dữ liệu</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="loadData(true)">Làm mới dữ liệu</button>
                     </div>
                 </div>
                 
@@ -187,6 +222,36 @@ function logout() {
     location.reload();
 }
 
+// 3. HÀM CHẠY ANIMATION CHỜ (WAITING) VÀ HIỂN THỊ THÔNG BÁO (SUCCESS TOAST)
+function toggleLoading(show, message = "Đang xử lý...") {
+    const overlay = document.getElementById("loadingOverlay");
+    const msgEl = document.getElementById("loadingMessage");
+    if (show) {
+        msgEl.innerText = message;
+        overlay.style.display = "flex";
+    } else {
+        overlay.style.display = "none";
+    }
+}
+
+function showToast(message, type = "success") {
+    const toastEl = document.getElementById("liveToast");
+    const toastBody = document.getElementById("toastBody");
+    
+    toastEl.classList.remove("bg-success", "bg-danger", "bg-warning", "text-white", "text-dark");
+    if (type === "success") {
+        toastEl.classList.add("bg-success", "text-white");
+    } else if (type === "danger") {
+        toastEl.classList.add("bg-danger", "text-white");
+    } else {
+        toastEl.classList.add("bg-warning", "text-dark");
+    }
+    
+    toastBody.innerText = message;
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+}
+
 async function api(data) {
     try {
         const res = await fetch(API_URL, {
@@ -204,14 +269,16 @@ async function login() {
     const password = document.getElementById("password").value;
 
     if(!username || !password) {
-        alert("Vui lòng nhập đầy đủ thông tin tài khoản!");
+        showToast("Vui lòng nhập đầy đủ thông tin tài khoản!", "danger");
         return;
     }
 
+    toggleLoading(true, "Đang xác thực tài khoản đăng nhập...");
     const result = await api({ action: "login", username, password });
+    toggleLoading(false);
 
     if (!result.success) {
-        alert(result.error);
+        showToast(result.error, "danger");
         return;
     }
 
@@ -219,27 +286,26 @@ async function login() {
     localStorage.setItem("role", result.role);
     localStorage.setItem("username", result.username);
 
+    showToast("Đăng nhập thành công!", "success");
     showDashboard();
 }
 
-async function loadData() {
+async function loadData(isManualClick = false) {
     document.getElementById("loadStatus").innerText = "Đang đồng bộ...";
+    if(isManualClick) toggleLoading(true, "Đang tải dữ liệu từ Google Sheet...");
+
     const result = await api({ action: "list", token: getToken() });
+    if(isManualClick) toggleLoading(false);
 
     if (result.success === false) {
-        alert("Phiên làm việc hết hạn hoặc lỗi: " + result.error);
-        logout();
+        showToast("Phiên làm việc hết hạn hoặc lỗi: " + result.error, "danger");
+        setTimeout(logout, 2000);
         return;
     }
 
     const myRole = localStorage.getItem("role");
     const tableHeader = document.getElementById("tableHeader");
-    let headerHtml = `
-        <th>Name</th>
-        <th>Value</th>
-        <th>Thời gian tạo</th>
-        <th>Người tạo</th>
-    `;
+    let headerHtml = `<th>Name</th><th>Value</th><th>Thời gian tạo</th><th>Người tạo</th>`;
     if (myRole === "admin") {
         headerHtml += `<th style="width: 130px;">Thao tác</th>`;
     }
@@ -287,6 +353,7 @@ async function loadData() {
     });
     
     updateTimestamp();
+    if(isManualClick) showToast("Làm mới dữ liệu thành công!", "success");
 }
 
 function updateTimestamp() {
@@ -303,7 +370,6 @@ function startEdit(id, name, value) {
     document.getElementById("editId").value = id;
     document.getElementById("name").value = name;
     document.getElementById("value").value = value;
-    
     document.getElementById("form-title").innerText = "Chỉnh Sửa Dữ Liệu";
     
     const btnSubmit = document.getElementById("btn-submit");
@@ -318,13 +384,11 @@ function cancelEdit() {
     document.getElementById("editId").value = "";
     document.getElementById("name").value = "";
     document.getElementById("value").value = "";
-    
     document.getElementById("form-title").innerText = "Thêm Dữ Liệu Mới";
     
     const btnSubmit = document.getElementById("btn-submit");
     btnSubmit.innerText = "Thêm Mới";
     btnSubmit.className = "btn btn-success w-100";
-    
     document.getElementById("cancel-col").style.display = "none";
 }
 
@@ -334,7 +398,7 @@ async function saveData() {
     const value = document.getElementById("value").value.trim();
 
     if(!name || !value) {
-        alert("Vui lòng nhập cả Name và Value!");
+        showToast("Vui lòng nhập cả Name và Value!", "danger");
         return;
     }
 
@@ -343,25 +407,55 @@ async function saveData() {
     const payload = { action, token: getToken(), name, value };
     if (isEdit) payload.id = id;
 
+    toggleLoading(true, "Đang truyền tải dữ liệu đến server...");
     const result = await api(payload);
+    toggleLoading(false);
 
     if(result.success) {
+        showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Thêm mới bản ghi thành công!", "success");
+        
+        // 2. KHỐI TỰ ĐỘNG LƯU NAME/VALUE MỚI VÀO CONFIGS KHI THÊM MỚI CHƯA TỒN TẠI
+        if (!isEdit) {
+            let currentNames = document.getElementById("cfgSuggestNames").value.split(",").map(x => x.trim()).filter(x => x !== "");
+            let currentValues = document.getElementById("cfgSuggestValues").value.split(",").map(x => x.trim()).filter(x => x !== "");
+            let isConfigChanged = false;
+
+            if (!currentNames.includes(name)) {
+                currentNames.push(name);
+                isConfigChanged = true;
+            }
+            if (!currentValues.includes(value)) {
+                currentValues.push(value);
+                isConfigChanged = true;
+            }
+
+            if (isConfigChanged) {
+                document.getElementById("cfgSuggestNames").value = currentNames.join(", ");
+                document.getElementById("cfgSuggestValues").value = currentValues.join(", ");
+                // Gọi lưu configs âm thầm lên Database (truyền tham số true để chạy ngầm)
+                await saveUserConfigs(true);
+            }
+        }
+
         cancelEdit();
-        loadData();
+        loadData(false);
     } else {
-        alert("Lỗi khi xử lý dữ liệu: " + result.error);
+        showToast("Lỗi hệ thống: " + result.error, "danger");
     }
 }
 
 async function deleteData(id) {
     if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn dòng dữ liệu này?")) return;
 
+    toggleLoading(true, "Đang thực hiện lệnh xóa dữ liệu...");
     const result = await api({ action: "delete", token: getToken(), id });
+    toggleLoading(false);
 
     if(result.success) {
-        loadData();
+        showToast("Xóa bản ghi thành công!", "success");
+        loadData(false);
     } else {
-        alert("Lỗi khi xóa: " + result.error);
+        showToast("Lỗi khi xóa: " + result.error, "danger");
     }
 }
 
@@ -374,70 +468,77 @@ async function createUser() {
     const password = passEl.value;
 
     if(!username || !password) {
-        alert("Vui lòng không để trống ô tài khoản mới!");
+        showToast("Vui lòng không để trống ô tài khoản mới!", "danger");
         return;
     }
 
+    toggleLoading(true, "Đang khởi tạo thành viên mới...");
     const result = await api({ action: "createUser", token: getToken(), username, password, role });
+    toggleLoading(false);
 
     if(result.success) {
-        alert("Tạo tài khoản thành viên thành công!");
+        showToast("Tạo tài khoản thành viên mới thành công!", "success");
         userEl.value = "";
         passEl.value = "";
     } else {
-        alert("Lỗi: " + result.error);
+        showToast("Lỗi: " + result.error, "danger");
     }
 }
 
-// 1. TÍNH NĂNG: Reset mật khẩu bởi Admin
 async function resetPasswordByAdmin() {
     const targetUsername = document.getElementById("resetTargetUser").value.trim();
     const newPassword = document.getElementById("resetNewPass").value;
 
     if (!targetUsername || !newPassword) {
-        alert("Vui lòng điền đầy đủ Username đích và mật khẩu mới cấp!");
+        showToast("Vui lòng điền đầy đủ Username đích và mật khẩu mới cấp!", "danger");
         return;
     }
 
-    if (!confirm(`Bạn chắc chắn muốn ép buộc đổi mật khẩu của tài khoản [${targetUsername}]?`)) return;
+    if (!confirm(`Bạn chắc chắn muốn khôi phục mật khẩu tài khoản [${targetUsername}]?`)) return;
 
+    toggleLoading(true, "Đang đặt lại mật khẩu thành viên...");
     const result = await api({ action: "resetPassword", token: getToken(), targetUsername, newPassword });
+    toggleLoading(false);
+
     if (result.success) {
-        alert(`Reset mật khẩu cho tài khoản ${targetUsername} thành công!`);
+        showToast(`Reset mật khẩu tài khoản ${targetUsername} thành công!`, "success");
         document.getElementById("resetTargetUser").value = "";
         document.getElementById("resetNewPass").value = "";
     } else {
-        alert("Lỗi: " + result.error);
+        showToast("Lỗi: " + result.error, "danger");
     }
 }
 
-// 2. TÍNH NĂNG: Đổi mật khẩu bởi Người dùng
 async function changePassword() {
     const oldPassword = document.getElementById("oldPass").value;
     const newPassword = document.getElementById("newPassUser").value;
 
     if (!oldPassword || !newPassword) {
-        alert("Vui lòng nhập đủ cả mật khẩu cũ và mật khẩu mới!");
+        showToast("Vui lòng nhập đủ cả mật khẩu cũ và mật khẩu mới!", "danger");
         return;
     }
 
+    toggleLoading(true, "Đang yêu cầu đổi mật khẩu bảo mật...");
     const result = await api({ action: "changePassword", token: getToken(), oldPassword, newPassword });
+    toggleLoading(false);
+
     if (result.success) {
-        alert("Đổi mật khẩu thành công! Giao diện sẽ tải lại.");
-        logout();
+        showToast("Đổi mật khẩu thành công! Bạn sẽ tự đăng xuất sau 2 giây...", "success");
+        setTimeout(logout, 2000);
     } else {
-        alert("Lỗi: " + result.error);
+        showToast("Lỗi: " + result.error, "danger");
     }
 }
 
-// 3. TÍNH NĂNG: Tải cấu hình Configs sau khi đăng nhập và render ra UI
-async function loadUserConfigs() {
+async function loadUserConfigs(isSilent = false) {
+    if(!isSilent) toggleLoading(true, "Đang đồng bộ giao diện tiện ích...");
     const result = await api({ action: "getUserConfigs", token: getToken() });
-    if (!result.success) return;
+    if(!isSilent) toggleLoading(false);
 
+    if (!result.success) return;
     const configs = result.configs || {};
 
-    // --- Xử lý liên kết truy cập nhanh (URL) ---
+    // --- Xử lý liên kết URL nhanh ---
     const urls = configs.urls || [];
     const container = document.getElementById("quickLinksContainer");
     const cardBlock = document.getElementById("quickLinksCard");
@@ -448,13 +549,10 @@ async function loadUserConfigs() {
         let rawTextareaValue = "";
         urls.forEach(item => {
             rawTextareaValue += `${item.title}|${item.url}\n`;
-            // Tạo Button link
             const a = document.createElement("a");
-            a.href = item.url;
-            a.target = "_blank";
+            a.href = item.url; a.target = "_blank";
             a.className = "btn btn-xs btn-outline-dark pt-0 pb-0 ps-2 pe-2 small bg-white border shadow-sm";
-            a.style.fontSize = "13px";
-            a.innerText = item.title;
+            a.style.style = "font-size: 13px;"; a.innerText = item.title;
             container.appendChild(a);
         });
         document.getElementById("cfgUrls").value = rawTextareaValue.trim();
@@ -467,27 +565,22 @@ async function loadUserConfigs() {
     const names = configs.suggestedNames || [];
     const datalistNames = document.getElementById("datalistNames");
     datalistNames.innerHTML = "";
-    names.forEach(n => {
-        datalistNames.innerHTML += `<option value="${n}">`;
-    });
+    names.forEach(n => { datalistNames.innerHTML += `<option value="${n}">`; });
     document.getElementById("cfgSuggestNames").value = names.join(", ");
 
     const values = configs.suggestedValues || [];
     const datalistValues = document.getElementById("datalistValues");
     datalistValues.innerHTML = "";
-    values.forEach(v => {
-        datalistValues.innerHTML += `<option value="${v}">`;
-    });
+    values.forEach(v => { datalistValues.innerHTML += `<option value="${v}">`; });
     document.getElementById("cfgSuggestValues").value = values.join(", ");
 }
 
-// 4. TÍNH NĂNG: Cập nhật cấu hình mới lên Database
-async function saveUserConfigs() {
+// 2. HÀM UPDATE CONFIGS HỖ TRỢ THAM SỐ CHẠY NGẦM (SILENT) KHÔNG GÂY LÀM PHIỀN USER
+async function saveUserConfigs(isSilent = false) {
     const rawUrls = document.getElementById("cfgUrls").value.split("\n");
     const rawNames = document.getElementById("cfgSuggestNames").value.split(",");
     const rawValues = document.getElementById("cfgSuggestValues").value.split(",");
 
-    // Build cấu trúc JSON
     const urlsArray = [];
     rawUrls.forEach(line => {
         if (line.includes("|")) {
@@ -505,13 +598,16 @@ async function saveUserConfigs() {
         suggestedValues: suggestedValues
     };
 
+    if (!isSilent) toggleLoading(true, "Đang ghi nhớ cấu hình mới...");
     const result = await api({ action: "updateUserConfigs", token: getToken(), configs: newConfigs });
+    if (!isSilent) toggleLoading(false);
+
     if (result.success) {
-        alert("Cập nhật bộ nhớ cấu hình thành công!");
-        // Gọi load lại để đồng bộ hóa lên giao diện liên kết nhanh & bộ gợi ý tức thì
-        loadUserConfigs(); 
+        if (!isSilent) showToast("Cập nhật bộ nhớ cấu hình thành công!", "success");
+        // Gọi tải lại configs chạy ngầm để map data ra Datalist gợi ý ngay lập tức
+        loadUserConfigs(true); 
     } else {
-        alert("Không thể lưu: " + result.error);
+        if (!isSilent) showToast("Không thể lưu cấu hình: " + result.error, "danger");
     }
 }
 
@@ -519,18 +615,32 @@ function showDashboard() {
     document.getElementById("loginCard").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
 
+    // 1. CHUẨN HÓA KIỂU CHÀO, VIẾT HOA CHỮ ĐẦU CỦA USERNAME ĐÚNG VAI TRÒ
+    const username = localStorage.getItem("username") || "";
+    const role = localStorage.getItem("role") || "";
+    const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
+    
+    let greetingString = "";
+    if (role === "admin") {
+        greetingString = `Chào quản trị viên <strong>${capitalizedUser}</strong>`;
+    } else {
+        greetingString = `Chào người dùng <strong>${capitalizedUser}</strong>`;
+    }
+    
     document.getElementById("userInfo").innerHTML = 
-        `Chào, <strong>${localStorage.getItem("username")}</strong> | Quyền: <span class="badge bg-info text-dark">${localStorage.getItem("role")}</span>`;
+        `${greetingString} | Vai trò: <span class="badge bg-info text-dark">${role}</span>`;
 
-    if (localStorage.getItem("role") === "admin") {
+    if (role === "admin") {
         document.getElementById("adminPanel").style.display = "block";
     } else {
         document.getElementById("adminPanel").style.display = "none";
     }
 
-    // Luồng chạy đồng bộ dữ liệu
-    loadData();
-    loadUserConfigs(); // <-- TỰ ĐỘNG TẢI CONFIGS NGAY SAU KHI VÀO DASHBOARD
+    // Luồng khởi tạo ban đầu đồng bộ mượt với hiệu ứng chờ toàn màn hình
+    toggleLoading(true, "Đang thiết lập không gian làm việc...");
+    Promise.all([loadData(false), loadUserConfigs(true)]).then(() => {
+        toggleLoading(false);
+    });
 }
 
 if (localStorage.getItem("token")) {
