@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CuongLabs Database Manager</title>
+    <title>Ghi Nhận Thời Gian Tăng Ca - OT Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background: #f4f6f8; padding-top: 30px; padding-bottom: 30px; }
@@ -49,8 +49,9 @@
     </div>
 </div>
 
-<div class="container" style="max-width: 950px;">
+<div class="container" style="max-width: 1050px;">
 
+    <!-- ĐĂNG NHẬP -->
     <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 80px;">
         <div class="card-body p-4">
             <h3 class="card-title text-center mb-4">Hệ Thống Đăng Nhập</h3>
@@ -64,6 +65,7 @@
         </div>
     </div>
 
+    <!-- DASHBOARD -->
     <div id="dashboard">
         
         <div class="card">
@@ -100,14 +102,6 @@
                                 <label class="form-label small mb-1 text-muted">Danh sách URL (Định dạng: Tên|Link - mỗi dòng 1 link)</label>
                                 <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="CuongLabs|https://cuonglabs.github.io/tools"></textarea>
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Tên - Name (Cách nhau bằng dấu phẩy)</label>
-                                <input id="cfgSuggestNames" class="form-control form-control-sm" placeholder="Sản phẩm A, Thiết bị B">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Giá trị - Value (Cách nhau bằng dấu phẩy)</label>
-                                <input id="cfgSuggestValues" class="form-control form-control-sm" placeholder="Hoạt động, Tạm dừng">
-                            </div>
                             <button id="btn-saveconfig" class="btn btn-success btn-sm float-end" onclick="saveUserConfigs(false)">Lưu cấu hình tiện ích</button>
                         </div>
                     </div>
@@ -122,6 +116,7 @@
             </div>
         </div>
 
+        <!-- ADMIN PANEL -->
         <div id="adminPanel" class="card border-warning" style="display:none">
             <div class="card-body">
                 <h4 class="card-title h5 text-warning mb-3">Tạo tài khoản thành viên mới</h4>
@@ -159,33 +154,54 @@
             </div>
         </div>
 
+        <!-- FORM THÊM / SỬA OT -->
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title h5 mb-3" id="form-title">Thêm dữ liệu mới</h4>
+                <h4 class="card-title h5 mb-3" id="form-title">⏱️ Record thời gian tăng ca mới</h4>
                 <input type="hidden" id="editId"> 
-                <div class="row g-2">
+                <div class="row g-3">
                     <div class="col-md-4">
-                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)" list="datalistNames" onkeydown="handleSaveKey(event)">
-                        <datalist id="datalistNames"></datalist>
+                        <label class="form-label small fw-bold text-secondary">1. Tăng ca ngày nào?</label>
+                        <input type="date" id="otDate" class="form-control" onkeydown="handleSaveKey(event)">
                     </div>
                     <div class="col-md-4">
-                        <input id="value" class="form-control" placeholder="Giá trị (Value)" list="datalistValues" onkeydown="handleSaveKey(event)">
-                        <datalist id="datalistValues"></datalist>
+                        <label class="form-label small fw-bold text-secondary">2. Bạn đang đi ca nào?</label>
+                        <input id="shift" class="form-control" placeholder="Chọn hoặc nhập ca..." list="datalistShifts" onkeydown="handleSaveKey(event)">
+                        <datalist id="datalistShifts">
+                            <option value="Ca1">
+                            <option value="Ca2">
+                            <option value="Ca3">
+                            <option value="Hành chính">
+                        </datalist>
                     </div>
-                    <div class="col-md-2">
-                        <button id="btn-submit" class="btn btn-success w-100" onclick="saveData()">Thêm mới</button>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">3. Thời gian tăng ca? (tiếng)</label>
+                        <input type="number" id="otHours" class="form-control" placeholder="Ví dụ: 2, 2.5, 4..." step="0.5" min="0" list="datalistHours" onkeydown="handleSaveKey(event)">
+                        <datalist id="datalistHours">
+                            <option value="2">
+                            <option value="4">
+                            <option value="8">
+                            <option value="10">
+                            <option value="12">
+                        </datalist>
                     </div>
+                </div>
+                <div class="row mt-3 justify-content-end g-2">
                     <div class="col-md-2" id="cancel-col" style="display:none;">
                         <button id="btn-cancel" class="btn btn-secondary w-100" onclick="cancelEdit()">Hủy sửa</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button id="btn-submit" class="btn btn-success w-100 fw-bold" onclick="saveData()">+ Thêm record OT</button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- DANH SÁCH DỮ LIỆU OT -->
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title h5 m-0">Danh sách dữ liệu</h4>
+                    <h4 class="card-title h5 m-0">📋 Danh sách thời gian tăng ca</h4>
                     <div>
                         <span id="loadStatus" class="loading-status me-2"></span>
                         <button id="btn-refresh" class="btn btn-outline-primary btn-sm" onclick="loadData(true)">Làm mới dữ liệu</button>
@@ -210,17 +226,40 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
+const API_URL = "THAY_URL_WEB_APP_GOOGLE_SCRIPT_TAI_DAY";
 
-// 1. HÀM TRUNG TÂM PHÒNG CHỐNG TẤN CÔNG XSS ĐỘC HẠI ĐÚNG CHUẨN OWASP
+// 1. HÀM TRUNG TÂM PHÒNG CHỐNG XSS
 function escapeHtml(str) {
-    if (!str) return "";
+    if (str === null || str === undefined) return "";
     return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+// 2. HÀM ĐỊNH DẠNG NGÀY DISPLAY CHUẨN dd/mm/yyyy (BAO GỒM CẢ SỐ 0)
+function formatDateDDMMYYYY(dateInput) {
+    if (!dateInput) return "N/A";
+    let d = new Date(dateInput);
+    if (isNaN(d.getTime())) return escapeHtml(dateInput);
+    
+    let day = String(d.getDate()).padStart(2, '0');
+    let month = String(d.getMonth() + 1).padStart(2, '0');
+    let year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+// 3. CHUYỂN ĐỔI NGÀY SANG YYYY-MM-DD ĐỂ ĐẶT VÀO INPUT DATE
+function formatDateYYYYMMDD(dateInput) {
+    if (!dateInput) return "";
+    let d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "";
+    let day = String(d.getDate()).padStart(2, '0');
+    let month = String(d.getMonth() + 1).padStart(2, '0');
+    let year = d.getFullYear();
+    return `${year}-${month}-${day}`;
 }
 
 function getToken() {
@@ -232,7 +271,6 @@ function logout() {
     location.reload();
 }
 
-// 3. TỐI ƯU HÀM LOADING: TỰ ĐỘNG KHÓA (DISABLE) NÚT BẤM KHI CHỜ PHẢN HỒI SERVER
 function toggleLoading(show, message = "Đang xử lý...") {
     const overlay = document.getElementById("loadingOverlay");
     const msgEl = document.getElementById("loadingMessage");
@@ -243,7 +281,6 @@ function toggleLoading(show, message = "Đang xử lý...") {
         overlay.style.display = "none";
     }
 
-    // Tự động tìm tất cả button chính để chống spam double-click
     const ActionButtons = [
         "btn-login", "btn-submit", "btn-cancel", "btn-refresh", 
         "btn-changepass", "btn-saveconfig", "btn-createuser", "btn-resetpass"
@@ -272,7 +309,6 @@ function showToast(message, type = "success") {
     toast.show();
 }
 
-// HỖ TRỢ ĐIỀU KHIỂN PHÍM TẮT ENTER CHO NGƯỜI DÙNG CHUYÊN NGHIỆP
 function handleLoginKey(e) {
     if (e.key === "Enter") login();
 }
@@ -335,8 +371,16 @@ async function loadData(isManualClick = false) {
     const myRole = localStorage.getItem("role");
     const tableHeader = document.getElementById("tableHeader");
     
-    // Hiển thị cột Thao tác cho tất cả người dùng
-    tableHeader.innerHTML = `<th>Tên</th><th>Giá trị</th><th>Thời gian tạo</th><th>Người tạo</th><th style="width: 130px;">Thao tác</th>`;
+    // Đã nâng cấp các cột bảng theo đúng yêu cầu
+    tableHeader.innerHTML = `
+        <th>Ngày OT</th>
+        <th>Ca làm việc</th>
+        <th>Số giờ OT</th>
+        <th>Người tạo</th>
+        <th>Tạo lúc</th>
+        <th>Người sửa</th>
+        <th>Sửa lúc</th>
+        <th style="width: 120px;">Thao tác</th>`;
 
     const tbody = document.getElementById("tbody");
     tbody.innerHTML = "";
@@ -344,7 +388,7 @@ async function loadData(isManualClick = false) {
     const rows = result.data || [];
 
     if(rows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Cơ sở dữ liệu đang trống hoặc bạn chưa có dữ liệu nào.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Cơ sở dữ liệu OT đang trống.</td></tr>`;
         updateTimestamp();
         return;
     }
@@ -352,32 +396,36 @@ async function loadData(isManualClick = false) {
     let htmlContentBuffer = "";
 
     rows.forEach(row => {
-        let dateStr = row.Created;
-        if(dateStr && !isNaN(Date.parse(dateStr))) {
-            dateStr = new Date(dateStr).toLocaleString('vi-VN');
-        }
+        let createdStr = row.Created ? new Date(row.Created).toLocaleString('vi-VN') : "-";
+        let updatedStr = row.Updated ? new Date(row.Updated).toLocaleString('vi-VN') : "-";
 
-        const cleanName = escapeHtml(row.Name);
-        const cleanValue = escapeHtml(row.Value);
+        const cleanOtDate = formatDateDDMMYYYY(row.OtDate);
+        const cleanShift = escapeHtml(row.Shift);
+        const cleanOtHours = escapeHtml(row.OtHours);
         const cleanCreatedBy = escapeHtml(row.CreatedBy);
+        const cleanUpdatedBy = escapeHtml(row.UpdatedBy);
 
-        // Kiểm tra điều kiện chỉnh sửa/xóa trên UI
         const isOwnerOrAdmin = (myRole === "admin" || cleanCreatedBy.toLowerCase() === currentUsername.toLowerCase());
 
         let rowHtml = `
         <tr>
-            <td><strong>${cleanName}</strong></td>
-            <td>${cleanValue}</td>
-            <td>${escapeHtml(dateStr)}</td>
+            <td><strong class="text-primary">${cleanOtDate}</strong></td>
+            <td><span class="badge bg-secondary">${cleanShift}</span></td>
+            <td><span class="badge bg-success fs-6">${cleanOtHours}h</span></td>
             <td><span class="badge bg-light text-dark border">${cleanCreatedBy || "N/A"}</span></td>
+            <td class="small text-muted">${escapeHtml(createdStr)}</td>
+            <td><span class="badge bg-light text-dark border">${cleanUpdatedBy || "-"}</span></td>
+            <td class="small text-muted">${escapeHtml(updatedStr)}</td>
             <td>`;
 
         if (isOwnerOrAdmin) {
+            // Encode an toàn tham số truyền vào hàm
+            const rawOtDateForInput = formatDateYYYYMMDD(row.OtDate);
             rowHtml += `
-                <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${escapeHtml(row.ID)}', '${cleanName}', '${cleanValue}')">Sửa</button>
+                <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${escapeHtml(row.ID)}', '${rawOtDateForInput}', '${cleanShift}', '${cleanOtHours}')">Sửa</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteData('${escapeHtml(row.ID)}')">Xóa</button>`;
         } else {
-            rowHtml += `<span class="text-muted small">Không có quyền</span>`;
+            rowHtml += `<span class="text-muted small">N/A</span>`;
         }
 
         rowHtml += `</td></tr>`;
@@ -399,15 +447,17 @@ function updateTimestamp() {
     document.getElementById("loadStatus").innerText = `Đã cập nhật lúc ${hh}:${mm} ${dd}/${MM}/${yyyy}`;
 }
 
-function startEdit(id, name, value) {
+function startEdit(id, otDate, shift, otHours) {
     document.getElementById("editId").value = id;
-    document.getElementById("name").value = name;
-    document.getElementById("value").value = value;
-    document.getElementById("form-title").innerText = "Chỉnh Sửa Dữ Liệu";
+    document.getElementById("otDate").value = otDate;
+    document.getElementById("shift").value = shift;
+    document.getElementById("otHours").value = otHours;
+    
+    document.getElementById("form-title").innerText = "✏️ Chỉnh Sửa Bản Ghi OT (ID: " + id + ")";
     
     const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "Cập nhật";
-    btnSubmit.className = "btn btn-warning w-100 text-dark";
+    btnSubmit.innerText = "Cập nhật OT";
+    btnSubmit.className = "btn btn-warning w-100 text-dark fw-bold";
     
     document.getElementById("cancel-col").style.display = "block";
     document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
@@ -415,59 +465,43 @@ function startEdit(id, name, value) {
 
 function cancelEdit() {
     document.getElementById("editId").value = "";
-    document.getElementById("name").value = "";
-    document.getElementById("value").value = "";
-    document.getElementById("form-title").innerText = "Thêm dữ liệu mới";
+    document.getElementById("otDate").value = "";
+    document.getElementById("shift").value = "";
+    document.getElementById("otHours").value = "";
+    
+    // Set ngày mặc định cho hôm nay khi hủy sửa
+    document.getElementById("otDate").valueAsDate = new Date();
+
+    document.getElementById("form-title").innerText = "⏱️ Record thời gian tăng ca mới";
     
     const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "Thêm mới";
-    btnSubmit.className = "btn btn-success w-100";
+    btnSubmit.innerText = "+ Thêm record OT";
+    btnSubmit.className = "btn btn-success w-100 fw-bold";
     document.getElementById("cancel-col").style.display = "none";
 }
 
 async function saveData() {
     const id = document.getElementById("editId").value;
-    const name = document.getElementById("name").value.trim();
-    const value = document.getElementById("value").value.trim();
+    const otDate = document.getElementById("otDate").value;
+    const shift = document.getElementById("shift").value.trim();
+    const otHours = document.getElementById("otHours").value.trim();
 
-    if(!name || !value) {
-        showToast("Vui lòng nhập cả Name và Value!", "danger");
+    if(!otDate || !shift || !otHours) {
+        showToast("Vui lòng điền đủ: Ngày, Ca làm việc và Số giờ OT!", "danger");
         return;
     }
 
     const isEdit = id !== "";
     const action = isEdit ? "update" : "add";
-    const payload = { action, token: getToken(), name, value };
+    const payload = { action, token: getToken(), otDate, shift, otHours };
     if (isEdit) payload.id = id;
 
-    toggleLoading(true, "Đang truyền tải dữ liệu đến server...");
+    toggleLoading(true, "Đang lưu record OT lên máy chủ...");
     const result = await api(payload);
     toggleLoading(false);
 
     if(result.success) {
-        showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Thêm mới bản ghi thành công!", "success");
-        
-        if (!isEdit) {
-            let currentNames = document.getElementById("cfgSuggestNames").value.split(",").map(x => x.trim()).filter(x => x !== "");
-            let currentValues = document.getElementById("cfgSuggestValues").value.split(",").map(x => x.trim()).filter(x => x !== "");
-            let isConfigChanged = false;
-
-            if (!currentNames.includes(name)) {
-                currentNames.push(name);
-                isConfigChanged = true;
-            }
-            if (!currentValues.includes(value)) {
-                currentValues.push(value);
-                isConfigChanged = true;
-            }
-
-            if (isConfigChanged) {
-                document.getElementById("cfgSuggestNames").value = currentNames.join(", ");
-                document.getElementById("cfgSuggestValues").value = currentValues.join(", ");
-                await saveUserConfigs(true);
-            }
-        }
-
+        showToast(isEdit ? "Cập nhật record OT thành công!" : "Ghi nhận tăng ca thành công!", "success");
         cancelEdit();
         loadData(false);
     } else {
@@ -476,14 +510,14 @@ async function saveData() {
 }
 
 async function deleteData(id) {
-    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn dòng dữ liệu này?")) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn record tăng ca này?")) return;
 
-    toggleLoading(true, "Đang thực hiện lệnh xóa dữ liệu...");
+    toggleLoading(true, "Đang xóa dữ liệu...");
     const result = await api({ action: "delete", token: getToken(), id });
     toggleLoading(false);
 
     if(result.success) {
-        showToast("Xóa bản ghi thành công!", "success");
+        showToast("Xóa bản ghi OT thành công!", "success");
         loadData(false);
     } else {
         showToast("Lỗi khi xóa: " + result.error, "danger");
@@ -521,13 +555,13 @@ async function resetPasswordByAdmin() {
     const newPassword = document.getElementById("resetNewPass").value;
 
     if (!targetUsername || !newPassword) {
-        showToast("Vui lòng điền đầy đủ Username đích và mật khẩu mới cấp!", "danger");
+        showToast("Vui lòng điền đầy đủ Username đích và mật khẩu mới!", "danger");
         return;
     }
 
     if (!confirm(`Bạn chắc chắn muốn khôi phục mật khẩu tài khoản [${targetUsername}]?`)) return;
 
-    toggleLoading(true, "Đang đặt lại mật khẩu thành viên...");
+    toggleLoading(true, "Đang đặt lại mật khẩu...");
     const result = await api({ action: "resetPassword", token: getToken(), targetUsername, newPassword });
     toggleLoading(false);
 
@@ -549,12 +583,12 @@ async function changePassword() {
         return;
     }
 
-    toggleLoading(true, "Đang yêu cầu đổi mật khẩu bảo mật...");
+    toggleLoading(true, "Đang xử lý đổi mật khẩu...");
     const result = await api({ action: "changePassword", token: getToken(), oldPassword, newPassword });
     toggleLoading(false);
 
     if (result.success) {
-        showToast("Đổi mật khẩu thành công! Bạn sẽ tự đăng xuất sau 2 giây...", "success");
+        showToast("Đổi mật khẩu thành công! Tự đăng xuất sau 2 giây...", "success");
         setTimeout(logout, 2000);
     } else {
         showToast("Lỗi: " + result.error, "danger");
@@ -590,25 +624,10 @@ async function loadUserConfigs(isSilent = false) {
         cardBlock.style.display = "none";
         document.getElementById("cfgUrls").value = "";
     }
-
-    const names = configs.suggestedNames || [];
-    const datalistNames = document.getElementById("datalistNames");
-    datalistNames.innerHTML = "";
-    names.forEach(n => { datalistNames.innerHTML += `<option value="${escapeHtml(n)}">`; });
-    document.getElementById("cfgSuggestNames").value = names.join(", ");
-
-    const values = configs.suggestedValues || [];
-    const datalistValues = document.getElementById("datalistValues");
-    datalistValues.innerHTML = "";
-    values.forEach(v => { datalistValues.innerHTML += `<option value="${escapeHtml(v)}">`; });
-    document.getElementById("cfgSuggestValues").value = values.join(", ");
 }
 
 async function saveUserConfigs(isSilent = false) {
     const rawUrls = document.getElementById("cfgUrls").value.split("\n");
-    const rawNames = document.getElementById("cfgSuggestNames").value.split(",");
-    const rawValues = document.getElementById("cfgSuggestValues").value.split(",");
-
     const urlsArray = [];
     rawUrls.forEach(line => {
         if (line.includes("|")) {
@@ -617,14 +636,7 @@ async function saveUserConfigs(isSilent = false) {
         }
     });
 
-    const suggestedNames = rawNames.map(x => x.trim()).filter(x => x !== "");
-    const suggestedValues = rawValues.map(x => x.trim()).filter(x => x !== "");
-
-    const newConfigs = {
-        urls: urlsArray,
-        suggestedNames: suggestedNames,
-        suggestedValues: suggestedValues
-    };
+    const newConfigs = { urls: urlsArray };
 
     if (!isSilent) toggleLoading(true, "Đang ghi nhớ cấu hình mới...");
     const result = await api({ action: "updateUserConfigs", token: getToken(), configs: newConfigs });
@@ -642,16 +654,16 @@ function showDashboard() {
     document.getElementById("loginCard").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
 
+    // Set ngày mặc định cho ô chọn ngày là ngày hôm nay
+    document.getElementById("otDate").valueAsDate = new Date();
+
     const username = localStorage.getItem("username") || "";
     const role = localStorage.getItem("role") || "";
     const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
     
-    let greetingString = "";
-    if (role === "admin") {
-        greetingString = `Chào quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`;
-    } else {
-        greetingString = `Chào người dùng <strong>${escapeHtml(capitalizedUser)}</strong>`;
-    }
+    let greetingString = role === "admin" 
+        ? `Chào quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`
+        : `Chào người dùng <strong>${escapeHtml(capitalizedUser)}</strong>`;
     
     document.getElementById("userInfo").innerHTML = greetingString;
 
