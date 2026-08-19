@@ -293,8 +293,8 @@
                     </div>
                 </div>
                 <div class="row mt-3 justify-content-end g-2">
-                    <div class="col-md-2 col-6" id="cancel-col" style="display:none;">
-                        <button id="btn-cancel" class="btn btn-outline-secondary w-100 fw-bold" onclick="cancelEdit()">Hủy</button>
+                    <div class="col-md-2 col-6">
+                        <button id="btn-reset" class="btn btn-outline-secondary w-100 fw-bold py-2" onclick="resetForm()">Xoá trống</button>
                     </div>
                     <div class="col-md-3 col-12">
                         <button id="btn-submit" class="btn btn-success w-100 fw-bold py-2" onclick="saveData()">+ Lưu lượt tăng ca</button>
@@ -347,6 +347,20 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
 
 let rawOTData = [];
+
+// Hàm xoá trống form / Hủy trạng thái sửa
+function resetForm() {
+    document.getElementById("editId").value = "";
+    document.getElementById("otDate").valueAsDate = new Date();
+    document.getElementById("shift").value = "";
+    document.getElementById("otHours").value = "";
+    
+    document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
+    
+    const btnSubmit = document.getElementById("btn-submit");
+    btnSubmit.innerText = "+ Lưu lượt tăng ca";
+    btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
+}
 
 function clearMonthFilter() {
     document.getElementById("filterMonth").value = "";
@@ -631,9 +645,8 @@ function startEdit(id, otDate, shift, otHours) {
     
     const btnSubmit = document.getElementById("btn-submit");
     btnSubmit.innerText = "Lưu thay đổi";
-    btnSubmit.className = "btn btn-warning w-100 fw-bold text-dark";
+    btnSubmit.className = "btn btn-warning w-100 fw-bold py-2 text-dark";
     
-    document.getElementById("cancel-col").style.display = "block";
     document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -674,7 +687,7 @@ async function saveData() {
 
     if(result.success) {
         showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Lưu lượt tăng ca thành công!", "success");
-        cancelEdit();
+        resetForm(); // Gọi resetForm() sau khi lưu thành công
         loadData(false);
     } else {
         showToast("Lỗi hệ thống: " + result.error, "danger");
