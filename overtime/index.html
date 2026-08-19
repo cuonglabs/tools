@@ -348,7 +348,6 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuK
 
 let rawOTData = [];
 
-// Hàm xoá trống form / Hủy trạng thái sửa
 function resetForm() {
     document.getElementById("editId").value = "";
     document.getElementById("otDate").valueAsDate = new Date();
@@ -357,9 +356,13 @@ function resetForm() {
     
     document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
     
+    // Đổi nút lưu về mặc định
     const btnSubmit = document.getElementById("btn-submit");
     btnSubmit.innerText = "+ Lưu lượt tăng ca";
     btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
+
+    // Đổi tên nút phụ về "Xoá trống"
+    document.getElementById("btn-reset").innerText = "Xoá trống";
 }
 
 function clearMonthFilter() {
@@ -643,10 +646,14 @@ function startEdit(id, otDate, shift, otHours) {
     
     document.getElementById("form-title").innerText = "✏️ Chỉnh sửa lượt tăng ca";
     
+    // Đổi nút lưu sang trạng thái Sửa
     const btnSubmit = document.getElementById("btn-submit");
     btnSubmit.innerText = "Lưu thay đổi";
     btnSubmit.className = "btn btn-warning w-100 fw-bold py-2 text-dark";
     
+    // Đổi tên nút phụ thành "Hủy thay đổi"
+    document.getElementById("btn-reset").innerText = "Hủy thay đổi";
+
     document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
 }
 
