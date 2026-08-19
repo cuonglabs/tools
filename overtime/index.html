@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -14,19 +15,26 @@
             --card-radius: 12px;
         }
 
-        body { 
-            background: var(--bg-body); 
+        /* CHỐNG TRÀN TOÀN TRANG */
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--bg-body);
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            padding-top: 15px; 
-            padding-bottom: 30px; 
+            padding-top: 15px;
+            padding-bottom: 30px;
             color: #334155;
         }
 
         /* CARD STYLING */
-        .card { 
-            margin-bottom: 16px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-            border: 1px solid #e2e8f0; 
+        .card {
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
             border-radius: var(--card-radius);
             background: #ffffff;
         }
@@ -34,7 +42,10 @@
         /* LOADING OVERLAY */
         #loadingOverlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
             z-index: 9999;
@@ -42,6 +53,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .spinner-box {
             background: #fff;
             padding: 24px 36px;
@@ -51,12 +63,15 @@
         }
 
         /* FORM & INPUTS */
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 8px;
             border: 1px solid #cbd5e1;
             padding: 0.5rem 0.75rem;
         }
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
@@ -67,56 +82,29 @@
             border: 1px solid #e2e8f0;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            margin-bottom: 0.5rem;
         }
+
         .table {
             margin-bottom: 0;
             white-space: nowrap;
+            /* Giữ dạng hàng ngang có thanh cuộn mượt */
         }
+
         .table th {
             background-color: #f1f5f9;
             color: #475569;
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.03em;
-            padding: 12px 16px;
+            padding: 10px 12px;
         }
+
         .table td {
-            padding: 12px 16px;
+            padding: 10px 12px;
             vertical-align: middle;
-        }
-
-        /* MOBILE OPTIMIZATIONS */
-        @media (max-width: 767.98px) {
-            body { padding-top: 10px; }
-            .container { padding-left: 10px; padding-right: 10px; }
-            .card-body { padding: 1rem; }
-            
-            .header-user-bar {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 12px;
-            }
-            .header-user-bar > div {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .filter-toolbar {
-                flex-direction: column;
-                align-items: stretch !important;
-                gap: 10px;
-            }
-            .filter-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .month-group-header {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 6px;
-            }
+            word-break: break-word;
+            /* Chống tràn với văn bản dài */
         }
 
         /* BADGES & BUTTONS */
@@ -125,378 +113,484 @@
             padding: 0.45em 0.75em;
             border-radius: 6px;
         }
+
         .btn-action {
-            padding: 0.25rem 0.6rem;
-            font-size: 0.825rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
             border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        /* MOBILE OPTIMIZATIONS (< 768px) */
+        @media (max-width: 767.98px) {
+            body {
+                padding-top: 10px;
+            }
+
+            .container {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .card-body {
+                padding: 0.875rem;
+            }
+
+            /* Header User Bar */
+            .header-user-bar {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 10px;
+            }
+
+            .header-user-bar>div {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* Filter Toolbar */
+            .filter-toolbar {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 12px;
+            }
+
+            .filter-group {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+
+            .filter-group>div {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .filter-group input[type="month"] {
+                flex-grow: 1;
+            }
+
+            /* Month Header Table Group */
+            .month-group-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 8px;
+            }
+
+            .month-group-header>div {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            /* Border fix cho phần cài đặt collapse */
+            .border-end-md {
+                border-right: none !important;
+                border-bottom: 1px solid #e2e8f0;
+                padding-bottom: 1rem;
+                margin-bottom: 1rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div id="loadingOverlay">
-    <div class="spinner-box">
-        <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
-        <div id="loadingMessage" class="fw-bold text-secondary fs-6">Đang kết nối hệ thống...</div>
-    </div>
-</div>
-
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
-    <div id="liveToast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body fw-bold" id="toastBody">Thao tác thành công!</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
-
-<div class="container" style="max-width: 1050px;">
-
-    <!-- ĐĂNG NHẬP -->
-    <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 60px;">
-        <div class="card-body p-4">
-            <h4 class="card-title text-center fw-bold mb-4 text-primary">ĐĂNG NHẬP HỆ THỐNG</h4>
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-secondary">Tên đăng nhập</label>
-                <input id="username" class="form-control" placeholder="Nhập tên đăng nhập" onkeydown="handleLoginKey(event)">
-            </div>
-            <div class="mb-4">
-                <label class="form-label small fw-bold text-secondary">Mật khẩu</label>
-                <input id="password" type="password" class="form-control" placeholder="Nhập mật khẩu" onkeydown="handleLoginKey(event)">
-            </div>
-            <button id="btn-login" class="btn btn-primary w-100 fw-bold py-2" onclick="login()">Đăng Nhập</button>
+    <div id="loadingOverlay">
+        <div class="spinner-box">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+            <div id="loadingMessage" class="fw-bold text-secondary fs-6">Đang kết nối hệ thống...</div>
         </div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard" style="display: none;">
-        
-        <!-- THÔNG TIN NGƯỜI DÙNG -->
-        <div class="card">
-            <div class="card-body d-flex justify-content-between align-items-center header-user-bar">
-                <div id="userInfo" class="fs-6 text-dark"></div>
-                <div>
-                    <button class="btn btn-outline-secondary btn-sm me-1" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
-                        ⚙️ Cấu hình & Bảo mật
-                    </button>
-                    <button class="btn btn-outline-danger btn-sm" onclick="logout()">Đăng xuất</button>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
+        <div id="liveToast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive"
+            aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold" id="toastBody">Thao tác thành công!</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="max-width: 1050px;">
+
+        <!-- ĐĂNG NHẬP -->
+        <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 60px;">
+            <div class="card-body p-4">
+                <h4 class="card-title text-center fw-bold mb-4 text-primary">ĐĂNG NHẬP HỆ THỐNG</h4>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">Tên đăng nhập</label>
+                    <input id="username" class="form-control" placeholder="Nhập tên đăng nhập"
+                        onkeydown="handleLoginKey(event)">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary">Mật khẩu</label>
+                    <input id="password" type="password" class="form-control" placeholder="Nhập mật khẩu"
+                        onkeydown="handleLoginKey(event)">
+                </div>
+                <button id="btn-login" class="btn btn-primary w-100 fw-bold py-2" onclick="login()">Đăng Nhập</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" style="display: none;">
+
+            <!-- THÔNG TIN NGƯỜI DÙNG -->
+            <div class="card">
+                <div class="card-body d-flex justify-content-between align-items-center header-user-bar">
+                    <div id="userInfo" class="fs-6 text-dark"></div>
+                    <div>
+                        <button class="btn btn-outline-secondary btn-sm me-1" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#settingsCollapse">
+                            ⚙️ Cấu hình & Bảo mật
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="logout()">Đăng xuất</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- COLLAPSE CẤU HÌNH -->
-        <div class="collapse" id="settingsCollapse">
-            <div class="card border-primary border-opacity-25 shadow-sm">
-                <div class="card-header bg-primary bg-opacity-10 text-primary fw-bold">Cài Đặt Tài Khoản & Tiện Ích</div>
+            <!-- COLLAPSE CẤU HÌNH -->
+            <div class="collapse" id="settingsCollapse">
+                <div class="card border-primary border-opacity-25 shadow-sm">
+                    <div class="card-header bg-primary bg-opacity-10 text-primary fw-bold">Cài Đặt Tài Khoản & Tiện Ích
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-5 border-end-md">
+                                <h6 class="fw-bold text-dark mb-3">🔒 Thay Đổi Mật Khẩu</h6>
+                                <div class="mb-2">
+                                    <input id="oldPass" type="password" class="form-control form-control-sm"
+                                        placeholder="Mật khẩu hiện tại">
+                                </div>
+                                <div class="mb-3">
+                                    <input id="newPassUser" type="password" class="form-control form-control-sm"
+                                        placeholder="Mật khẩu mới">
+                                </div>
+                                <button id="btn-changepass" class="btn btn-primary btn-sm w-100 fw-bold"
+                                    onclick="changePassword()">Cập nhật mật khẩu</button>
+                            </div>
+
+                            <div class="col-md-7">
+                                <h6 class="fw-bold text-dark mb-3">🛠️ Liên Kết Truy Cập Nhanh</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1 text-muted">Danh sách URL (Cú pháp:
+                                        Tên|Đường_dẫn - mỗi dòng 1 link)</label>
+                                    <textarea id="cfgUrls" class="form-control form-control-sm" rows="2"
+                                        placeholder="CuongLabs|https://cuonglabs.github.io/tools"></textarea>
+                                </div>
+                                <button id="btn-saveconfig" class="btn btn-success btn-sm float-end fw-bold"
+                                    onclick="saveUserConfigs(false)">Lưu cấu hình</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK LINKS -->
+            <div id="quickLinksCard" class="card" style="display:none;">
+                <div class="card-body p-2 bg-light d-flex align-items-center flex-wrap">
+                    <span class="me-2 small text-secondary fw-bold">🔗 Truy cập nhanh:</span>
+                    <div id="quickLinksContainer" class="d-flex flex-wrap gap-1"></div>
+                </div>
+            </div>
+
+            <!-- ADMIN PANEL -->
+            <div id="adminPanel" class="card border-warning" style="display:none">
                 <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-5 border-end-md">
-                            <h6 class="fw-bold text-dark mb-3">🔒 Thay Đổi Mật Khẩu</h6>
-                            <div class="mb-2">
-                                <input id="oldPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu hiện tại">
+                    <h5 class="card-title text-warning-emphasis fw-bold mb-3">Quản Trị: Tạo Tài Khoản Mới</h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-4">
+                            <input id="newUser" class="form-control form-control-sm" placeholder="Tên đăng nhập mới">
+                        </div>
+                        <div class="col-md-4">
+                            <input id="newPass" type="password" class="form-control form-control-sm"
+                                placeholder="Mật khẩu mới">
+                        </div>
+                        <div class="col-md-2">
+                            <select id="newRole" class="form-select form-select-sm">
+                                <option value="user">Nhân viên</option>
+                                <option value="admin">Quản trị viên</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button id="btn-createuser" class="btn btn-warning btn-sm w-100 fw-bold text-dark"
+                                onclick="createUser()">Tạo tài khoản</button>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25">
+                    <h5 class="card-title text-danger fw-bold mb-3">Quản Trị: Cấp Lai Mật Khẩu</h5>
+                    <div class="row g-2">
+                        <div class="col-md-5">
+                            <input id="resetTargetUser" class="form-control form-control-sm"
+                                placeholder="Tên tài khoản cần cấp lại">
+                        </div>
+                        <div class="col-md-5">
+                            <input id="resetNewPass" type="password" class="form-control form-control-sm"
+                                placeholder="Mật khẩu mới">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="btn-resetpass" class="btn btn-danger btn-sm w-100 fw-bold"
+                                onclick="resetPasswordByAdmin()">Cấp lại mật khẩu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM THÊM / SỬA OT -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-primary mb-3" id="form-title">⏱️ Ghi nhận thời gian tăng ca</h5>
+                    <input type="hidden" id="editId">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">1. Ngày tăng ca</label>
+                            <input type="date" id="otDate" class="form-control" onkeydown="handleSaveKey(event)">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">2. Ca làm việc</label>
+                            <input id="shift" class="form-control" placeholder="Chọn hoặc nhập ca..."
+                                list="datalistShifts" onkeydown="handleSaveKey(event)">
+                            <datalist id="datalistShifts">
+                                <option value="Ca1">
+                                <option value="Ca2">
+                                <option value="Ca3">
+                                <option value="Hành chính">
+                            </datalist>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">3. Số giờ tăng ca (giờ)</label>
+                            <input type="number" id="otHours" class="form-control"
+                                placeholder="Nhập số giờ (ví dụ: 2, 2.5, 4...)" step="0.5" min="0" list="datalistHours"
+                                onkeydown="handleSaveKey(event)">
+                            <datalist id="datalistHours">
+                                <option value="2">
+                                <option value="4">
+                                <option value="8">
+                                <option value="10">
+                                <option value="12">
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="row mt-3 justify-content-end g-2">
+                        <div class="col-md-3 col-12">
+                            <button id="btn-reset" class="btn btn-outline-secondary w-100 fw-bold py-2"
+                                onclick="resetForm()">Xoá trống</button>
+                        </div>
+                        <div class="col-md-3 col-12">
+                            <button id="btn-submit" class="btn btn-success w-100 fw-bold py-2" onclick="saveData()">+
+                                Lưu lượt tăng ca</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DANH SÁCH DỮ LIỆU OT -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 filter-toolbar">
+                        <h5 class="card-title fw-bold text-dark m-0">📋 Lịch sử tăng ca</h5>
+
+                        <!-- BỘ LỌC THÁNG & NÚT LÀM MỚI -->
+                        <div class="d-flex align-items-center gap-2 filter-group flex-wrap">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0 small fw-bold text-secondary">Tháng:</label>
+                                <input type="month" id="filterMonth" class="form-control form-control-sm py-1 px-2"
+                                    style="width: auto; height: 31px;" onchange="renderGroupedData()">
+                                <button
+                                    class="btn btn-outline-secondary btn-sm py-1 px-3 d-inline-flex align-items-center justify-content-center"
+                                    style="height: 31px;" onclick="clearMonthFilter()">Tất cả</button>
                             </div>
-                            <div class="mb-3">
-                                <input id="newPassUser" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
+                            <div class="d-flex align-items-center gap-2 ms-auto">
+                                <button id="btn-refresh"
+                                    class="btn btn-outline-primary btn-sm fw-bold py-1 px-3 d-inline-flex align-items-center justify-content-center"
+                                    style="height: 31px;" onclick="loadData(true)">↻ Làm mới</button>
                             </div>
-                            <button id="btn-changepass" class="btn btn-primary btn-sm w-100 fw-bold" onclick="changePassword()">Cập nhật mật khẩu</button>
-                        </div>
-                        
-                        <div class="col-md-7">
-                            <h6 class="fw-bold text-dark mb-3">🛠️ Liên Kết Truy Cập Nhanh</h6>
-                            <div class="mb-2">
-                                <label class="form-label small mb-1 text-muted">Danh sách URL (Cú pháp: Tên|Đường_dẫn - mỗi dòng 1 link)</label>
-                                <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="CuongLabs|https://cuonglabs.github.io/tools"></textarea>
-                            </div>
-                            <button id="btn-saveconfig" class="btn btn-success btn-sm float-end fw-bold" onclick="saveUserConfigs(false)">Lưu cấu hình</button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- QUICK LINKS -->
-        <div id="quickLinksCard" class="card" style="display:none;">
-            <div class="card-body p-2 bg-light d-flex align-items-center flex-wrap">
-                <span class="me-2 small text-secondary fw-bold">🔗 Truy cập nhanh:</span>
-                <div id="quickLinksContainer" class="d-flex flex-wrap gap-1"></div>
-            </div>
-        </div>
+                    <div class="mb-2">
+                        <span id="loadStatus" class="small italic text-muted"></span>
+                    </div>
 
-        <!-- ADMIN PANEL -->
-        <div id="adminPanel" class="card border-warning" style="display:none">
-            <div class="card-body">
-                <h5 class="card-title text-warning-emphasis fw-bold mb-3">Quản Trị: Tạo Tài Khoản Mới</h5>
-                <div class="row g-2 mb-4">
-                    <div class="col-md-4">
-                        <input id="newUser" class="form-control form-control-sm" placeholder="Tên đăng nhập mới">
-                    </div>
-                    <div class="col-md-4">
-                        <input id="newPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
-                    </div>
-                    <div class="col-md-2">
-                        <select id="newRole" class="form-select form-select-sm">
-                            <option value="user">Nhân viên</option>
-                            <option value="admin">Quản trị viên</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button id="btn-createuser" class="btn btn-warning btn-sm w-100 fw-bold text-dark" onclick="createUser()">Tạo tài khoản</button>
-                    </div>
-                </div>
-
-                <hr class="text-muted opacity-25">
-                <h5 class="card-title text-danger fw-bold mb-3">Quản Trị: Cấp Lai Mật Khẩu</h5>
-                <div class="row g-2">
-                    <div class="col-md-5">
-                        <input id="resetTargetUser" class="form-control form-control-sm" placeholder="Tên tài khoản cần cấp lại">
-                    </div>
-                    <div class="col-md-5">
-                        <input id="resetNewPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
-                    </div>
-                    <div class="col-md-2">
-                        <button id="btn-resetpass" class="btn btn-danger btn-sm w-100 fw-bold" onclick="resetPasswordByAdmin()">Cấp lại mật khẩu</button>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr id="tableHeader"></tr>
+                            </thead>
+                            <tbody id="tbody">
+                                <tr>
+                                    <td id="empty-row" class="text-center text-muted py-4">Đang tải dữ liệu...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+
         </div>
-
-        <!-- FORM THÊM / SỬA OT -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-primary mb-3" id="form-title">⏱️ Ghi nhận thời gian tăng ca</h5>
-                <input type="hidden" id="editId"> 
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">1. Ngày tăng ca</label>
-                        <input type="date" id="otDate" class="form-control" onkeydown="handleSaveKey(event)">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">2. Ca làm việc</label>
-                        <input id="shift" class="form-control" placeholder="Chọn hoặc nhập ca..." list="datalistShifts" onkeydown="handleSaveKey(event)">
-                        <datalist id="datalistShifts">
-                            <option value="Ca1">
-                            <option value="Ca2">
-                            <option value="Ca3">
-                            <option value="Hành chính">
-                        </datalist>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">3. Số giờ tăng ca (giờ)</label>
-                        <input type="number" id="otHours" class="form-control" placeholder="Nhập số giờ (ví dụ: 2, 2.5, 4...)" step="0.5" min="0" list="datalistHours" onkeydown="handleSaveKey(event)">
-                        <datalist id="datalistHours">
-                            <option value="2">
-                            <option value="4">
-                            <option value="8">
-                            <option value="10">
-                            <option value="12">
-                        </datalist>
-                    </div>
-                </div>
-                <div class="row mt-3 justify-content-end g-2">
-                    <div class="col-md-3 col-12">
-                        <button id="btn-reset" class="btn btn-outline-secondary w-100 fw-bold py-2" onclick="resetForm()">Xoá trống</button>
-                    </div>
-                    <div class="col-md-3 col-12">
-                        <button id="btn-submit" class="btn btn-success w-100 fw-bold py-2" onclick="saveData()">+ Lưu lượt tăng ca</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DANH SÁCH DỮ LIỆU OT -->
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3 filter-toolbar">
-                    <h5 class="card-title fw-bold text-dark m-0">📋 Lịch sử tăng ca</h5>
-                    
-                    <!-- BỘ LỌC THÁNG & NÚT LÀM MỚI -->
-                    <div class="d-flex align-items-center gap-2 filter-group flex-wrap">
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label mb-0 small fw-bold text-secondary">Tháng:</label>
-                            <input type="month" id="filterMonth" class="form-control form-control-sm py-1 px-2" style="width: auto; height: 31px;" onchange="renderGroupedData()">
-                            <button class="btn btn-outline-secondary btn-sm py-1 px-3 d-inline-flex align-items-center justify-content-center" style="height: 31px;" onclick="clearMonthFilter()">Tất cả</button>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 ms-auto">
-                            <button id="btn-refresh" class="btn btn-outline-primary btn-sm fw-bold py-1 px-3 d-inline-flex align-items-center justify-content-center" style="height: 31px;" onclick="loadData(true)">↻ Làm mới</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-2">
-                    <span id="loadStatus" class="small italic text-muted"></span>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr id="tableHeader"></tr>
-                        </thead>
-                        <tbody id="tbody">
-                            <tr><td id="empty-row" class="text-center text-muted py-4">Đang tải dữ liệu...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
 
-let rawOTData = [];
+        let rawOTData = [];
 
-function resetForm() {
-    document.getElementById("editId").value = "";
-    document.getElementById("otDate").valueAsDate = new Date();
-    document.getElementById("shift").value = "";
-    document.getElementById("otHours").value = "";
-    
-    document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
-    
-    // Đổi nút lưu về mặc định
-    const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "+ Lưu lượt tăng ca";
-    btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
+        function resetForm() {
+            document.getElementById("editId").value = "";
+            document.getElementById("otDate").valueAsDate = new Date();
+            document.getElementById("shift").value = "";
+            document.getElementById("otHours").value = "";
 
-    // Đổi tên nút phụ về "Xoá trống"
-    document.getElementById("btn-reset").innerText = "Xoá trống";
-}
+            document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
 
-function clearMonthFilter() {
-    document.getElementById("filterMonth").value = "";
-    renderGroupedData();
-}
+            // Đổi nút lưu về mặc định
+            const btnSubmit = document.getElementById("btn-submit");
+            btnSubmit.innerText = "+ Lưu lượt tăng ca";
+            btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
 
-function escapeHtml(str) {
-    if (str === null || str === undefined) return "";
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+            // Đổi tên nút phụ về "Xoá trống"
+            document.getElementById("btn-reset").innerText = "Xoá trống";
+        }
 
-function formatDateDDMMYYYY(dateInput) {
-    if (!dateInput) return "N/A";
-    let d = new Date(dateInput);
-    if (isNaN(d.getTime())) return escapeHtml(dateInput);
-    
-    let day = String(d.getDate()).padStart(2, '0');
-    let month = String(d.getMonth() + 1).padStart(2, '0');
-    let year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-}
+        function clearMonthFilter() {
+            document.getElementById("filterMonth").value = "";
+            renderGroupedData();
+        }
 
-function formatDateYYYYMMDD(dateInput) {
-    if (!dateInput) return "";
-    let d = new Date(dateInput);
-    if (isNaN(d.getTime())) return "";
-    let day = String(d.getDate()).padStart(2, '0');
-    let month = String(d.getMonth() + 1).padStart(2, '0');
-    let year = d.getFullYear();
-    return `${year}-${month}-${day}`;
-}
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-function getToken() {
-    return localStorage.getItem("token") || "";
-}
+        function formatDateDDMMYYYY(dateInput) {
+            if (!dateInput) return "N/A";
+            let d = new Date(dateInput);
+            if (isNaN(d.getTime())) return escapeHtml(dateInput);
 
-function logout() {
-    localStorage.clear();
-    location.reload();
-}
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
 
-function toggleLoading(show, message = "Đang xử lý...") {
-    const overlay = document.getElementById("loadingOverlay");
-    const msgEl = document.getElementById("loadingMessage");
-    if (show) {
-        msgEl.innerText = message;
-        overlay.style.display = "flex";
-    } else {
-        overlay.style.display = "none";
-    }
+        function formatDateYYYYMMDD(dateInput) {
+            if (!dateInput) return "";
+            let d = new Date(dateInput);
+            if (isNaN(d.getTime())) return "";
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let year = d.getFullYear();
+            return `${year}-${month}-${day}`;
+        }
 
-    const ActionButtons = [
-        "btn-login", "btn-submit", "btn-cancel", "btn-refresh", 
-        "btn-changepass", "btn-saveconfig", "btn-createuser", "btn-resetpass"
-    ];
-    ActionButtons.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.disabled = show;
-    });
-}
+        function getToken() {
+            return localStorage.getItem("token") || "";
+        }
 
-function showToast(message, type = "success") {
-    const toastEl = document.getElementById("liveToast");
-    const toastBody = document.getElementById("toastBody");
-    
-    toastEl.classList.remove("bg-success", "bg-danger", "bg-warning", "text-white", "text-dark");
-    if (type === "success") {
-        toastEl.classList.add("bg-success", "text-white");
-    } else if (type === "danger") {
-        toastEl.classList.add("bg-danger", "text-white");
-    } else {
-        toastEl.classList.add("bg-warning", "text-dark");
-    }
-    
-    toastBody.innerText = message;
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    toast.show();
-}
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
 
-function handleLoginKey(e) { if (e.key === "Enter") login(); }
-function handleSaveKey(e) { if (e.key === "Enter") saveData(); }
+        function toggleLoading(show, message = "Đang xử lý...") {
+            const overlay = document.getElementById("loadingOverlay");
+            const msgEl = document.getElementById("loadingMessage");
+            if (show) {
+                msgEl.innerText = message;
+                overlay.style.display = "flex";
+            } else {
+                overlay.style.display = "none";
+            }
 
-async function api(data) {
-    try {
-        const res = await fetch(API_URL, {
-            method: "POST",
-            body: JSON.stringify(data)
-        });
-        return await res.json();
-    } catch (e) {
-        return { success: false, error: "Không thể kết nối đến máy chủ API" };
-    }
-}
+            const ActionButtons = [
+                "btn-login", "btn-submit", "btn-cancel", "btn-refresh",
+                "btn-changepass", "btn-saveconfig", "btn-createuser", "btn-resetpass"
+            ];
+            ActionButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = show;
+            });
+        }
 
-async function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
+        function showToast(message, type = "success") {
+            const toastEl = document.getElementById("liveToast");
+            const toastBody = document.getElementById("toastBody");
 
-    if(!username || !password) {
-        showToast("Vui lòng nhập đầy đủ thông tin đăng nhập!", "danger");
-        return;
-    }
+            toastEl.classList.remove("bg-success", "bg-danger", "bg-warning", "text-white", "text-dark");
+            if (type === "success") {
+                toastEl.classList.add("bg-success", "text-white");
+            } else if (type === "danger") {
+                toastEl.classList.add("bg-danger", "text-white");
+            } else {
+                toastEl.classList.add("bg-warning", "text-dark");
+            }
 
-    toggleLoading(true, "Đang xác thực tài khoản...");
-    const result = await api({ action: "login", username, password });
-    toggleLoading(false);
+            toastBody.innerText = message;
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
 
-    if (!result.success) {
-        showToast(result.error, "danger");
-        return;
-    }
+        function handleLoginKey(e) { if (e.key === "Enter") login(); }
+        function handleSaveKey(e) { if (e.key === "Enter") saveData(); }
 
-    localStorage.setItem("token", result.token);
-    localStorage.setItem("role", result.role);
-    localStorage.setItem("username", result.username);
+        async function api(data) {
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+                return await res.json();
+            } catch (e) {
+                return { success: false, error: "Không thể kết nối đến máy chủ API" };
+            }
+        }
 
-    showToast("Đăng nhập thành công!", "success");
-    showDashboard();
-}
+        async function login() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
 
-// XỬ LÝ VÀ GOM NHÓM HIỂN THỊ DỮ LIỆU BẢNG
-function renderGroupedData() {
-    const currentUsername = localStorage.getItem("username") || "";
-    const myRole = localStorage.getItem("role");
-    const selectedMonth = document.getElementById("filterMonth").value;
+            if (!username || !password) {
+                showToast("Vui lòng nhập đầy đủ thông tin đăng nhập!", "danger");
+                return;
+            }
 
-    const tableHeader = document.getElementById("tableHeader");
-    tableHeader.innerHTML = `
+            toggleLoading(true, "Đang xác thực tài khoản...");
+            const result = await api({ action: "login", username, password });
+            toggleLoading(false);
+
+            if (!result.success) {
+                showToast(result.error, "danger");
+                return;
+            }
+
+            localStorage.setItem("token", result.token);
+            localStorage.setItem("role", result.role);
+            localStorage.setItem("username", result.username);
+
+            showToast("Đăng nhập thành công!", "success");
+            showDashboard();
+        }
+
+        // XỬ LÝ VÀ GOM NHÓM HIỂN THỊ DỮ LIỆU BẢNG
+        function renderGroupedData() {
+            const currentUsername = localStorage.getItem("username") || "";
+            const myRole = localStorage.getItem("role");
+            const selectedMonth = document.getElementById("filterMonth").value;
+
+            const tableHeader = document.getElementById("tableHeader");
+            tableHeader.innerHTML = `
         <th>Ngày OT</th>
         <th>Ca làm việc</th>
         <th>Số giờ</th>
@@ -506,48 +600,48 @@ function renderGroupedData() {
         <th>Thời gian sửa</th>
         <th class="text-center" style="width: 110px;">Thao tác</th>`;
 
-    const tbody = document.getElementById("tbody");
-    tbody.innerHTML = "";
+            const tbody = document.getElementById("tbody");
+            tbody.innerHTML = "";
 
-    if (rawOTData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Chưa có dữ liệu tăng ca nào.</td></tr>`;
-        return;
-    }
+            if (rawOTData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Chưa có dữ liệu tăng ca nào.</td></tr>`;
+                return;
+            }
 
-    const grouped = {};
-    rawOTData.forEach(row => {
-        if (!row.OtDate) return;
-        const d = new Date(row.OtDate);
-        if (isNaN(d.getTime())) return;
+            const grouped = {};
+            rawOTData.forEach(row => {
+                if (!row.OtDate) return;
+                const d = new Date(row.OtDate);
+                if (isNaN(d.getTime())) return;
 
-        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        if (selectedMonth && monthKey !== selectedMonth) return;
+                const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (selectedMonth && monthKey !== selectedMonth) return;
 
-        if (!grouped[monthKey]) grouped[monthKey] = [];
-        grouped[monthKey].push(row);
-    });
+                if (!grouped[monthKey]) grouped[monthKey] = [];
+                grouped[monthKey].push(row);
+            });
 
-    const monthKeys = Object.keys(grouped).sort().reverse();
+            const monthKeys = Object.keys(grouped).sort().reverse();
 
-    if (monthKeys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Không tìm thấy bản ghi nào trong tháng đã chọn.</td></tr>`;
-        return;
-    }
+            if (monthKeys.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Không tìm thấy bản ghi nào trong tháng đã chọn.</td></tr>`;
+                return;
+            }
 
-    let htmlContentBuffer = "";
+            let htmlContentBuffer = "";
 
-    monthKeys.forEach(monthKey => {
-        const records = grouped[monthKey];
-        records.sort((a, b) => new Date(b.OtDate) - new Date(a.OtDate));
+            monthKeys.forEach(monthKey => {
+                const records = grouped[monthKey];
+                records.sort((a, b) => new Date(b.OtDate) - new Date(a.OtDate));
 
-        const totalHours = records.reduce((sum, item) => sum + (parseFloat(item.OtHours) || 0), 0);
-        const totalCount = records.length;
+                const totalHours = records.reduce((sum, item) => sum + (parseFloat(item.OtHours) || 0), 0);
+                const totalCount = records.length;
 
-        const [year, month] = monthKey.split("-");
-        const formattedMonthLabel = `Tháng ${month}/${year}`;
+                const [year, month] = monthKey.split("-");
+                const formattedMonthLabel = `Tháng ${month}/${year}`;
 
-        // HEADER NHÓM THÁNG
-        htmlContentBuffer += `
+                // HEADER NHÓM THÁNG
+                htmlContentBuffer += `
             <tr class="table-primary border-0">
                 <td colspan="8" class="py-2 bg-primary bg-opacity-10 border-0">
                     <div class="d-flex justify-content-between align-items-center month-group-header">
@@ -561,19 +655,19 @@ function renderGroupedData() {
             </tr>
         `;
 
-        records.forEach(row => {
-            let createdStr = row.Created ? new Date(row.Created).toLocaleString('vi-VN') : "-";
-            let updatedStr = row.Updated ? new Date(row.Updated).toLocaleString('vi-VN') : "-";
+                records.forEach(row => {
+                    let createdStr = row.Created ? new Date(row.Created).toLocaleString('vi-VN') : "-";
+                    let updatedStr = row.Updated ? new Date(row.Updated).toLocaleString('vi-VN') : "-";
 
-            const cleanOtDate = formatDateDDMMYYYY(row.OtDate);
-            const cleanShift = escapeHtml(row.Shift);
-            const cleanOtHours = escapeHtml(row.OtHours);
-            const cleanCreatedBy = escapeHtml(row.CreatedBy);
-            const cleanUpdatedBy = escapeHtml(row.UpdatedBy);
+                    const cleanOtDate = formatDateDDMMYYYY(row.OtDate);
+                    const cleanShift = escapeHtml(row.Shift);
+                    const cleanOtHours = escapeHtml(row.OtHours);
+                    const cleanCreatedBy = escapeHtml(row.CreatedBy);
+                    const cleanUpdatedBy = escapeHtml(row.UpdatedBy);
 
-            const isOwnerOrAdmin = (myRole === "admin" || cleanCreatedBy.toLowerCase() === currentUsername.toLowerCase());
+                    const isOwnerOrAdmin = (myRole === "admin" || cleanCreatedBy.toLowerCase() === currentUsername.toLowerCase());
 
-            htmlContentBuffer += `
+                    htmlContentBuffer += `
             <tr>
                 <td><strong class="text-dark">${cleanOtDate}</strong></td>
                 <td><span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">${cleanShift}</span></td>
@@ -584,295 +678,296 @@ function renderGroupedData() {
                 <td class="small text-muted">${escapeHtml(updatedStr)}</td>
                 <td class="text-center">`;
 
-            if (isOwnerOrAdmin) {
-                const rawOtDateForInput = formatDateYYYYMMDD(row.OtDate);
-                htmlContentBuffer += `
+                    if (isOwnerOrAdmin) {
+                        const rawOtDateForInput = formatDateYYYYMMDD(row.OtDate);
+                        htmlContentBuffer += `
                     <button class="btn btn-action btn-outline-warning text-dark me-1" onclick="startEdit('${escapeHtml(row.ID)}', '${rawOtDateForInput}', '${cleanShift}', '${cleanOtHours}')">Sửa</button>
                     <button class="btn btn-action btn-outline-danger" onclick="deleteData('${escapeHtml(row.ID)}')">Xóa</button>`;
-            } else {
-                htmlContentBuffer += `<span class="text-muted small">N/A</span>`;
+                    } else {
+                        htmlContentBuffer += `<span class="text-muted small">N/A</span>`;
+                    }
+
+                    htmlContentBuffer += `</td></tr>`;
+                });
+            });
+
+            tbody.innerHTML = htmlContentBuffer;
+        }
+
+        async function loadData(isManualClick = false) {
+            document.getElementById("loadStatus").innerText = "Đang đồng bộ dữ liệu...";
+            if (isManualClick) toggleLoading(true, "Đang tải danh sách tăng ca...");
+
+            const result = await api({ action: "list", token: getToken() });
+            if (isManualClick) toggleLoading(false);
+
+            if (result.success === false) {
+                showToast("Phiên làm việc hết hạn hoặc lỗi: " + result.error, "danger");
+                setTimeout(logout, 2000);
+                return;
             }
 
-            htmlContentBuffer += `</td></tr>`;
-        });
-    });
+            rawOTData = result.data || [];
 
-    tbody.innerHTML = htmlContentBuffer;
-}
+            const filterInput = document.getElementById("filterMonth");
+            if (!filterInput.value) {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                filterInput.value = `${yyyy}-${mm}`;
+            }
 
-async function loadData(isManualClick = false) {
-    document.getElementById("loadStatus").innerText = "Đang đồng bộ dữ liệu...";
-    if(isManualClick) toggleLoading(true, "Đang tải danh sách tăng ca...");
-
-    const result = await api({ action: "list", token: getToken() });
-    if(isManualClick) toggleLoading(false);
-
-    if (result.success === false) {
-        showToast("Phiên làm việc hết hạn hoặc lỗi: " + result.error, "danger");
-        setTimeout(logout, 2000);
-        return;
-    }
-
-    rawOTData = result.data || [];
-
-    const filterInput = document.getElementById("filterMonth");
-    if (!filterInput.value) {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        filterInput.value = `${yyyy}-${mm}`;
-    }
-
-    renderGroupedData();
-    updateTimestamp();
-    if(isManualClick) showToast("Đã cập nhật dữ liệu mới nhất!", "success");
-}
-
-function updateTimestamp() {
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const MM = String(now.getMonth() + 1).padStart(2, '0');
-    const yyyy = now.getFullYear();
-    document.getElementById("loadStatus").innerText = `Cập nhật gần nhất: ${hh}:${mm} - ${dd}/${MM}/${yyyy}`;
-}
-
-function startEdit(id, otDate, shift, otHours) {
-    document.getElementById("editId").value = id;
-    document.getElementById("otDate").value = otDate;
-    document.getElementById("shift").value = shift;
-    document.getElementById("otHours").value = otHours;
-    
-    document.getElementById("form-title").innerText = "✏️ Chỉnh sửa lượt tăng ca";
-    
-    // Đổi nút lưu sang trạng thái Sửa
-    const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "Lưu thay đổi";
-    btnSubmit.className = "btn btn-warning w-100 fw-bold py-2 text-dark";
-    
-    // Đổi tên nút phụ thành "Hủy thay đổi"
-    document.getElementById("btn-reset").innerText = "Hủy thay đổi";
-
-    document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
-}
-
-function cancelEdit() {
-    document.getElementById("editId").value = "";
-    document.getElementById("otDate").value = "";
-    document.getElementById("shift").value = "";
-    document.getElementById("otHours").value = "";
-    
-    document.getElementById("otDate").valueAsDate = new Date();
-    document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
-    
-    const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "+ Lưu lượt tăng ca";
-    btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
-    document.getElementById("cancel-col").style.display = "none";
-}
-
-async function saveData() {
-    const id = document.getElementById("editId").value;
-    const otDate = document.getElementById("otDate").value;
-    const shift = document.getElementById("shift").value.trim();
-    const otHours = document.getElementById("otHours").value.trim();
-
-    if(!otDate || !shift || !otHours) {
-        showToast("Vui lòng điền đủ: Ngày, Ca làm việc và Số giờ OT!", "danger");
-        return;
-    }
-
-    const isEdit = id !== "";
-    const action = isEdit ? "update" : "add";
-    const payload = { action, token: getToken(), otDate, shift, otHours };
-    if (isEdit) payload.id = id;
-
-    toggleLoading(true, "Đang lưu dữ liệu tăng ca...");
-    const result = await api(payload);
-    toggleLoading(false);
-
-    if(result.success) {
-        showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Lưu lượt tăng ca thành công!", "success");
-        resetForm(); // Gọi resetForm() sau khi lưu thành công
-        loadData(false);
-    } else {
-        showToast("Lỗi hệ thống: " + result.error, "danger");
-    }
-}
-
-async function deleteData(id) {
-    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn lượt tăng ca này?")) return;
-
-    toggleLoading(true, "Đang xóa...");
-    const result = await api({ action: "delete", token: getToken(), id });
-    toggleLoading(false);
-
-    if(result.success) {
-        showToast("Đã xóa thành công!", "success");
-        loadData(false);
-    } else {
-        showToast("Lỗi khi xóa: " + result.error, "danger");
-    }
-}
-
-async function createUser() {
-    const userEl = document.getElementById("newUser");
-    const passEl = document.getElementById("newPass");
-    const role = document.getElementById("newRole").value;
-
-    const username = userEl.value.trim();
-    const password = passEl.value;
-
-    if(!username || !password) {
-        showToast("Vui lòng không để trống tên đăng nhập và mật khẩu!", "danger");
-        return;
-    }
-
-    toggleLoading(true, "Đang khởi tạo tài khoản...");
-    const result = await api({ action: "createUser", token: getToken(), username, password, role });
-    toggleLoading(false);
-
-    if(result.success) {
-        showToast("Khởi tạo tài khoản thành công!", "success");
-        userEl.value = "";
-        passEl.value = "";
-    } else {
-        showToast("Lỗi: " + result.error, "danger");
-    }
-}
-
-async function resetPasswordByAdmin() {
-    const targetUsername = document.getElementById("resetTargetUser").value.trim();
-    const newPassword = document.getElementById("resetNewPass").value;
-
-    if (!targetUsername || !newPassword) {
-        showToast("Vui lòng nhập đầy đủ Tên tài khoản và Mật khẩu mới!", "danger");
-        return;
-    }
-
-    if (!confirm(`Bạn chắc chắn muốn đặt lại mật khẩu cho tài khoản [${targetUsername}]?`)) return;
-
-    toggleLoading(true, "Đang cấp lại mật khẩu...");
-    const result = await api({ action: "resetPassword", token: getToken(), targetUsername, newPassword });
-    toggleLoading(false);
-
-    if (result.success) {
-        showToast(`Cấp lại mật khẩu cho tài khoản ${targetUsername} thành công!`, "success");
-        document.getElementById("resetTargetUser").value = "";
-        document.getElementById("resetNewPass").value = "";
-    } else {
-        showToast("Lỗi: " + result.error, "danger");
-    }
-}
-
-async function changePassword() {
-    const oldPassword = document.getElementById("oldPass").value;
-    const newPassword = document.getElementById("newPassUser").value;
-
-    if (!oldPassword || !newPassword) {
-        showToast("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới!", "danger");
-        return;
-    }
-
-    toggleLoading(true, "Đang đổi mật khẩu...");
-    const result = await api({ action: "changePassword", token: getToken(), oldPassword, newPassword });
-    toggleLoading(false);
-
-    if (result.success) {
-        showToast("Đổi mật khẩu thành công! Đang đăng xuất...", "success");
-        setTimeout(logout, 2000);
-    } else {
-        showToast("Lỗi: " + result.error, "danger");
-    }
-}
-
-async function loadUserConfigs(isSilent = false) {
-    if(!isSilent) toggleLoading(true, "Đang tải cấu hình cá nhân...");
-    const result = await api({ action: "getUserConfigs", token: getToken() });
-    if(!isSilent) toggleLoading(false);
-
-    if (!result.success) return;
-    const configs = result.configs || {};
-
-    const urls = configs.urls || [];
-    const container = document.getElementById("quickLinksContainer");
-    const cardBlock = document.getElementById("quickLinksCard");
-    
-    container.innerHTML = "";
-    if (urls.length > 0) {
-        cardBlock.style.display = "block";
-        let rawTextareaValue = "";
-        urls.forEach(item => {
-            rawTextareaValue += `${item.title}|${item.url}\n`;
-            const a = document.createElement("a");
-            a.href = item.url; a.target = "_blank";
-            a.className = "btn btn-xs btn-outline-dark pt-0 pb-0 ps-2 pe-2 small bg-white border shadow-sm";
-            a.style.fontSize = "12px"; a.innerText = item.title;
-            container.appendChild(a);
-        });
-        document.getElementById("cfgUrls").value = rawTextareaValue.trim();
-    } else {
-        cardBlock.style.display = "none";
-        document.getElementById("cfgUrls").value = "";
-    }
-}
-
-async function saveUserConfigs(isSilent = false) {
-    const rawUrls = document.getElementById("cfgUrls").value.split("\n");
-    const urlsArray = [];
-    rawUrls.forEach(line => {
-        if (line.includes("|")) {
-            const parts = line.split("|");
-            urlsArray.push({ title: parts[0].trim(), url: parts[1].trim() });
+            renderGroupedData();
+            updateTimestamp();
+            if (isManualClick) showToast("Đã cập nhật dữ liệu mới nhất!", "success");
         }
-    });
 
-    const newConfigs = { urls: urlsArray };
+        function updateTimestamp() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const MM = String(now.getMonth() + 1).padStart(2, '0');
+            const yyyy = now.getFullYear();
+            document.getElementById("loadStatus").innerText = `Cập nhật gần nhất: ${hh}:${mm} - ${dd}/${MM}/${yyyy}`;
+        }
 
-    if (!isSilent) toggleLoading(true, "Đang lưu cấu hình...");
-    const result = await api({ action: "updateUserConfigs", token: getToken(), configs: newConfigs });
-    if (!isSilent) toggleLoading(false);
+        function startEdit(id, otDate, shift, otHours) {
+            document.getElementById("editId").value = id;
+            document.getElementById("otDate").value = otDate;
+            document.getElementById("shift").value = shift;
+            document.getElementById("otHours").value = otHours;
 
-    if (result.success) {
-        if (!isSilent) showToast("Lưu cấu hình thành công!", "success");
-        loadUserConfigs(true); 
-    } else {
-        if (!isSilent) showToast("Không thể lưu cấu hình: " + result.error, "danger");
-    }
-}
+            document.getElementById("form-title").innerText = "✏️ Chỉnh sửa lượt tăng ca";
 
-function showDashboard() {
-    document.getElementById("loginCard").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
+            // Đổi nút lưu sang trạng thái Sửa
+            const btnSubmit = document.getElementById("btn-submit");
+            btnSubmit.innerText = "Lưu thay đổi";
+            btnSubmit.className = "btn btn-warning w-100 fw-bold py-2 text-dark";
 
-    document.getElementById("otDate").valueAsDate = new Date();
+            // Đổi tên nút phụ thành "Hủy thay đổi"
+            document.getElementById("btn-reset").innerText = "Hủy thay đổi";
 
-    const username = localStorage.getItem("username") || "";
-    const role = localStorage.getItem("role") || "";
-    const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
-    
-    let greetingString = role === "admin" 
-        ? `Xin chào Quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`
-        : `Xin chào, <strong>${escapeHtml(capitalizedUser)}</strong>`;
-    
-    document.getElementById("userInfo").innerHTML = greetingString;
+            document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
+        }
 
-    if (role === "admin") {
-        document.getElementById("adminPanel").style.display = "block";
-    } else {
-        document.getElementById("adminPanel").style.display = "none";
-    }
+        function cancelEdit() {
+            document.getElementById("editId").value = "";
+            document.getElementById("otDate").value = "";
+            document.getElementById("shift").value = "";
+            document.getElementById("otHours").value = "";
 
-    toggleLoading(true, "Đang khởi tạo không gian làm việc...");
-    Promise.all([loadData(false), loadUserConfigs(true)]).then(() => {
-        toggleLoading(false);
-    });
-}
+            document.getElementById("otDate").valueAsDate = new Date();
+            document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
 
-if (localStorage.getItem("token")) {
-    showDashboard();
-}
-</script>
+            const btnSubmit = document.getElementById("btn-submit");
+            btnSubmit.innerText = "+ Lưu lượt tăng ca";
+            btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
+            document.getElementById("cancel-col").style.display = "none";
+        }
+
+        async function saveData() {
+            const id = document.getElementById("editId").value;
+            const otDate = document.getElementById("otDate").value;
+            const shift = document.getElementById("shift").value.trim();
+            const otHours = document.getElementById("otHours").value.trim();
+
+            if (!otDate || !shift || !otHours) {
+                showToast("Vui lòng điền đủ: Ngày, Ca làm việc và Số giờ OT!", "danger");
+                return;
+            }
+
+            const isEdit = id !== "";
+            const action = isEdit ? "update" : "add";
+            const payload = { action, token: getToken(), otDate, shift, otHours };
+            if (isEdit) payload.id = id;
+
+            toggleLoading(true, "Đang lưu dữ liệu tăng ca...");
+            const result = await api(payload);
+            toggleLoading(false);
+
+            if (result.success) {
+                showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Lưu lượt tăng ca thành công!", "success");
+                resetForm(); // Gọi resetForm() sau khi lưu thành công
+                loadData(false);
+            } else {
+                showToast("Lỗi hệ thống: " + result.error, "danger");
+            }
+        }
+
+        async function deleteData(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn lượt tăng ca này?")) return;
+
+            toggleLoading(true, "Đang xóa...");
+            const result = await api({ action: "delete", token: getToken(), id });
+            toggleLoading(false);
+
+            if (result.success) {
+                showToast("Đã xóa thành công!", "success");
+                loadData(false);
+            } else {
+                showToast("Lỗi khi xóa: " + result.error, "danger");
+            }
+        }
+
+        async function createUser() {
+            const userEl = document.getElementById("newUser");
+            const passEl = document.getElementById("newPass");
+            const role = document.getElementById("newRole").value;
+
+            const username = userEl.value.trim();
+            const password = passEl.value;
+
+            if (!username || !password) {
+                showToast("Vui lòng không để trống tên đăng nhập và mật khẩu!", "danger");
+                return;
+            }
+
+            toggleLoading(true, "Đang khởi tạo tài khoản...");
+            const result = await api({ action: "createUser", token: getToken(), username, password, role });
+            toggleLoading(false);
+
+            if (result.success) {
+                showToast("Khởi tạo tài khoản thành công!", "success");
+                userEl.value = "";
+                passEl.value = "";
+            } else {
+                showToast("Lỗi: " + result.error, "danger");
+            }
+        }
+
+        async function resetPasswordByAdmin() {
+            const targetUsername = document.getElementById("resetTargetUser").value.trim();
+            const newPassword = document.getElementById("resetNewPass").value;
+
+            if (!targetUsername || !newPassword) {
+                showToast("Vui lòng nhập đầy đủ Tên tài khoản và Mật khẩu mới!", "danger");
+                return;
+            }
+
+            if (!confirm(`Bạn chắc chắn muốn đặt lại mật khẩu cho tài khoản [${targetUsername}]?`)) return;
+
+            toggleLoading(true, "Đang cấp lại mật khẩu...");
+            const result = await api({ action: "resetPassword", token: getToken(), targetUsername, newPassword });
+            toggleLoading(false);
+
+            if (result.success) {
+                showToast(`Cấp lại mật khẩu cho tài khoản ${targetUsername} thành công!`, "success");
+                document.getElementById("resetTargetUser").value = "";
+                document.getElementById("resetNewPass").value = "";
+            } else {
+                showToast("Lỗi: " + result.error, "danger");
+            }
+        }
+
+        async function changePassword() {
+            const oldPassword = document.getElementById("oldPass").value;
+            const newPassword = document.getElementById("newPassUser").value;
+
+            if (!oldPassword || !newPassword) {
+                showToast("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới!", "danger");
+                return;
+            }
+
+            toggleLoading(true, "Đang đổi mật khẩu...");
+            const result = await api({ action: "changePassword", token: getToken(), oldPassword, newPassword });
+            toggleLoading(false);
+
+            if (result.success) {
+                showToast("Đổi mật khẩu thành công! Đang đăng xuất...", "success");
+                setTimeout(logout, 2000);
+            } else {
+                showToast("Lỗi: " + result.error, "danger");
+            }
+        }
+
+        async function loadUserConfigs(isSilent = false) {
+            if (!isSilent) toggleLoading(true, "Đang tải cấu hình cá nhân...");
+            const result = await api({ action: "getUserConfigs", token: getToken() });
+            if (!isSilent) toggleLoading(false);
+
+            if (!result.success) return;
+            const configs = result.configs || {};
+
+            const urls = configs.urls || [];
+            const container = document.getElementById("quickLinksContainer");
+            const cardBlock = document.getElementById("quickLinksCard");
+
+            container.innerHTML = "";
+            if (urls.length > 0) {
+                cardBlock.style.display = "block";
+                let rawTextareaValue = "";
+                urls.forEach(item => {
+                    rawTextareaValue += `${item.title}|${item.url}\n`;
+                    const a = document.createElement("a");
+                    a.href = item.url; a.target = "_blank";
+                    a.className = "btn btn-xs btn-outline-dark pt-0 pb-0 ps-2 pe-2 small bg-white border shadow-sm";
+                    a.style.fontSize = "12px"; a.innerText = item.title;
+                    container.appendChild(a);
+                });
+                document.getElementById("cfgUrls").value = rawTextareaValue.trim();
+            } else {
+                cardBlock.style.display = "none";
+                document.getElementById("cfgUrls").value = "";
+            }
+        }
+
+        async function saveUserConfigs(isSilent = false) {
+            const rawUrls = document.getElementById("cfgUrls").value.split("\n");
+            const urlsArray = [];
+            rawUrls.forEach(line => {
+                if (line.includes("|")) {
+                    const parts = line.split("|");
+                    urlsArray.push({ title: parts[0].trim(), url: parts[1].trim() });
+                }
+            });
+
+            const newConfigs = { urls: urlsArray };
+
+            if (!isSilent) toggleLoading(true, "Đang lưu cấu hình...");
+            const result = await api({ action: "updateUserConfigs", token: getToken(), configs: newConfigs });
+            if (!isSilent) toggleLoading(false);
+
+            if (result.success) {
+                if (!isSilent) showToast("Lưu cấu hình thành công!", "success");
+                loadUserConfigs(true);
+            } else {
+                if (!isSilent) showToast("Không thể lưu cấu hình: " + result.error, "danger");
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById("loginCard").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+
+            document.getElementById("otDate").valueAsDate = new Date();
+
+            const username = localStorage.getItem("username") || "";
+            const role = localStorage.getItem("role") || "";
+            const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
+
+            let greetingString = role === "admin"
+                ? `Xin chào Quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`
+                : `Xin chào, <strong>${escapeHtml(capitalizedUser)}</strong>`;
+
+            document.getElementById("userInfo").innerHTML = greetingString;
+
+            if (role === "admin") {
+                document.getElementById("adminPanel").style.display = "block";
+            } else {
+                document.getElementById("adminPanel").style.display = "none";
+            }
+
+            toggleLoading(true, "Đang khởi tạo không gian làm việc...");
+            Promise.all([loadData(false), loadUserConfigs(true)]).then(() => {
+                toggleLoading(false);
+            });
+        }
+
+        if (localStorage.getItem("token")) {
+            showDashboard();
+        }
+    </script>
 </body>
+
 </html>
