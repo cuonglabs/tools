@@ -2,32 +2,132 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ghi Nhận Thời Gian Tăng Ca - OT Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hệ Thống Quản Lý Tăng Ca - OT Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #f4f6f8; padding-top: 30px; padding-bottom: 30px; }
-        .card { margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: none; }
-        #dashboard { display: none; }
-        .loading-status { font-style: italic; color: #6c757d; font-size: 14px; }
-        
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --card-radius: 12px;
+        }
+
+        body { 
+            background: var(--bg-body); 
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-top: 15px; 
+            padding-bottom: 30px; 
+            color: #334155;
+        }
+
+        /* CARD STYLING */
+        .card { 
+            margin-bottom: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+            border: 1px solid #e2e8f0; 
+            border-radius: var(--card-radius);
+            background: #ffffff;
+        }
+
+        /* LOADING OVERLAY */
         #loadingOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(33, 37, 41, 0.6);
-            backdrop-filter: blur(3px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             z-index: 9999;
             display: none;
             justify-content: center;
             align-items: center;
-            transition: all 0.2s ease-in-out;
         }
         .spinner-box {
             background: #fff;
-            padding: 25px 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 24px 36px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             text-align: center;
+        }
+
+        /* FORM & INPUTS */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 0.75rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* TABLE STYLING FOR MOBILE */
+        .table-responsive {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table {
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+        .table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 12px 16px;
+        }
+        .table td {
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 767.98px) {
+            body { padding-top: 10px; }
+            .container { padding-left: 10px; padding-right: 10px; }
+            .card-body { padding: 1rem; }
+            
+            .header-user-bar {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 12px;
+            }
+            .header-user-bar > div {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .filter-toolbar {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 10px;
+            }
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .month-group-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 6px;
+            }
+        }
+
+        /* BADGES & BUTTONS */
+        .badge {
+            font-weight: 500;
+            padding: 0.45em 0.75em;
+            border-radius: 6px;
+        }
+        .btn-action {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.825rem;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -36,12 +136,12 @@
 <div id="loadingOverlay">
     <div class="spinner-box">
         <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
-        <div id="loadingMessage" class="fw-bold text-secondary fs-6">Đang kết nối server...</div>
+        <div id="loadingMessage" class="fw-bold text-secondary fs-6">Đang kết nối hệ thống...</div>
     </div>
 </div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
-    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="liveToast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body fw-bold" id="toastBody">Thao tác thành công!</div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -52,66 +152,71 @@
 <div class="container" style="max-width: 1050px;">
 
     <!-- ĐĂNG NHẬP -->
-    <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 80px;">
+    <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 60px;">
         <div class="card-body p-4">
-            <h3 class="card-title text-center mb-4">Hệ Thống Đăng Nhập</h3>
+            <h4 class="card-title text-center fw-bold mb-4 text-primary">ĐĂNG NHẬP HỆ THỐNG</h4>
             <div class="mb-3">
-                <input id="username" class="form-control" placeholder="Tên đăng nhập" onkeydown="handleLoginKey(event)">
+                <label class="form-label small fw-bold text-secondary">Tên đăng nhập</label>
+                <input id="username" class="form-control" placeholder="Nhập tên đăng nhập" onkeydown="handleLoginKey(event)">
             </div>
             <div class="mb-4">
-                <input id="password" type="password" class="form-control" placeholder="Mật khẩu" onkeydown="handleLoginKey(event)">
+                <label class="form-label small fw-bold text-secondary">Mật khẩu</label>
+                <input id="password" type="password" class="form-control" placeholder="Nhập mật khẩu" onkeydown="handleLoginKey(event)">
             </div>
-            <button id="btn-login" class="btn btn-primary w-100" onclick="login()">Đăng Nhập</button>
+            <button id="btn-login" class="btn btn-primary w-100 fw-bold py-2" onclick="login()">Đăng Nhập</button>
         </div>
     </div>
 
     <!-- DASHBOARD -->
-    <div id="dashboard">
+    <div id="dashboard" style="display: none;">
         
+        <!-- THÔNG TIN NGƯỜI DÙNG -->
         <div class="card">
-            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div id="userInfo" class="fs-5"></div>
+            <div class="card-body d-flex justify-content-between align-items-center header-user-bar">
+                <div id="userInfo" class="fs-6 text-dark"></div>
                 <div>
-                    <button class="btn btn-outline-secondary btn-sm me-2" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
+                    <button class="btn btn-outline-secondary btn-sm me-1" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
                         ⚙️ Cấu hình & Bảo mật
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="logout()">Đăng xuất</button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="logout()">Đăng xuất</button>
                 </div>
             </div>
         </div>
 
+        <!-- COLLAPSE CẤU HÌNH -->
         <div class="collapse" id="settingsCollapse">
-            <div class="card border-info">
-                <div class="card-header bg-info bg-opacity-10 text-dark fw-bold">Cài Đặt Tài Khoản & Tiện Ích Cấu Hình</div>
+            <div class="card border-primary border-opacity-25 shadow-sm">
+                <div class="card-header bg-primary bg-opacity-10 text-primary fw-bold">Cài Đặt Tài Khoản & Tiện Ích</div>
                 <div class="card-body">
                     <div class="row g-4">
-                        <div class="col-md-5 border-end">
-                            <h5 class="h6 text-primary mb-3">🔒 Thay Đổi Mật Khẩu</h5>
+                        <div class="col-md-5 border-end-md">
+                            <h6 class="fw-bold text-dark mb-3">🔒 Thay Đổi Mật Khẩu</h6>
                             <div class="mb-2">
-                                <input id="oldPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu cũ">
+                                <input id="oldPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu hiện tại">
                             </div>
                             <div class="mb-3">
                                 <input id="newPassUser" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
                             </div>
-                            <button id="btn-changepass" class="btn btn-primary btn-sm w-100" onclick="changePassword()">Cập nhật mật khẩu</button>
+                            <button id="btn-changepass" class="btn btn-primary btn-sm w-100 fw-bold" onclick="changePassword()">Cập nhật mật khẩu</button>
                         </div>
                         
                         <div class="col-md-7">
-                            <h5 class="h6 text-success mb-3">🛠️ Thiết Lập Bộ Nhớ Gợi Ý & URL Nhanh</h5>
+                            <h6 class="fw-bold text-dark mb-3">🛠️ Liên Kết Truy Cập Nhanh</h6>
                             <div class="mb-2">
-                                <label class="form-label small mb-1 text-muted">Danh sách URL (Định dạng: Tên|Link - mỗi dòng 1 link)</label>
+                                <label class="form-label small mb-1 text-muted">Danh sách URL (Cú pháp: Tên|Đường_dẫn - mỗi dòng 1 link)</label>
                                 <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="CuongLabs|https://cuonglabs.github.io/tools"></textarea>
                             </div>
-                            <button id="btn-saveconfig" class="btn btn-success btn-sm float-end" onclick="saveUserConfigs(false)">Lưu cấu hình tiện ích</button>
+                            <button id="btn-saveconfig" class="btn btn-success btn-sm float-end fw-bold" onclick="saveUserConfigs(false)">Lưu cấu hình</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- QUICK LINKS -->
         <div id="quickLinksCard" class="card" style="display:none;">
             <div class="card-body p-2 bg-light d-flex align-items-center flex-wrap">
-                <span class="me-2 small text-muted fw-bold">🔗 Truy cập nhanh:</span>
+                <span class="me-2 small text-secondary fw-bold">🔗 Truy cập nhanh:</span>
                 <div id="quickLinksContainer" class="d-flex flex-wrap gap-1"></div>
             </div>
         </div>
@@ -119,36 +224,36 @@
         <!-- ADMIN PANEL -->
         <div id="adminPanel" class="card border-warning" style="display:none">
             <div class="card-body">
-                <h4 class="card-title h5 text-warning mb-3">Tạo tài khoản thành viên mới</h4>
+                <h5 class="card-title text-warning-emphasis fw-bold mb-3">Quản Trị: Tạo Tài Khoản Mới</h5>
                 <div class="row g-2 mb-4">
                     <div class="col-md-4">
-                        <input id="newUser" class="form-control" placeholder="Username mới">
+                        <input id="newUser" class="form-control form-control-sm" placeholder="Tên đăng nhập mới">
                     </div>
                     <div class="col-md-4">
-                        <input id="newPass" type="password" class="form-control" placeholder="Password mới">
+                        <input id="newPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
                     </div>
                     <div class="col-md-2">
-                        <select id="newRole" class="form-select">
+                        <select id="newRole" class="form-select form-select-sm">
                             <option value="user">Nhân viên</option>
                             <option value="admin">Quản trị viên</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button id="btn-createuser" class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo tài khoản</button>
+                        <button id="btn-createuser" class="btn btn-warning btn-sm w-100 fw-bold text-dark" onclick="createUser()">Tạo tài khoản</button>
                     </div>
                 </div>
 
-                <hr class="text-muted">
-                <h4 class="card-title h5 text-danger mb-3">Cấp lại mật khẩu thành viên</h4>
+                <hr class="text-muted opacity-25">
+                <h5 class="card-title text-danger fw-bold mb-3">Quản Trị: Cấp Lai Mật Khẩu</h5>
                 <div class="row g-2">
                     <div class="col-md-5">
-                        <input id="resetTargetUser" class="form-control" placeholder="Username cần khôi phục">
+                        <input id="resetTargetUser" class="form-control form-control-sm" placeholder="Tên tài khoản cần cấp lại">
                     </div>
                     <div class="col-md-5">
-                        <input id="resetNewPass" type="password" class="form-control" placeholder="Mật khẩu mới">
+                        <input id="resetNewPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
                     </div>
                     <div class="col-md-2">
-                        <button id="btn-resetpass" class="btn btn-danger w-100" onclick="resetPasswordByAdmin()">Cấp lại mới</button>
+                        <button id="btn-resetpass" class="btn btn-danger btn-sm w-100 fw-bold" onclick="resetPasswordByAdmin()">Cấp lại mật khẩu</button>
                     </div>
                 </div>
             </div>
@@ -157,15 +262,15 @@
         <!-- FORM THÊM / SỬA OT -->
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title h5 mb-3" id="form-title">⏱️ Record thời gian tăng ca mới</h4>
+                <h5 class="card-title fw-bold text-primary mb-3" id="form-title">⏱️ Ghi nhận thời gian tăng ca</h5>
                 <input type="hidden" id="editId"> 
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">1. Tăng ca ngày nào?</label>
+                        <label class="form-label small fw-bold text-secondary">1. Ngày tăng ca</label>
                         <input type="date" id="otDate" class="form-control" onkeydown="handleSaveKey(event)">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">2. Bạn đang đi ca nào?</label>
+                        <label class="form-label small fw-bold text-secondary">2. Ca làm việc</label>
                         <input id="shift" class="form-control" placeholder="Chọn hoặc nhập ca..." list="datalistShifts" onkeydown="handleSaveKey(event)">
                         <datalist id="datalistShifts">
                             <option value="Ca1">
@@ -175,8 +280,8 @@
                         </datalist>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">3. Thời gian tăng ca? (tiếng)</label>
-                        <input type="number" id="otHours" class="form-control" placeholder="Ví dụ: 2, 2.5, 4..." step="0.5" min="0" list="datalistHours" onkeydown="handleSaveKey(event)">
+                        <label class="form-label small fw-bold text-secondary">3. Số giờ tăng ca (giờ)</label>
+                        <input type="number" id="otHours" class="form-control" placeholder="Nhập số giờ (ví dụ: 2, 2.5, 4...)" step="0.5" min="0" list="datalistHours" onkeydown="handleSaveKey(event)">
                         <datalist id="datalistHours">
                             <option value="2">
                             <option value="4">
@@ -187,11 +292,11 @@
                     </div>
                 </div>
                 <div class="row mt-3 justify-content-end g-2">
-                    <div class="col-md-2" id="cancel-col" style="display:none;">
-                        <button id="btn-cancel" class="btn btn-secondary w-100" onclick="cancelEdit()">Hủy sửa</button>
+                    <div class="col-md-2 col-6" id="cancel-col" style="display:none;">
+                        <button id="btn-cancel" class="btn btn-outline-secondary w-100 fw-bold" onclick="cancelEdit()">Hủy</button>
                     </div>
-                    <div class="col-md-3">
-                        <button id="btn-submit" class="btn btn-success w-100 fw-bold" onclick="saveData()">+ Thêm record OT</button>
+                    <div class="col-md-3 col-12">
+                        <button id="btn-submit" class="btn btn-success w-100 fw-bold py-2" onclick="saveData()">+ Lưu lượt tăng ca</button>
                     </div>
                 </div>
             </div>
@@ -200,29 +305,33 @@
         <!-- DANH SÁCH DỮ LIỆU OT -->
         <div class="card">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <h4 class="card-title h5 m-0">📋 Danh sách thời gian tăng ca</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3 filter-toolbar">
+                    <h5 class="card-title fw-bold text-dark m-0">📋 Lịch sử tăng ca</h5>
                     
-                    <!-- BỘ LỌC THÁNG / NĂM -->
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 small fw-bold text-secondary">Lọc tháng:</label>
-                        <input type="month" id="filterMonth" class="form-control form-control-sm" onchange="renderGroupedData()">
-                        <button class="btn btn-outline-secondary btn-sm" onclick="clearMonthFilter()">Tất cả</button>
+                    <!-- BỘ LỌC THÁNG & NÚT LÀM MỚI -->
+                    <div class="d-flex align-items-center gap-2 filter-group flex-wrap">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label mb-0 small fw-bold text-secondary">Tháng:</label>
+                            <input type="month" id="filterMonth" class="form-control form-control-sm" style="width: auto;" onchange="renderGroupedData()">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="clearMonthFilter()">Tất cả</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 ms-auto">
+                            <button id="btn-refresh" class="btn btn-outline-primary btn-sm fw-bold" onclick="loadData(true)">↻ Làm mới</button>
+                        </div>
                     </div>
+                </div>
 
-                    <div>
-                        <span id="loadStatus" class="loading-status me-2"></span>
-                        <button id="btn-refresh" class="btn btn-outline-primary btn-sm" onclick="loadData(true)">Làm mới dữ liệu</button>
-                    </div>
+                <div class="mb-2">
+                    <span id="loadStatus" class="small italic text-muted"></span>
                 </div>
                 
                 <div class="table-responsive">
-                    <table class="table table-bordered align-middle">
-                        <thead class="table-light">
+                    <table class="table table-hover align-middle">
+                        <thead>
                             <tr id="tableHeader"></tr>
                         </thead>
                         <tbody id="tbody">
-                            <tr><td id="empty-row" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
+                            <tr><td id="empty-row" class="text-center text-muted py-4">Đang tải dữ liệu...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -236,16 +345,13 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
 
-// Biến toàn cục lưu trữ dữ liệu sau khi tải về từ Server
 let rawOTData = [];
 
-// Xóa bộ lọc tháng để hiển thị tất cả các tháng
 function clearMonthFilter() {
     document.getElementById("filterMonth").value = "";
     renderGroupedData();
 }
 
-// 1. HÀM TRUNG TÂM PHÒNG CHỐNG XSS
 function escapeHtml(str) {
     if (str === null || str === undefined) return "";
     return String(str)
@@ -256,7 +362,6 @@ function escapeHtml(str) {
         .replace(/'/g, "&#039;");
 }
 
-// 2. HÀM ĐỊNH DẠNG NGÀY DISPLAY CHUẨN dd/mm/yyyy (BAO GỒM CẢ SỐ 0)
 function formatDateDDMMYYYY(dateInput) {
     if (!dateInput) return "N/A";
     let d = new Date(dateInput);
@@ -268,7 +373,6 @@ function formatDateDDMMYYYY(dateInput) {
     return `${day}/${month}/${year}`;
 }
 
-// 3. CHUYỂN ĐỔI NGÀY SANG YYYY-MM-DD ĐỂ ĐẶT VÀO INPUT DATE
 function formatDateYYYYMMDD(dateInput) {
     if (!dateInput) return "";
     let d = new Date(dateInput);
@@ -326,12 +430,8 @@ function showToast(message, type = "success") {
     toast.show();
 }
 
-function handleLoginKey(e) {
-    if (e.key === "Enter") login();
-}
-function handleSaveKey(e) {
-    if (e.key === "Enter") saveData();
-}
+function handleLoginKey(e) { if (e.key === "Enter") login(); }
+function handleSaveKey(e) { if (e.key === "Enter") saveData(); }
 
 async function api(data) {
     try {
@@ -350,11 +450,11 @@ async function login() {
     const password = document.getElementById("password").value;
 
     if(!username || !password) {
-        showToast("Vui lòng nhập đầy đủ thông tin tài khoản!", "danger");
+        showToast("Vui lòng nhập đầy đủ thông tin đăng nhập!", "danger");
         return;
     }
 
-    toggleLoading(true, "Đang xác thực tài khoản đăng nhập...");
+    toggleLoading(true, "Đang xác thực tài khoản...");
     const result = await api({ action: "login", username, password });
     toggleLoading(false);
 
@@ -371,32 +471,31 @@ async function login() {
     showDashboard();
 }
 
-// Hàm xử lý Gom Nhóm và Hiển Thị Dữ Liệu
+// XỬ LÝ VÀ GOM NHÓM HIỂN THỊ DỮ LIỆU BẢNG
 function renderGroupedData() {
     const currentUsername = localStorage.getItem("username") || "";
     const myRole = localStorage.getItem("role");
-    const selectedMonth = document.getElementById("filterMonth").value; // Dạng "YYYY-MM"
+    const selectedMonth = document.getElementById("filterMonth").value;
 
     const tableHeader = document.getElementById("tableHeader");
     tableHeader.innerHTML = `
         <th>Ngày OT</th>
         <th>Ca làm việc</th>
-        <th>Số giờ OT</th>
+        <th>Số giờ</th>
         <th>Người tạo</th>
-        <th>Tạo lúc</th>
+        <th>Thời gian tạo</th>
         <th>Người sửa</th>
-        <th>Sửa lúc</th>
-        <th style="width: 120px;">Thao tác</th>`;
+        <th>Thời gian sửa</th>
+        <th class="text-center" style="width: 110px;">Thao tác</th>`;
 
     const tbody = document.getElementById("tbody");
     tbody.innerHTML = "";
 
     if (rawOTData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Cơ sở dữ liệu OT đang trống.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Chưa có dữ liệu tăng ca nào.</td></tr>`;
         return;
     }
 
-    // 1. Phân nhóm các bản ghi theo Tháng-Năm (YYYY-MM)
     const grouped = {};
     rawOTData.forEach(row => {
         if (!row.OtDate) return;
@@ -404,55 +503,46 @@ function renderGroupedData() {
         if (isNaN(d.getTime())) return;
 
         const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        
-        // Nếu người dùng chọn lọc tháng cụ thể
         if (selectedMonth && monthKey !== selectedMonth) return;
 
-        if (!grouped[monthKey]) {
-            grouped[monthKey] = [];
-        }
+        if (!grouped[monthKey]) grouped[monthKey] = [];
         grouped[monthKey].push(row);
     });
 
-    const monthKeys = Object.keys(grouped).sort().reverse(); // Sắp xếp tháng mới nhất lên đầu
+    const monthKeys = Object.keys(grouped).sort().reverse();
 
     if (monthKeys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Không tìm thấy bản ghi tăng ca nào cho tháng đã chọn.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Không tìm thấy bản ghi nào trong tháng đã chọn.</td></tr>`;
         return;
     }
 
     let htmlContentBuffer = "";
 
-    // 2. Duyệt qua từng tháng và dựng Header Nhóm + Chi tiết các ngày
     monthKeys.forEach(monthKey => {
         const records = grouped[monthKey];
-        
-        // Sắp xếp các bản ghi trong tháng theo ngày giảm dần
         records.sort((a, b) => new Date(b.OtDate) - new Date(a.OtDate));
 
-        // Tính tổng số giờ & tổng số lần trong tháng
         const totalHours = records.reduce((sum, item) => sum + (parseFloat(item.OtHours) || 0), 0);
         const totalCount = records.length;
 
         const [year, month] = monthKey.split("-");
         const formattedMonthLabel = `Tháng ${month}/${year}`;
 
-        // Header Gom Nhóm Cho Tháng
+        // HEADER NHÓM THÁNG
         htmlContentBuffer += `
-            <tr class="table-primary fw-bold">
-                <td colspan="8" class="py-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fs-6">📅 ${formattedMonthLabel}</span>
-                        <div>
-                            <span class="badge bg-primary me-2">Tổng số lần: ${totalCount} lần</span>
-                            <span class="badge bg-success fs-6">Tổng giờ OT: ${totalHours}h</span>
+            <tr class="table-primary border-0">
+                <td colspan="8" class="py-2 bg-primary bg-opacity-10 border-0">
+                    <div class="d-flex justify-content-between align-items-center month-group-header">
+                        <span class="fw-bold text-primary fs-6">📅 ${formattedMonthLabel}</span>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary text-white">Tổng: ${totalCount} lượt</span>
+                            <span class="badge bg-success text-white">Tổng giờ OT: ${totalHours}h</span>
                         </div>
                     </div>
                 </td>
             </tr>
         `;
 
-        // Render các dòng bản ghi thuộc tháng đó
         records.forEach(row => {
             let createdStr = row.Created ? new Date(row.Created).toLocaleString('vi-VN') : "-";
             let updatedStr = row.Updated ? new Date(row.Updated).toLocaleString('vi-VN') : "-";
@@ -467,20 +557,20 @@ function renderGroupedData() {
 
             htmlContentBuffer += `
             <tr>
-                <td class="ps-3"><strong class="text-dark">${cleanOtDate}</strong></td>
-                <td><span class="badge bg-secondary">${cleanShift}</span></td>
-                <td><span class="badge bg-success bg-opacity-75 text-white fs-6">${cleanOtHours}h</span></td>
+                <td><strong class="text-dark">${cleanOtDate}</strong></td>
+                <td><span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">${cleanShift}</span></td>
+                <td><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 fs-6">${cleanOtHours}h</span></td>
                 <td><span class="badge bg-light text-dark border">${cleanCreatedBy || "N/A"}</span></td>
                 <td class="small text-muted">${escapeHtml(createdStr)}</td>
                 <td><span class="badge bg-light text-dark border">${cleanUpdatedBy || "-"}</span></td>
                 <td class="small text-muted">${escapeHtml(updatedStr)}</td>
-                <td>`;
+                <td class="text-center">`;
 
             if (isOwnerOrAdmin) {
                 const rawOtDateForInput = formatDateYYYYMMDD(row.OtDate);
                 htmlContentBuffer += `
-                    <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${escapeHtml(row.ID)}', '${rawOtDateForInput}', '${cleanShift}', '${cleanOtHours}')">Sửa</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteData('${escapeHtml(row.ID)}')">Xóa</button>`;
+                    <button class="btn btn-action btn-outline-warning text-dark me-1" onclick="startEdit('${escapeHtml(row.ID)}', '${rawOtDateForInput}', '${cleanShift}', '${cleanOtHours}')">Sửa</button>
+                    <button class="btn btn-action btn-outline-danger" onclick="deleteData('${escapeHtml(row.ID)}')">Xóa</button>`;
             } else {
                 htmlContentBuffer += `<span class="text-muted small">N/A</span>`;
             }
@@ -492,10 +582,9 @@ function renderGroupedData() {
     tbody.innerHTML = htmlContentBuffer;
 }
 
-// Cập nhật hàm loadData để lưu dữ liệu vào rawOTData
 async function loadData(isManualClick = false) {
-    document.getElementById("loadStatus").innerText = "Đang đồng bộ...";
-    if(isManualClick) toggleLoading(true, "Đang tải dữ liệu từ máy chủ...");
+    document.getElementById("loadStatus").innerText = "Đang đồng bộ dữ liệu...";
+    if(isManualClick) toggleLoading(true, "Đang tải danh sách tăng ca...");
 
     const result = await api({ action: "list", token: getToken() });
     if(isManualClick) toggleLoading(false);
@@ -506,10 +595,8 @@ async function loadData(isManualClick = false) {
         return;
     }
 
-    // Lưu dữ liệu vào biến toàn cục
     rawOTData = result.data || [];
 
-    // Tự động chọn tháng hiện tại vào ô lọc (YYYY-MM) nếu chưa chọn
     const filterInput = document.getElementById("filterMonth");
     if (!filterInput.value) {
         const now = new Date();
@@ -520,7 +607,7 @@ async function loadData(isManualClick = false) {
 
     renderGroupedData();
     updateTimestamp();
-    if(isManualClick) showToast("Làm mới dữ liệu thành công!", "success");
+    if(isManualClick) showToast("Đã cập nhật dữ liệu mới nhất!", "success");
 }
 
 function updateTimestamp() {
@@ -530,7 +617,7 @@ function updateTimestamp() {
     const dd = String(now.getDate()).padStart(2, '0');
     const MM = String(now.getMonth() + 1).padStart(2, '0');
     const yyyy = now.getFullYear();
-    document.getElementById("loadStatus").innerText = `Đã cập nhật lúc ${hh}:${mm} ${dd}/${MM}/${yyyy}`;
+    document.getElementById("loadStatus").innerText = `Cập nhật gần nhất: ${hh}:${mm} - ${dd}/${MM}/${yyyy}`;
 }
 
 function startEdit(id, otDate, shift, otHours) {
@@ -539,11 +626,11 @@ function startEdit(id, otDate, shift, otHours) {
     document.getElementById("shift").value = shift;
     document.getElementById("otHours").value = otHours;
     
-    document.getElementById("form-title").innerText = "✏️ Chỉnh Sửa Bản Ghi OT (ID: " + id + ")";
+    document.getElementById("form-title").innerText = "✏️ Chỉnh sửa lượt tăng ca";
     
     const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "Cập nhật OT";
-    btnSubmit.className = "btn btn-warning w-100 text-dark fw-bold";
+    btnSubmit.innerText = "Lưu thay đổi";
+    btnSubmit.className = "btn btn-warning w-100 fw-bold text-dark";
     
     document.getElementById("cancel-col").style.display = "block";
     document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
@@ -555,14 +642,12 @@ function cancelEdit() {
     document.getElementById("shift").value = "";
     document.getElementById("otHours").value = "";
     
-    // Set ngày mặc định cho hôm nay khi hủy sửa
     document.getElementById("otDate").valueAsDate = new Date();
-
-    document.getElementById("form-title").innerText = "⏱️ Record thời gian tăng ca mới";
+    document.getElementById("form-title").innerText = "⏱️ Ghi nhận thời gian tăng ca";
     
     const btnSubmit = document.getElementById("btn-submit");
-    btnSubmit.innerText = "+ Thêm record OT";
-    btnSubmit.className = "btn btn-success w-100 fw-bold";
+    btnSubmit.innerText = "+ Lưu lượt tăng ca";
+    btnSubmit.className = "btn btn-success w-100 fw-bold py-2";
     document.getElementById("cancel-col").style.display = "none";
 }
 
@@ -582,12 +667,12 @@ async function saveData() {
     const payload = { action, token: getToken(), otDate, shift, otHours };
     if (isEdit) payload.id = id;
 
-    toggleLoading(true, "Đang lưu record OT lên máy chủ...");
+    toggleLoading(true, "Đang lưu dữ liệu tăng ca...");
     const result = await api(payload);
     toggleLoading(false);
 
     if(result.success) {
-        showToast(isEdit ? "Cập nhật record OT thành công!" : "Ghi nhận tăng ca thành công!", "success");
+        showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Lưu lượt tăng ca thành công!", "success");
         cancelEdit();
         loadData(false);
     } else {
@@ -596,14 +681,14 @@ async function saveData() {
 }
 
 async function deleteData(id) {
-    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn record tăng ca này?")) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn lượt tăng ca này?")) return;
 
-    toggleLoading(true, "Đang xóa dữ liệu...");
+    toggleLoading(true, "Đang xóa...");
     const result = await api({ action: "delete", token: getToken(), id });
     toggleLoading(false);
 
     if(result.success) {
-        showToast("Xóa bản ghi OT thành công!", "success");
+        showToast("Đã xóa thành công!", "success");
         loadData(false);
     } else {
         showToast("Lỗi khi xóa: " + result.error, "danger");
@@ -619,16 +704,16 @@ async function createUser() {
     const password = passEl.value;
 
     if(!username || !password) {
-        showToast("Vui lòng không để trống ô tài khoản mới!", "danger");
+        showToast("Vui lòng không để trống tên đăng nhập và mật khẩu!", "danger");
         return;
     }
 
-    toggleLoading(true, "Đang khởi tạo thành viên mới...");
+    toggleLoading(true, "Đang khởi tạo tài khoản...");
     const result = await api({ action: "createUser", token: getToken(), username, password, role });
     toggleLoading(false);
 
     if(result.success) {
-        showToast("Tạo tài khoản thành viên mới thành công!", "success");
+        showToast("Khởi tạo tài khoản thành công!", "success");
         userEl.value = "";
         passEl.value = "";
     } else {
@@ -641,18 +726,18 @@ async function resetPasswordByAdmin() {
     const newPassword = document.getElementById("resetNewPass").value;
 
     if (!targetUsername || !newPassword) {
-        showToast("Vui lòng điền đầy đủ Username đích và mật khẩu mới!", "danger");
+        showToast("Vui lòng nhập đầy đủ Tên tài khoản và Mật khẩu mới!", "danger");
         return;
     }
 
-    if (!confirm(`Bạn chắc chắn muốn khôi phục mật khẩu tài khoản [${targetUsername}]?`)) return;
+    if (!confirm(`Bạn chắc chắn muốn đặt lại mật khẩu cho tài khoản [${targetUsername}]?`)) return;
 
-    toggleLoading(true, "Đang đặt lại mật khẩu...");
+    toggleLoading(true, "Đang cấp lại mật khẩu...");
     const result = await api({ action: "resetPassword", token: getToken(), targetUsername, newPassword });
     toggleLoading(false);
 
     if (result.success) {
-        showToast(`Reset mật khẩu tài khoản ${targetUsername} thành công!`, "success");
+        showToast(`Cấp lại mật khẩu cho tài khoản ${targetUsername} thành công!`, "success");
         document.getElementById("resetTargetUser").value = "";
         document.getElementById("resetNewPass").value = "";
     } else {
@@ -665,16 +750,16 @@ async function changePassword() {
     const newPassword = document.getElementById("newPassUser").value;
 
     if (!oldPassword || !newPassword) {
-        showToast("Vui lòng nhập đủ cả mật khẩu cũ và mật khẩu mới!", "danger");
+        showToast("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới!", "danger");
         return;
     }
 
-    toggleLoading(true, "Đang xử lý đổi mật khẩu...");
+    toggleLoading(true, "Đang đổi mật khẩu...");
     const result = await api({ action: "changePassword", token: getToken(), oldPassword, newPassword });
     toggleLoading(false);
 
     if (result.success) {
-        showToast("Đổi mật khẩu thành công! Tự đăng xuất sau 2 giây...", "success");
+        showToast("Đổi mật khẩu thành công! Đang đăng xuất...", "success");
         setTimeout(logout, 2000);
     } else {
         showToast("Lỗi: " + result.error, "danger");
@@ -682,7 +767,7 @@ async function changePassword() {
 }
 
 async function loadUserConfigs(isSilent = false) {
-    if(!isSilent) toggleLoading(true, "Đang đồng bộ giao diện tiện ích...");
+    if(!isSilent) toggleLoading(true, "Đang tải cấu hình cá nhân...");
     const result = await api({ action: "getUserConfigs", token: getToken() });
     if(!isSilent) toggleLoading(false);
 
@@ -702,7 +787,7 @@ async function loadUserConfigs(isSilent = false) {
             const a = document.createElement("a");
             a.href = item.url; a.target = "_blank";
             a.className = "btn btn-xs btn-outline-dark pt-0 pb-0 ps-2 pe-2 small bg-white border shadow-sm";
-            a.style.fontSize = "13px"; a.innerText = item.title;
+            a.style.fontSize = "12px"; a.innerText = item.title;
             container.appendChild(a);
         });
         document.getElementById("cfgUrls").value = rawTextareaValue.trim();
@@ -724,12 +809,12 @@ async function saveUserConfigs(isSilent = false) {
 
     const newConfigs = { urls: urlsArray };
 
-    if (!isSilent) toggleLoading(true, "Đang ghi nhớ cấu hình mới...");
+    if (!isSilent) toggleLoading(true, "Đang lưu cấu hình...");
     const result = await api({ action: "updateUserConfigs", token: getToken(), configs: newConfigs });
     if (!isSilent) toggleLoading(false);
 
     if (result.success) {
-        if (!isSilent) showToast("Cập nhật bộ nhớ cấu hình thành công!", "success");
+        if (!isSilent) showToast("Lưu cấu hình thành công!", "success");
         loadUserConfigs(true); 
     } else {
         if (!isSilent) showToast("Không thể lưu cấu hình: " + result.error, "danger");
@@ -740,7 +825,6 @@ function showDashboard() {
     document.getElementById("loginCard").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
 
-    // Set ngày mặc định cho ô chọn ngày là ngày hôm nay
     document.getElementById("otDate").valueAsDate = new Date();
 
     const username = localStorage.getItem("username") || "";
@@ -748,8 +832,8 @@ function showDashboard() {
     const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
     
     let greetingString = role === "admin" 
-        ? `Chào quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`
-        : `Chào người dùng <strong>${escapeHtml(capitalizedUser)}</strong>`;
+        ? `Xin chào Quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`
+        : `Xin chào, <strong>${escapeHtml(capitalizedUser)}</strong>`;
     
     document.getElementById("userInfo").innerHTML = greetingString;
 
@@ -759,7 +843,7 @@ function showDashboard() {
         document.getElementById("adminPanel").style.display = "none";
     }
 
-    toggleLoading(true, "Đang thiết lập không gian làm việc...");
+    toggleLoading(true, "Đang khởi tạo không gian làm việc...");
     Promise.all([loadData(false), loadUserConfigs(true)]).then(() => {
         toggleLoading(false);
     });
