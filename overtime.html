@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CuongLabs Database Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f4f6f8; padding-top: 30px; padding-bottom: 30px; }
+        .card { margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: none; }
+        #dashboard { display: none; }
+        .loading-status { font-style: italic; color: #6c757d; font-size: 14px; }
+        
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(33, 37, 41, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
+        }
+        .spinner-box {
+            background: #fff;
+            padding: 25px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+    <div class="spinner-box">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+        <div id="loadingMessage" class="fw-bold text-secondary fs-6">Đang kết nối server...</div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
+    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body fw-bold" id="toastBody">Thao tác thành công!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="max-width: 950px;">
+
+    <div id="loginCard" class="card mx-auto" style="max-width: 400px; margin-top: 80px;">
+        <div class="card-body p-4">
+            <h3 class="card-title text-center mb-4">Hệ Thống Đăng Nhập</h3>
+            <div class="mb-3">
+                <input id="username" class="form-control" placeholder="Tên đăng nhập" onkeydown="handleLoginKey(event)">
+            </div>
+            <div class="mb-4">
+                <input id="password" type="password" class="form-control" placeholder="Mật khẩu" onkeydown="handleLoginKey(event)">
+            </div>
+            <button id="btn-login" class="btn btn-primary w-100" onclick="login()">Đăng Nhập</button>
+        </div>
+    </div>
+
+    <div id="dashboard">
+        
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div id="userInfo" class="fs-5"></div>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm me-2" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
+                        ⚙️ Cấu hình & Bảo mật
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="logout()">Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="collapse" id="settingsCollapse">
+            <div class="card border-info">
+                <div class="card-header bg-info bg-opacity-10 text-dark fw-bold">Cài Đặt Tài Khoản & Tiện Ích Cấu Hình</div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-5 border-end">
+                            <h5 class="h6 text-primary mb-3">🔒 Thay Đổi Mật Khẩu</h5>
+                            <div class="mb-2">
+                                <input id="oldPass" type="password" class="form-control form-control-sm" placeholder="Mật khẩu cũ">
+                            </div>
+                            <div class="mb-3">
+                                <input id="newPassUser" type="password" class="form-control form-control-sm" placeholder="Mật khẩu mới">
+                            </div>
+                            <button id="btn-changepass" class="btn btn-primary btn-sm w-100" onclick="changePassword()">Cập nhật mật khẩu</button>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <h5 class="h6 text-success mb-3">🛠️ Thiết Lập Bộ Nhớ Gợi Ý & URL Nhanh</h5>
+                            <div class="mb-2">
+                                <label class="form-label small mb-1 text-muted">Danh sách URL (Định dạng: Tên|Link - mỗi dòng 1 link)</label>
+                                <textarea id="cfgUrls" class="form-control form-control-sm" rows="2" placeholder="CuongLabs|https://cuonglabs.github.io/tools"></textarea>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Tên - Name (Cách nhau bằng dấu phẩy)</label>
+                                <input id="cfgSuggestNames" class="form-control form-control-sm" placeholder="Sản phẩm A, Thiết bị B">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small mb-1 text-muted">Gợi ý nhập cho cột Giá trị - Value (Cách nhau bằng dấu phẩy)</label>
+                                <input id="cfgSuggestValues" class="form-control form-control-sm" placeholder="Hoạt động, Tạm dừng">
+                            </div>
+                            <button id="btn-saveconfig" class="btn btn-success btn-sm float-end" onclick="saveUserConfigs(false)">Lưu cấu hình tiện ích</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quickLinksCard" class="card" style="display:none;">
+            <div class="card-body p-2 bg-light d-flex align-items-center flex-wrap">
+                <span class="me-2 small text-muted fw-bold">🔗 Truy cập nhanh:</span>
+                <div id="quickLinksContainer" class="d-flex flex-wrap gap-1"></div>
+            </div>
+        </div>
+
+        <div id="adminPanel" class="card border-warning" style="display:none">
+            <div class="card-body">
+                <h4 class="card-title h5 text-warning mb-3">Tạo tài khoản thành viên mới</h4>
+                <div class="row g-2 mb-4">
+                    <div class="col-md-4">
+                        <input id="newUser" class="form-control" placeholder="Username mới">
+                    </div>
+                    <div class="col-md-4">
+                        <input id="newPass" type="password" class="form-control" placeholder="Password mới">
+                    </div>
+                    <div class="col-md-2">
+                        <select id="newRole" class="form-select">
+                            <option value="user">Nhân viên</option>
+                            <option value="admin">Quản trị viên</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="btn-createuser" class="btn btn-warning w-100 text-dark" onclick="createUser()">Tạo tài khoản</button>
+                    </div>
+                </div>
+
+                <hr class="text-muted">
+                <h4 class="card-title h5 text-danger mb-3">Cấp lại mật khẩu thành viên</h4>
+                <div class="row g-2">
+                    <div class="col-md-5">
+                        <input id="resetTargetUser" class="form-control" placeholder="Username cần khôi phục">
+                    </div>
+                    <div class="col-md-5">
+                        <input id="resetNewPass" type="password" class="form-control" placeholder="Mật khẩu mới">
+                    </div>
+                    <div class="col-md-2">
+                        <button id="btn-resetpass" class="btn btn-danger w-100" onclick="resetPasswordByAdmin()">Cấp lại mới</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title h5 mb-3" id="form-title">Thêm dữ liệu mới</h4>
+                <input type="hidden" id="editId"> 
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input id="name" class="form-control" placeholder="Tên đối tượng (Name)" list="datalistNames" onkeydown="handleSaveKey(event)">
+                        <datalist id="datalistNames"></datalist>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="value" class="form-control" placeholder="Giá trị (Value)" list="datalistValues" onkeydown="handleSaveKey(event)">
+                        <datalist id="datalistValues"></datalist>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="btn-submit" class="btn btn-success w-100" onclick="saveData()">Thêm mới</button>
+                    </div>
+                    <div class="col-md-2" id="cancel-col" style="display:none;">
+                        <button id="btn-cancel" class="btn btn-secondary w-100" onclick="cancelEdit()">Hủy sửa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title h5 m-0">Danh sách dữ liệu</h4>
+                    <div>
+                        <span id="loadStatus" class="loading-status me-2"></span>
+                        <button id="btn-refresh" class="btn btn-outline-primary btn-sm" onclick="loadData(true)">Làm mới dữ liệu</button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr id="tableHeader"></tr>
+                        </thead>
+                        <tbody id="tbody">
+                            <tr><td id="empty-row" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxX4l1AfUFroLcgazD-ijuKLJrnCfRU0U0o8oR4cfVSqmFRlj7h-vhgstqcqBEk4m17/exec";
+
+// 1. HÀM TRUNG TÂM PHÒNG CHỐNG TẤN CÔNG XSS ĐỘC HẠI ĐÚNG CHUẨN OWASP
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function getToken() {
+    return localStorage.getItem("token") || "";
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload();
+}
+
+// 3. TỐI ƯU HÀM LOADING: TỰ ĐỘNG KHÓA (DISABLE) NÚT BẤM KHI CHỜ PHẢN HỒI SERVER
+function toggleLoading(show, message = "Đang xử lý...") {
+    const overlay = document.getElementById("loadingOverlay");
+    const msgEl = document.getElementById("loadingMessage");
+    if (show) {
+        msgEl.innerText = message;
+        overlay.style.display = "flex";
+    } else {
+        overlay.style.display = "none";
+    }
+
+    // Tự động tìm tất cả button chính để chống spam double-click
+    const ActionButtons = [
+        "btn-login", "btn-submit", "btn-cancel", "btn-refresh", 
+        "btn-changepass", "btn-saveconfig", "btn-createuser", "btn-resetpass"
+    ];
+    ActionButtons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = show;
+    });
+}
+
+function showToast(message, type = "success") {
+    const toastEl = document.getElementById("liveToast");
+    const toastBody = document.getElementById("toastBody");
+    
+    toastEl.classList.remove("bg-success", "bg-danger", "bg-warning", "text-white", "text-dark");
+    if (type === "success") {
+        toastEl.classList.add("bg-success", "text-white");
+    } else if (type === "danger") {
+        toastEl.classList.add("bg-danger", "text-white");
+    } else {
+        toastEl.classList.add("bg-warning", "text-dark");
+    }
+    
+    toastBody.innerText = message;
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+}
+
+// HỖ TRỢ ĐIỀU KHIỂN PHÍM TẮT ENTER CHO NGƯỜI DÙNG CHUYÊN NGHIỆP
+function handleLoginKey(e) {
+    if (e.key === "Enter") login();
+}
+function handleSaveKey(e) {
+    if (e.key === "Enter") saveData();
+}
+
+async function api(data) {
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    } catch (e) {
+        return { success: false, error: "Không thể kết nối đến máy chủ API" };
+    }
+}
+
+async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    if(!username || !password) {
+        showToast("Vui lòng nhập đầy đủ thông tin tài khoản!", "danger");
+        return;
+    }
+
+    toggleLoading(true, "Đang xác thực tài khoản đăng nhập...");
+    const result = await api({ action: "login", username, password });
+    toggleLoading(false);
+
+    if (!result.success) {
+        showToast(result.error, "danger");
+        return;
+    }
+
+    localStorage.setItem("token", result.token);
+    localStorage.setItem("role", result.role);
+    localStorage.setItem("username", result.username);
+
+    showToast("Đăng nhập thành công!", "success");
+    showDashboard();
+}
+
+async function loadData(isManualClick = false) {
+    document.getElementById("loadStatus").innerText = "Đang đồng bộ...";
+    if(isManualClick) toggleLoading(true, "Đang tải dữ liệu từ máy chủ...");
+
+    const result = await api({ action: "list", token: getToken() });
+    if(isManualClick) toggleLoading(false);
+
+    if (result.success === false) {
+        showToast("Phiên làm việc hết hạn hoặc lỗi: " + result.error, "danger");
+        setTimeout(logout, 2000);
+        return;
+    }
+
+    const currentUsername = localStorage.getItem("username") || "";
+    const myRole = localStorage.getItem("role");
+    const tableHeader = document.getElementById("tableHeader");
+    
+    // Hiển thị cột Thao tác cho tất cả người dùng
+    tableHeader.innerHTML = `<th>Tên</th><th>Giá trị</th><th>Thời gian tạo</th><th>Người tạo</th><th style="width: 130px;">Thao tác</th>`;
+
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+
+    const rows = result.data || [];
+
+    if(rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Cơ sở dữ liệu đang trống hoặc bạn chưa có dữ liệu nào.</td></tr>`;
+        updateTimestamp();
+        return;
+    }
+
+    let htmlContentBuffer = "";
+
+    rows.forEach(row => {
+        let dateStr = row.Created;
+        if(dateStr && !isNaN(Date.parse(dateStr))) {
+            dateStr = new Date(dateStr).toLocaleString('vi-VN');
+        }
+
+        const cleanName = escapeHtml(row.Name);
+        const cleanValue = escapeHtml(row.Value);
+        const cleanCreatedBy = escapeHtml(row.CreatedBy);
+
+        // Kiểm tra điều kiện chỉnh sửa/xóa trên UI
+        const isOwnerOrAdmin = (myRole === "admin" || cleanCreatedBy.toLowerCase() === currentUsername.toLowerCase());
+
+        let rowHtml = `
+        <tr>
+            <td><strong>${cleanName}</strong></td>
+            <td>${cleanValue}</td>
+            <td>${escapeHtml(dateStr)}</td>
+            <td><span class="badge bg-light text-dark border">${cleanCreatedBy || "N/A"}</span></td>
+            <td>`;
+
+        if (isOwnerOrAdmin) {
+            rowHtml += `
+                <button class="btn btn-sm btn-warning me-1 text-dark" onclick="startEdit('${escapeHtml(row.ID)}', '${cleanName}', '${cleanValue}')">Sửa</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteData('${escapeHtml(row.ID)}')">Xóa</button>`;
+        } else {
+            rowHtml += `<span class="text-muted small">Không có quyền</span>`;
+        }
+
+        rowHtml += `</td></tr>`;
+        htmlContentBuffer += rowHtml; 
+    });
+    
+    tbody.innerHTML = htmlContentBuffer;
+    updateTimestamp();
+    if(isManualClick) showToast("Làm mới dữ liệu thành công!", "success");
+}
+
+function updateTimestamp() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const MM = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    document.getElementById("loadStatus").innerText = `Đã cập nhật lúc ${hh}:${mm} ${dd}/${MM}/${yyyy}`;
+}
+
+function startEdit(id, name, value) {
+    document.getElementById("editId").value = id;
+    document.getElementById("name").value = name;
+    document.getElementById("value").value = value;
+    document.getElementById("form-title").innerText = "Chỉnh Sửa Dữ Liệu";
+    
+    const btnSubmit = document.getElementById("btn-submit");
+    btnSubmit.innerText = "Cập nhật";
+    btnSubmit.className = "btn btn-warning w-100 text-dark";
+    
+    document.getElementById("cancel-col").style.display = "block";
+    document.getElementById("form-title").scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelEdit() {
+    document.getElementById("editId").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("value").value = "";
+    document.getElementById("form-title").innerText = "Thêm dữ liệu mới";
+    
+    const btnSubmit = document.getElementById("btn-submit");
+    btnSubmit.innerText = "Thêm mới";
+    btnSubmit.className = "btn btn-success w-100";
+    document.getElementById("cancel-col").style.display = "none";
+}
+
+async function saveData() {
+    const id = document.getElementById("editId").value;
+    const name = document.getElementById("name").value.trim();
+    const value = document.getElementById("value").value.trim();
+
+    if(!name || !value) {
+        showToast("Vui lòng nhập cả Name và Value!", "danger");
+        return;
+    }
+
+    const isEdit = id !== "";
+    const action = isEdit ? "update" : "add";
+    const payload = { action, token: getToken(), name, value };
+    if (isEdit) payload.id = id;
+
+    toggleLoading(true, "Đang truyền tải dữ liệu đến server...");
+    const result = await api(payload);
+    toggleLoading(false);
+
+    if(result.success) {
+        showToast(isEdit ? "Cập nhật dữ liệu thành công!" : "Thêm mới bản ghi thành công!", "success");
+        
+        if (!isEdit) {
+            let currentNames = document.getElementById("cfgSuggestNames").value.split(",").map(x => x.trim()).filter(x => x !== "");
+            let currentValues = document.getElementById("cfgSuggestValues").value.split(",").map(x => x.trim()).filter(x => x !== "");
+            let isConfigChanged = false;
+
+            if (!currentNames.includes(name)) {
+                currentNames.push(name);
+                isConfigChanged = true;
+            }
+            if (!currentValues.includes(value)) {
+                currentValues.push(value);
+                isConfigChanged = true;
+            }
+
+            if (isConfigChanged) {
+                document.getElementById("cfgSuggestNames").value = currentNames.join(", ");
+                document.getElementById("cfgSuggestValues").value = currentValues.join(", ");
+                await saveUserConfigs(true);
+            }
+        }
+
+        cancelEdit();
+        loadData(false);
+    } else {
+        showToast("Lỗi hệ thống: " + result.error, "danger");
+    }
+}
+
+async function deleteData(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn dòng dữ liệu này?")) return;
+
+    toggleLoading(true, "Đang thực hiện lệnh xóa dữ liệu...");
+    const result = await api({ action: "delete", token: getToken(), id });
+    toggleLoading(false);
+
+    if(result.success) {
+        showToast("Xóa bản ghi thành công!", "success");
+        loadData(false);
+    } else {
+        showToast("Lỗi khi xóa: " + result.error, "danger");
+    }
+}
+
+async function createUser() {
+    const userEl = document.getElementById("newUser");
+    const passEl = document.getElementById("newPass");
+    const role = document.getElementById("newRole").value;
+
+    const username = userEl.value.trim();
+    const password = passEl.value;
+
+    if(!username || !password) {
+        showToast("Vui lòng không để trống ô tài khoản mới!", "danger");
+        return;
+    }
+
+    toggleLoading(true, "Đang khởi tạo thành viên mới...");
+    const result = await api({ action: "createUser", token: getToken(), username, password, role });
+    toggleLoading(false);
+
+    if(result.success) {
+        showToast("Tạo tài khoản thành viên mới thành công!", "success");
+        userEl.value = "";
+        passEl.value = "";
+    } else {
+        showToast("Lỗi: " + result.error, "danger");
+    }
+}
+
+async function resetPasswordByAdmin() {
+    const targetUsername = document.getElementById("resetTargetUser").value.trim();
+    const newPassword = document.getElementById("resetNewPass").value;
+
+    if (!targetUsername || !newPassword) {
+        showToast("Vui lòng điền đầy đủ Username đích và mật khẩu mới cấp!", "danger");
+        return;
+    }
+
+    if (!confirm(`Bạn chắc chắn muốn khôi phục mật khẩu tài khoản [${targetUsername}]?`)) return;
+
+    toggleLoading(true, "Đang đặt lại mật khẩu thành viên...");
+    const result = await api({ action: "resetPassword", token: getToken(), targetUsername, newPassword });
+    toggleLoading(false);
+
+    if (result.success) {
+        showToast(`Reset mật khẩu tài khoản ${targetUsername} thành công!`, "success");
+        document.getElementById("resetTargetUser").value = "";
+        document.getElementById("resetNewPass").value = "";
+    } else {
+        showToast("Lỗi: " + result.error, "danger");
+    }
+}
+
+async function changePassword() {
+    const oldPassword = document.getElementById("oldPass").value;
+    const newPassword = document.getElementById("newPassUser").value;
+
+    if (!oldPassword || !newPassword) {
+        showToast("Vui lòng nhập đủ cả mật khẩu cũ và mật khẩu mới!", "danger");
+        return;
+    }
+
+    toggleLoading(true, "Đang yêu cầu đổi mật khẩu bảo mật...");
+    const result = await api({ action: "changePassword", token: getToken(), oldPassword, newPassword });
+    toggleLoading(false);
+
+    if (result.success) {
+        showToast("Đổi mật khẩu thành công! Bạn sẽ tự đăng xuất sau 2 giây...", "success");
+        setTimeout(logout, 2000);
+    } else {
+        showToast("Lỗi: " + result.error, "danger");
+    }
+}
+
+async function loadUserConfigs(isSilent = false) {
+    if(!isSilent) toggleLoading(true, "Đang đồng bộ giao diện tiện ích...");
+    const result = await api({ action: "getUserConfigs", token: getToken() });
+    if(!isSilent) toggleLoading(false);
+
+    if (!result.success) return;
+    const configs = result.configs || {};
+
+    const urls = configs.urls || [];
+    const container = document.getElementById("quickLinksContainer");
+    const cardBlock = document.getElementById("quickLinksCard");
+    
+    container.innerHTML = "";
+    if (urls.length > 0) {
+        cardBlock.style.display = "block";
+        let rawTextareaValue = "";
+        urls.forEach(item => {
+            rawTextareaValue += `${item.title}|${item.url}\n`;
+            const a = document.createElement("a");
+            a.href = item.url; a.target = "_blank";
+            a.className = "btn btn-xs btn-outline-dark pt-0 pb-0 ps-2 pe-2 small bg-white border shadow-sm";
+            a.style.fontSize = "13px"; a.innerText = item.title;
+            container.appendChild(a);
+        });
+        document.getElementById("cfgUrls").value = rawTextareaValue.trim();
+    } else {
+        cardBlock.style.display = "none";
+        document.getElementById("cfgUrls").value = "";
+    }
+
+    const names = configs.suggestedNames || [];
+    const datalistNames = document.getElementById("datalistNames");
+    datalistNames.innerHTML = "";
+    names.forEach(n => { datalistNames.innerHTML += `<option value="${escapeHtml(n)}">`; });
+    document.getElementById("cfgSuggestNames").value = names.join(", ");
+
+    const values = configs.suggestedValues || [];
+    const datalistValues = document.getElementById("datalistValues");
+    datalistValues.innerHTML = "";
+    values.forEach(v => { datalistValues.innerHTML += `<option value="${escapeHtml(v)}">`; });
+    document.getElementById("cfgSuggestValues").value = values.join(", ");
+}
+
+async function saveUserConfigs(isSilent = false) {
+    const rawUrls = document.getElementById("cfgUrls").value.split("\n");
+    const rawNames = document.getElementById("cfgSuggestNames").value.split(",");
+    const rawValues = document.getElementById("cfgSuggestValues").value.split(",");
+
+    const urlsArray = [];
+    rawUrls.forEach(line => {
+        if (line.includes("|")) {
+            const parts = line.split("|");
+            urlsArray.push({ title: parts[0].trim(), url: parts[1].trim() });
+        }
+    });
+
+    const suggestedNames = rawNames.map(x => x.trim()).filter(x => x !== "");
+    const suggestedValues = rawValues.map(x => x.trim()).filter(x => x !== "");
+
+    const newConfigs = {
+        urls: urlsArray,
+        suggestedNames: suggestedNames,
+        suggestedValues: suggestedValues
+    };
+
+    if (!isSilent) toggleLoading(true, "Đang ghi nhớ cấu hình mới...");
+    const result = await api({ action: "updateUserConfigs", token: getToken(), configs: newConfigs });
+    if (!isSilent) toggleLoading(false);
+
+    if (result.success) {
+        if (!isSilent) showToast("Cập nhật bộ nhớ cấu hình thành công!", "success");
+        loadUserConfigs(true); 
+    } else {
+        if (!isSilent) showToast("Không thể lưu cấu hình: " + result.error, "danger");
+    }
+}
+
+function showDashboard() {
+    document.getElementById("loginCard").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+
+    const username = localStorage.getItem("username") || "";
+    const role = localStorage.getItem("role") || "";
+    const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
+    
+    let greetingString = "";
+    if (role === "admin") {
+        greetingString = `Chào quản trị viên <strong>${escapeHtml(capitalizedUser)}</strong>`;
+    } else {
+        greetingString = `Chào người dùng <strong>${escapeHtml(capitalizedUser)}</strong>`;
+    }
+    
+    document.getElementById("userInfo").innerHTML = greetingString;
+
+    if (role === "admin") {
+        document.getElementById("adminPanel").style.display = "block";
+    } else {
+        document.getElementById("adminPanel").style.display = "none";
+    }
+
+    toggleLoading(true, "Đang thiết lập không gian làm việc...");
+    Promise.all([loadData(false), loadUserConfigs(true)]).then(() => {
+        toggleLoading(false);
+    });
+}
+
+if (localStorage.getItem("token")) {
+    showDashboard();
+}
+</script>
+</body>
+</html>
