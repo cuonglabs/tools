@@ -10,179 +10,212 @@
     <!-- BỔ SUNG CÁC THẺ META THÔNG TIN CHIA SẺ (OPEN GRAPH) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://cuonglabs.github.io/tools/overtime/">
-    <meta property="og:title" content="Hệ Thống Quản Lý Tăng Ca & Nghỉ Phép">
-    <meta property="og:description" content="Công cụ hỗ trợ ghi nhận thời gian tăng ca, đăng ký nghỉ phép và theo dõi lịch sử làm việc nhanh chóng, tiện lợi.">
+    <meta property="og:title" content="Quản Lý Tăng Ca & Nghỉ Phép">
+    <meta property="og:description"
+        content="Công cụ hỗ trợ ghi nhận thời gian tăng ca, đăng ký nghỉ phép và theo dõi lịch sử làm việc nhanh chóng, tiện lợi.">
     <meta property="og:image" content="https://cuonglabs.github.io/tools/overtime/cover-page.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://cuonglabs.github.io/tools/overtime/cover-page.png">
+    <meta property="og:image:secure_url" content="https://cuonglabs.github.io/tools/overtime/cover-page.png">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <style>
-    :root {
-        --primary-color: #2563eb;
-        --primary-hover: #1d4ed8;
-        --bg-body: #f8fafc;
-        --card-radius: 12px;
-    }
-
-    html, body {
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    body { 
-        background: var(--bg-body); 
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        padding-top: 15px; 
-        padding-bottom: 30px; 
-        color: #334155;
-    }
-
-    .card { 
-        margin-bottom: 48px; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-        border: 1px solid #e2e8f0; 
-        border-radius: var(--card-radius);
-        background: #ffffff;
-    }
-
-    #loadingOverlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 9999;
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
-    .spinner-box {
-        background: #fff;
-        padding: 24px 36px;
-        border-radius: 16px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .form-control, .form-select {
-        border-radius: 8px;
-        border: 1px solid #cbd5e1;
-        padding: 0.5rem 0.75rem;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-
-    .table-responsive {
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
-        margin-bottom: 0.5rem;
-        width: 100%;
-    }
-    .table {
-        margin-bottom: 0;
-        white-space: nowrap;
-    }
-    .table th {
-        background-color: #f1f5f9;
-        color: #475569;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        padding: 10px 12px;
-    }
-    .table td {
-        padding: 10px 12px;
-        vertical-align: middle;
-    }
-
-    .badge {
-        font-weight: 500;
-        padding: 0.45em 0.75em;
-        border-radius: 6px;
-    }
-    .btn-action {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-        border-radius: 6px;
-        white-space: nowrap;
-    }
-
-    @media (max-width: 767.98px) {
-        body { padding-top: 10px; }
-        .container { padding-left: 4px; padding-right: 4px; }
-        .card-body { padding: 0.875rem; }
-        
-        .header-user-bar {
-            align-items: stretch !important;
-            gap: 10px;
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --card-radius: 12px;
         }
-        .header-user-bar > div {
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--bg-body);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-top: 15px;
+            padding-bottom: 30px;
+            color: #334155;
+        }
+
+        .card {
+            margin-bottom: 48px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            border-radius: var(--card-radius);
+            background: #ffffff;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            display: flex;
-            justify-content: flex-start;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
             align-items: center;
-            column-gap: 4px;
-        }
-        .header-user-bar > div:last-child {
-            justify-content: flex-end;
-        }
-        .header-user-bar > div > button {
-            padding-left: 2px;
-            padding-right: 2px;
         }
 
-        .filter-toolbar {
-            flex-direction: column;
-            align-items: stretch !important;
-            gap: 12px;
+        .spinner-box {
+            background: #fff;
+            padding: 24px 36px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        .filter-group {
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 0.5rem;
             width: 100%;
-            flex-direction: column;
-            align-items: stretch !important;
-            gap: 8px !important;
         }
-        
-        .filter-group > .d-flex {
-            width: 100%;
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            align-items: center;
-            gap: 6px !important;
-        }
-        .filter-group input[type="month"] {
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-        .filter-group button {
+
+        .table {
+            margin-bottom: 0;
             white-space: nowrap;
-            flex-shrink: 0;
-        }
-        
-        .month-group-header {
-            flex-direction: row;
-            align-items: flex-start !important;
-            gap: 8px;
-        }
-        .month-group-header > div {
-            width: 100%;
-            display: flex !important;
-            justify-content: flex-start !important;
         }
 
-        .border-start-md {
-            border-right: none !important;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 1rem;
-            margin-top: 1rem;
+        .table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 10px 12px;
         }
-    }
-</style>
+
+        .table td {
+            padding: 10px 12px;
+            vertical-align: middle;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.45em 0.75em;
+            border-radius: 6px;
+        }
+
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 767.98px) {
+            body {
+                padding-top: 10px;
+            }
+
+            .container {
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+
+            .card-body {
+                padding: 0.875rem;
+            }
+
+            .header-user-bar {
+                align-items: stretch !important;
+                gap: 10px;
+            }
+
+            .header-user-bar>div {
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                column-gap: 4px;
+            }
+
+            .header-user-bar>div:last-child {
+                justify-content: flex-end;
+            }
+
+            .header-user-bar>div>button {
+                padding-left: 2px;
+                padding-right: 2px;
+            }
+
+            .filter-toolbar {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 12px;
+            }
+
+            .filter-group {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+
+            .filter-group>.d-flex {
+                width: 100%;
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                align-items: center;
+                gap: 6px !important;
+            }
+
+            .filter-group input[type="month"] {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .filter-group button {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .month-group-header {
+                flex-direction: row;
+                align-items: flex-start !important;
+                gap: 8px;
+            }
+
+            .month-group-header>div {
+                width: 100%;
+                display: flex !important;
+                justify-content: flex-start !important;
+            }
+
+            .border-start-md {
+                border-right: none !important;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 1rem;
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -354,8 +387,7 @@
                         <div class="col-md-3">
                             <label class="form-label small fw-bold text-secondary">3. Số giờ tăng ca (giờ)</label>
                             <input type="number" id="otHours" class="form-control"
-                                placeholder="Chọn hoặc nhập số giờ ..." step="0.5" min="0"
-                                list="datalistHours"
+                                placeholder="Chọn hoặc nhập số giờ ..." step="0.5" min="0" list="datalistHours"
                                 onkeydown="handleSaveKey(event)">
                             <datalist id="datalistHours">
                                 <option value="2">
@@ -367,10 +399,8 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label small fw-bold text-secondary">4. Công việc tăng ca</label>
-                            <input type="text" id="otTask" class="form-control"
-                                placeholder="Nhập mô tả công việc ..."
-                                list="datalistTasks" 
-                                onkeydown="handleSaveKey(event)">
+                            <input type="text" id="otTask" class="form-control" placeholder="Nhập mô tả công việc ..."
+                                list="datalistTasks" onkeydown="handleSaveKey(event)">
                             <datalist id="datalistTasks">
                                 <option value="Bảo trì"></option>
                                 <option value="Xử lý sự cố"></option>
@@ -386,7 +416,8 @@
                                 onclick="resetForm()">Xoá trống</button>
                         </div>
                         <div class="col-md-3 col-12">
-                            <button id="btn-submit" class="btn btn-success w-100 fw-bold py-2" onclick="saveData()">+ Lưu lượt tăng ca</button>
+                            <button id="btn-submit" class="btn btn-success w-100 fw-bold py-2" onclick="saveData()">+
+                                Lưu lượt tăng ca</button>
                         </div>
                     </div>
                 </div>
@@ -395,12 +426,14 @@
             <!-- FORM ĐĂNG KÝ / CẬP NHẬT NGHỈ PHÉP (FORM MỚI) -->
             <div class="card border-info border-opacity-50">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold text-info-emphasis mb-3" id="holiday-form-title">🌴 Đăng ký nghỉ phép</h5>
+                    <h5 class="card-title fw-bold text-info-emphasis mb-3" id="holiday-form-title">🌴 Đăng ký nghỉ phép
+                    </h5>
                     <input type="hidden" id="editHolidayId">
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label small fw-bold text-secondary">1. Ngày nghỉ</label>
-                            <input type="date" id="holidayDate" class="form-control" onkeydown="handleHolidaySaveKey(event)">
+                            <input type="date" id="holidayDate" class="form-control"
+                                onkeydown="handleHolidaySaveKey(event)">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label small fw-bold text-secondary">2. Loại nghỉ phép</label>
@@ -414,15 +447,18 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-secondary">3. Lý do nghỉ</label>
-                            <input type="text" id="holidayReason" class="form-control" placeholder="Nhập lý do xin nghỉ..." onkeydown="handleHolidaySaveKey(event)">
+                            <input type="text" id="holidayReason" class="form-control"
+                                placeholder="Nhập lý do xin nghỉ..." onkeydown="handleHolidaySaveKey(event)">
                         </div>
                     </div>
                     <div class="row mt-3 justify-content-end g-2">
                         <div class="col-md-3 col-12">
-                            <button id="btn-holiday-reset" class="btn btn-outline-secondary w-100 fw-bold py-2" onclick="resetHolidayForm()">Xoá trống</button>
+                            <button id="btn-holiday-reset" class="btn btn-outline-secondary w-100 fw-bold py-2"
+                                onclick="resetHolidayForm()">Xoá trống</button>
                         </div>
                         <div class="col-md-3 col-12">
-                            <button id="btn-holiday-submit" class="btn btn-info text-white w-100 fw-bold py-2" onclick="saveHolidayData()">+ Đăng ký nghỉ</button>
+                            <button id="btn-holiday-submit" class="btn btn-info text-white w-100 fw-bold py-2"
+                                onclick="saveHolidayData()">+ Đăng ký nghỉ</button>
                         </div>
                     </div>
                 </div>
@@ -436,9 +472,14 @@
                         <div class="d-flex align-items-center gap-2 filter-group">
                             <div class="d-flex align-items-center gap-2 w-100">
                                 <label class="form-label mb-0 small fw-bold text-secondary text-nowrap">Tháng:</label>
-                                <input type="month" id="filterHolidayMonth" class="form-control form-control-sm py-1 px-2" style="height: 33px;" onchange="renderGroupedHolidayData()">
-                                <button class="btn btn-outline-secondary btn-sm py-1 px-2 text-nowrap" style="height: 33px;" onclick="clearHolidayMonthFilter()">Tất cả</button>
-                                <button id="btn-holiday-refresh" class="btn btn-outline-primary btn-sm fw-bold py-1 px-2 text-nowrap ms-auto" style="height: 33px;" onclick="loadHolidayData(true)">↻</button>
+                                <input type="month" id="filterHolidayMonth"
+                                    class="form-control form-control-sm py-1 px-2" style="height: 33px;"
+                                    onchange="renderGroupedHolidayData()">
+                                <button class="btn btn-outline-secondary btn-sm py-1 px-2 text-nowrap"
+                                    style="height: 33px;" onclick="clearHolidayMonthFilter()">Tất cả</button>
+                                <button id="btn-holiday-refresh"
+                                    class="btn btn-outline-primary btn-sm fw-bold py-1 px-2 text-nowrap ms-auto"
+                                    style="height: 33px;" onclick="loadHolidayData(true)">↻</button>
                             </div>
                         </div>
                     </div>
@@ -471,7 +512,8 @@
                                     style="height: 33px;" onchange="renderGroupedData()">
                                 <button class="btn btn-outline-secondary btn-sm py-1 px-2 text-nowrap"
                                     style="height: 33px;" onclick="clearMonthFilter()">Tất cả</button>
-                                <button id="btn-refresh" class="btn btn-outline-primary btn-sm fw-bold py-1 px-2 text-nowrap ms-auto"
+                                <button id="btn-refresh"
+                                    class="btn btn-outline-primary btn-sm fw-bold py-1 px-2 text-nowrap ms-auto"
                                     style="height: 33px;" onclick="loadData(true)">↻</button>
                             </div>
                         </div>
@@ -970,7 +1012,7 @@
         function startEditHoliday(id, holidayDate, leaveType, reason) {
             document.getElementById("editHolidayId").value = id;
             document.getElementById("holidayDate").value = holidayDate;
-            
+
             const leaveTypeSelect = document.getElementById("leaveType");
             for (let i = 0; i < leaveTypeSelect.options.length; i++) {
                 if (leaveTypeSelect.options[i].value === leaveType) {
