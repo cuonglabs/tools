@@ -1,61 +1,12 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký tài khoản hệ thống</title>
-    <!-- Sử dụng Tailwind CSS để giao diện nhanh gọn, đẹp mắt -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 flex items-center justify-center min-h-screen">
-
-    <div class="bg-white p-8 rounded-2xl shadow-lg w-96">
-        <!-- Tiêu đề (Sẽ tự thay đổi nếu dùng chung hàm toggleAuthMode) -->
-        <h2 id="auth-title" class="text-2xl font-bold text-center text-slate-800 mb-6">Đăng nhập hệ thống</h2>
-
-        <!-- Khung hiển thị lỗi -->
-        <div id="auth-error" class="text-red-500 text-sm text-center mb-4 min-h-[20px]"></div>
-
-        <!-- Form nhập liệu -->
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-600 mb-1">Tên đăng nhập (Username)</label>
-                <input type="text" id="auth-username" placeholder="Nhập username..." 
-                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-slate-600 mb-1">Mật khẩu (Password)</label>
-                <input type="password" id="auth-password" placeholder="Nhập mật khẩu..." 
-                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <!-- Nút bấm submit -->
-            <button id="btn-submit-auth" onclick="handleAuthAction()" 
-                class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-200">
-                Đăng nhập
-            </button>
-        </div>
-
-        <!-- Chuyển đổi qua lại Đăng nhập / Đăng ký (nếu cần) -->
-        <div class="mt-6 text-center">
-            <button id="btn-switch-mode" onclick="toggleAuthMode()" class="text-sm text-blue-600 hover:underline">
-                Tạo tài khoản mới
-            </button>
-        </div>
-    </div>
-
-    <!-- Nhập module auth.js chính -->
-    <script type="module">
-        import { initAuth } from './js/auth.js';
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Đăng ký tài khoản hệ thống</title><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-slate-100 flex items-center justify-center min-h-screen"><div class="bg-white p-8 rounded-2xl shadow-lg w-96"><h2 id="auth-title" class="text-2xl font-bold text-center text-slate-800 mb-6">Đăng nhập hệ thống</h2><div id="auth-error" class="text-red-500 text-sm text-center mb-4 min-h-[20px]"></div><div class="space-y-4"><div><label class="block text-sm font-medium text-slate-600 mb-1">Tên đăng nhập (Username)</label> <input type="text" id="auth-username" placeholder="Nhập username..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div><label class="block text-sm font-medium text-slate-600 mb-1">Mật khẩu (Password)</label> <input type="password" id="auth-password" placeholder="Nhập mật khẩu..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></div><button id="btn-submit-auth" onclick="handleAuthAction()" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-200">Đăng nhập</button></div><div class="mt-6 text-center"><button id="btn-switch-mode" onclick="toggleAuthMode()" class="text-sm text-blue-600 hover:underline">Tạo tài khoản mới</button></div></div><script type="module">import { initAuth } from './js/auth.js';
         import { redirectBackOrDefault } from './js/utilities.js';
-
+        
         // Hàm xử lý sau khi đăng ký/đăng nhập thành công
         function handleLoginSuccess(user) {
             console.log("Đăng nhập/Đăng ký thành công với user:", user);
             // alert(`Chào mừng ${user.username} (Mã ID: ${user.id}) đã vào hệ thống!`);
             // Chuyển hướng sang trang chính sau khi thành công (ví dụ: window.location.href = 'index.html';)
-            redirectBackOrDefault('test_Supperbase R2.html')
+            redirectBackOrDefault('index.html')
         }
 
         // Hàm xử lý sau khi đăng xuất
@@ -67,8 +18,4 @@
         // Khởi tạo hệ thống auth khi trang vừa tải xong
         document.addEventListener('DOMContentLoaded', () => {
             initAuth(handleLoginSuccess, handleLogoutSuccess);
-        });
-    </script>
-
-</body>
-</html>
+        });</script></body></html>
