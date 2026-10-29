@@ -181,184 +181,464 @@ function showTitle(_0x17bae0) {
     function _0x3514b4(_0x3eb618) { !_0xbeb569.contains(_0x3eb618.target) && _0x3eb618.target !== _0x17bae0 && (_0xbeb569.remove(), activePopup && activePopup.element === _0xbeb569 && (activePopup = null), document.removeEventListener("click", _0x3514b4)); }
     setTimeout(() => { document.addEventListener("click", _0x3514b4); }, 0);
 }
-function renderSummaryWeeklyTable(_0x40cd36, _0xd0e56d) {
-    const _0x1e02c9 = (el_filterSummarySearch.value || "").toLowerCase();
-    if (!el_summaryWeeklyHeader || !el_summaryWeeklyTbody || !_0xd0e56d)
-        return;
-    const _0xa9d68e = ["THỨ 2", "THỨ 3", "THỨ 4", "THỨ 5", "THỨ 6", "THỨ 7", "CHỦ NHẬT"];
-    el_summaryWeeklyHeader.innerHTML = _0xa9d68e.map(_0x5bf09a => "<th>" + _0x5bf09a + "</th>").join("");
-    const _0x3099fa = {};
-    _0x40cd36.forEach(_0x2b4259 => {
-        const _0x4b9c85 = getSummaryDateKey(_0x2b4259.otdate || _0x2b4259.OtDate);
-        if (!_0x4b9c85)
-            return;
-        if (_0x1e02c9) {
-            const _0x393bab = (_0x2b4259.otdate + " " + _0x2b4259.otshift + " " + _0x2b4259.othours + " " + _0x2b4259.ottask + " " + _0x2b4259.createdby).toLowerCase();
-            if (!_0x393bab.includes(_0x1e02c9))
-                return;
-        }
-        const _0x1371a4 = getSummaryUserName(_0x2b4259), _0x53c0e4 = _0x1371a4.toLocaleLowerCase("vi-VN"), _0x5f3929 = _0x2b4259.ottask || _0x2b4259.OtTask || "", _0x423d04 = _0x2b4259.created || _0x2b4259.Created;
-        let _0x4d1602 = _0x423d04 ? new Date(_0x423d04).toLocaleString("vi-VN") : "-";
-        if (!_0x3099fa[_0x4b9c85])
-            _0x3099fa[_0x4b9c85] = {};
-        if (!_0x3099fa[_0x4b9c85][_0x53c0e4])
-            _0x3099fa[_0x4b9c85][_0x53c0e4] = { "name": _0x1371a4, "type": "ot", "hours": 0, "task": _0x5f3929, "createdStr": _0x4d1602 };
-        _0x3099fa[_0x4b9c85][_0x53c0e4].hours += getSummaryHours(_0x2b4259.othours || _0x2b4259.OtHours);
-    }), getSummaryHolidayRecords().forEach(_0x3ca603 => {
-        if (_0x1e02c9) {
-            const _0x201d8f = (_0x3ca603.otdate + " " + _0x3ca603.otshift + " " + _0x3ca603.othours + " " + _0x3ca603.ottask + " " + _0x3ca603.createdby).toLowerCase();
-            if (!_0x201d8f.includes(_0x1e02c9))
-                return;
-        }
-        const _0x50c10b = getSummaryDateKey(_0x3ca603.hldate || _0x3ca603.HolidayDate);
-        if (!_0x50c10b)
-            return;
-        const _0x3a6a6d = getSummaryUserName(_0x3ca603), _0x3af9a0 = _0x3ca603.hltype || _0x3ca603.HolidayType || "???", _0x229ba2 = _0x3ca603.hlreason || _0x3ca603.HolidayReason || "", _0x560a4f = getLeaveCode(_0x3af9a0), _0x4538f5 = _0x3a6a6d.toLocaleLowerCase("vi-VN"), _0x9668f3 = _0x3ca603.created || _0x3ca603.Created;
-        let _0x26ed6c = _0x9668f3 ? new Date(_0x9668f3).toLocaleString("vi-VN") : "-";
-        if (!_0x3099fa[_0x50c10b])
-            _0x3099fa[_0x50c10b] = {};
-        _0x3099fa[_0x50c10b][_0x4538f5] = { "name": _0x3a6a6d, "type": "off", "typeName": _0x3af9a0, "typeLeave": _0x560a4f, "reason": _0x229ba2, "createdStr": _0x26ed6c };
+// ======================================================================
+// TỔNG HỢP: CUỘN VÔ HẠN THEO THÁNG (4 tab: Theo tuần / Nhân viên / Tăng ca / Nghỉ phép)
+// - Cuộn xuống đáy  -> tải thêm tháng kế tiếp
+// - Cuộn lên đỉnh   -> tải thêm tháng cũ hơn (giữ nguyên vị trí đang xem)
+// - Chọn tháng      -> đã tải thì cuộn tới, chưa tải thì dựng lại từ tháng đó
+// - Mỗi tháng có 1 dòng tiêu đề "Tháng M-YYYY" chiếm toàn bộ các cột
+// ======================================================================
+const SUMMARY_SCROLL_THRESHOLD = 60;     // px còn lại tới mép thì bắt đầu tải thêm
+const SUMMARY_MONTH_MARGIN = 2;          // cho phép cuộn thêm tối đa N tháng ngoài vùng có dữ liệu
+const SUMMARY_LIST_NEWEST_FIRST = false; // tab Tăng ca/Nghỉ phép: false = ngày tăng dần trong từng tháng
+const summaryView = { months: [], anchorKey: "", originKey: "", suppressUntil: 0, lastTop: new WeakMap(), ready: false, spyPending: false, bottomPending: false, touchY: null };
+
+const SUMMARY_WEEKLY_LEGEND = '<tr class="summary-tail-row"><td colspan="7" class="text-muted py-4">'
+    + '<div class="text-start ps-4 mb-4"><div class="fw-bold mb-2 small">Note:</div><div class="row ps-3 g-1 small">'
+    + '<div class="col-12 col-md-6"><div><b>OFF1</b> : <span>Nghỉ phép năm</span></div></div>'
+    + '<div class="col-12 col-md-6"><div><b>OFF2</b> : <span>Nghỉ bù tăng ca</span></div></div>'
+    + '<div class="col-12 col-md-6"><div><b>OFF3</b> : <span>Nghỉ công tác</span></div></div>'
+    + '<div class="col-12 col-md-6"><div><b>OFF4</b> : <span>Nghỉ đặc biệt</span></div></div>'
+    + '<div class="col-12 col-md-6"><div><b>OFF5</b> : <span>Nghỉ bảo hiểm</span></div></div>'
+    + '<div class="col-12 col-md-6"><div><b>OFF6</b> : <span>Nghỉ không lương</span></div></div>'
+    + '</div></div></td></tr>';
+
+// ---------- Tiện ích tháng ----------
+function summaryAddMonths(key, delta) {
+    const parts = key.split("-").map(Number);
+    const d = new Date(parts[0], parts[1] - 1 + delta, 1);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+}
+function summaryMonthInfoFromKey(key) {
+    const parts = key.split("-").map(Number);
+    return { key: key, year: parts[0], month: parts[1], daysInMonth: new Date(parts[0], parts[1], 0).getDate(), firstDay: new Date(parts[0], parts[1] - 1, 1) };
+}
+function summaryMonthTitle(key) {
+    const parts = key.split("-");
+    return "Tháng " + Number(parts[1]) + "-" + parts[0];
+}
+function summaryDayKey(info, day) {
+    return info.year + "-" + String(info.month).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+}
+function getSummaryOtRecordsFor(key) {
+    return (rawOTData || []).filter(r => getSummaryDateKey(r.otdate || r.OtDate).slice(0, 7) === key);
+}
+function getSummaryHolidayRecordsFor(key) {
+    return (rawHolidayData || []).filter(r => getSummaryDateKey(r.hldate || r.HolidayDate).slice(0, 7) === key);
+}
+function summaryMatchesSearch(text) {
+    const q = ((el_filterSummarySearch && el_filterSummarySearch.value) || "").toLowerCase();
+    return !q || String(text).toLowerCase().includes(q);
+}
+function summaryOtSearchText(r) { return [r.otdate, r.otshift, r.othours, r.ottask, r.createdby].join(" "); }
+function summaryHolidaySearchText(r) { return [r.hldate, r.hltype, r.hlreason, r.createdby].join(" "); }
+function summaryFormatDateTime(v) { return v ? new Date(v).toLocaleString("vi-VN") : "-"; }
+
+// Giới hạn tháng có thể cuộn tới: vùng có dữ liệu + tháng hiện tại + tháng người dùng chọn, mở rộng thêm vài tháng
+function getSummaryMonthBounds() {
+    let min = "", max = "";
+    const consider = k => { if (!k) return; if (!min || k < min) min = k; if (!max || k > max) max = k; };
+    (rawOTData || []).forEach(r => consider(getSummaryDateKey(r.otdate || r.OtDate).slice(0, 7)));
+    (rawHolidayData || []).forEach(r => consider(getSummaryDateKey(r.hldate || r.HolidayDate).slice(0, 7)));
+    const now = new Date();
+    consider(now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0"));
+    consider(summaryView.originKey);
+    return { min: summaryAddMonths(min, -SUMMARY_MONTH_MARGIN), max: summaryAddMonths(max, SUMMARY_MONTH_MARGIN) };
+}
+
+// ---------- Dựng nội dung từng tháng ----------
+function buildWeeklyMonthHtml(info) {
+    const byDate = {};
+    getSummaryOtRecordsFor(info.key).forEach(r => {
+        if (!summaryMatchesSearch(summaryOtSearchText(r))) return;
+        const dateKey = getSummaryDateKey(r.otdate || r.OtDate);
+        if (!dateKey) return;
+        const name = getSummaryUserName(r), nameKey = name.toLocaleLowerCase("vi-VN");
+        if (!byDate[dateKey]) byDate[dateKey] = {};
+        if (!byDate[dateKey][nameKey]) byDate[dateKey][nameKey] = { name: name, type: "ot", hours: 0, task: r.ottask || r.OtTask || "", createdStr: summaryFormatDateTime(r.created || r.Created) };
+        byDate[dateKey][nameKey].hours += getSummaryHours(r.othours || r.OtHours);
     });
-    let _0x3c9b64 = _0xd0e56d.firstDay.getDay() - 1;
-    if (_0x3c9b64 < 0)
-        _0x3c9b64 = 6;
-    const _0x2550fb = Math.ceil((_0x3c9b64 + _0xd0e56d.daysInMonth) / 7) * 7, _0x35b3f4 = _0x2550fb / 7;
-    let _0x2206b7 = "";
-    for (let _0x4b1d67 = 0; _0x4b1d67 < _0x35b3f4; _0x4b1d67++) {
-        _0x2206b7 += "<tr>";
-        for (let _0x2fad15 = 0; _0x2fad15 < 7; _0x2fad15++) {
-            const _0x95ae1e = _0x4b1d67 * 7 + _0x2fad15, _0xaacf0d = _0x95ae1e - _0x3c9b64 + 1, _0x310249 = _0xd0e56d.year + "-" + String(_0xd0e56d.month).padStart(2, "0") + "-" + String(_0xaacf0d).padStart(2, "0"), _0x1444fc = Object.values(_0x3099fa[_0x310249] || {}).sort((_0x5c808b, _0x4efb84) => _0x5c808b.name.localeCompare(_0x4efb84.name, "vi")), _0x28b73b = getLunarString(_0x310249);
-            if (_0xaacf0d < 1 || _0xaacf0d > _0xd0e56d.daysInMonth) {
-                _0x2206b7 += "<td class=\"summary-empty-day\" data-hld=\"" + _0x310249 + "\"></td>";
+    getSummaryHolidayRecordsFor(info.key).forEach(r => {
+        if (!summaryMatchesSearch(summaryHolidaySearchText(r))) return;
+        const dateKey = getSummaryDateKey(r.hldate || r.HolidayDate);
+        if (!dateKey) return;
+        const name = getSummaryUserName(r), typeName = r.hltype || r.HolidayType || "???";
+        if (!byDate[dateKey]) byDate[dateKey] = {};
+        byDate[dateKey][name.toLocaleLowerCase("vi-VN")] = { name: name, type: "off", typeName: typeName, typeLeave: getLeaveCode(typeName), reason: r.hlreason || r.HolidayReason || "", createdStr: summaryFormatDateTime(r.created || r.Created) };
+    });
+    let offset = info.firstDay.getDay() - 1;
+    if (offset < 0) offset = 6;
+    const weeks = Math.ceil((offset + info.daysInMonth) / 7);
+    let html = "";
+    for (let w = 0; w < weeks; w++) {
+        html += "<tr>";
+        for (let c = 0; c < 7; c++) {
+            const day = w * 7 + c - offset + 1;
+            if (day < 1 || day > info.daysInMonth) {
+                html += '<td class="summary-empty-day"></td>';
                 continue;
             }
-            let _0x42dc49 = "<span class=\"weekly-day-number mb-2 text-wrap text-break\">Ngày " + _0xaacf0d + "<br>\n(" + _0x28b73b + ")</span><br><br>";
-            !_0x1444fc.length ? _0x42dc49 += "<span class=\"summary-week-empty\">—</span><br><br><br><br><br>" : _0x1444fc.forEach(_0xc33b37 => { _0xc33b37.type === "off" ? _0x42dc49 += "<span class=\"ot-person-line weekly-off-line\" onclick=\"showTitle(this)\" data-title=\"" + (escapeHtml(_0xc33b37.typeLeave) + " : " + escapeHtml(_0xc33b37.typeName)) + "\nLý do : " + _0xc33b37.reason + "\nNgày tạo : " + _0xc33b37.createdStr + "\">\n                            <span class=\"ot-person-name\">" + escapeHtml(_0xc33b37.name) + "</span>-<span class=\"ot-person-off\">" + escapeHtml(_0xc33b37.typeLeave) + "</span>\n                        </span><br>" : _0x42dc49 += "<span class=\"ot-person-line\" onclick=\"showTitle(this)\" data-title=\"Công việc : " + _0xc33b37.task + "\nNgày tạo : " + _0xc33b37.createdStr + "\">\n                        <span class=\"ot-person-name\">" + escapeHtml(_0xc33b37.name) + "</span>-<span class=\"ot-person-hours\">" + escapeHtml(formatSummaryHours(_0xc33b37.hours)) + "h</span>\n                        </span><br>"; }), _0x2206b7 += "<td data-hld=\"" + _0x310249 + "\">" + _0x42dc49 + "</td>";
+            const dateKey = summaryDayKey(info, day);
+            const people = Object.values(byDate[dateKey] || {}).sort((a, b) => a.name.localeCompare(b.name, "vi"));
+            let cell = '<span class="weekly-day-number mb-2 text-wrap text-break">Ngày ' + day + "<br>\n(" + getLunarString(dateKey) + ")</span><br><br>";
+            if (!people.length) {
+                cell += '<span class="summary-week-empty">—</span><br><br><br><br><br>';
+            } else {
+                people.forEach(p => {
+                    if (p.type === "off") {
+                        cell += '<span class="ot-person-line weekly-off-line" onclick="showTitle(this)" data-title="' + (escapeHtml(p.typeLeave) + " : " + escapeHtml(p.typeName)) + "\nLý do : " + p.reason + "\nNgày tạo : " + p.createdStr + '">\n'
+                            + '<span class="ot-person-name">' + escapeHtml(p.name) + '</span>-<span class="ot-person-off">' + escapeHtml(p.typeLeave) + "</span>\n</span><br>";
+                    } else {
+                        cell += '<span class="ot-person-line" onclick="showTitle(this)" data-title="Công việc : ' + p.task + "\nNgày tạo : " + p.createdStr + '">\n'
+                            + '<span class="ot-person-name">' + escapeHtml(p.name) + '</span>-<span class="ot-person-hours">' + escapeHtml(formatSummaryHours(p.hours)) + "h</span>\n</span><br>";
+                    }
+                });
+            }
+            html += '<td data-hld="' + dateKey + '">' + cell + "</td>";
         }
-        _0x2206b7 += "</tr>";
+        html += "</tr>";
     }
-    _0x2206b7 += "\n    <td colspan=\"7\" class=\"text-muted py-4\">\n        <div class=\"text-start ps-4 mb-4\">\n            <div class=\"fw-bold mb-2 small\">Note:</div>\n            <div class=\"row ps-3 g-1 small\">\n                <div class=\"col-12 col-md-6\">\n                    <div><b>OFF1</b> : <span>Nghỉ phép năm</span></div>\n                </div>\n                <div class=\"col-12 col-md-6\">\n                    <div><b>OFF2</b> : <span>Nghỉ bù tăng ca</span></div>\n                </div>\n                <div class=\"col-12 col-md-6\">\n                    <div><b>OFF3</b> : <span>Nghỉ công tác</span></div>\n                </div>\n                <div class=\"col-12 col-md-6\">\n                    <div><b>OFF4</b> : <span>Nghỉ đặc biệt</span></div>\n                </div>\n                <div class=\"col-12 col-md-6\">\n                    <div><b>OFF5</b> : <span>Nghỉ bảo hiểm</span></div>\n                </div>\n                <div class=\"col-12 col-md-6\">\n                    <div><b>OFF6</b> : <span>Nghỉ không lương</span></div>\n                </div>\n            </div>\n        </div>\n    </td>\n    ", el_summaryWeeklyTbody.innerHTML = _0x2206b7;
+    return html;
 }
-function renderSummaryEmployeeTable(_0x1d5fa7, _0x51ac46) {
-    const _0x163bb4 = (el_filterSummarySearch.value || "").toLowerCase();
-    if (!el_summaryEmployeeHeader || !el_summaryEmployeeTbody || !_0x51ac46)
-        return;
-    let _0x41022d = "<th>STT</th><th>TÊN</th><th>SỐ LẦN OT</th><th>TỔNG GIỜ OT</th>";
-    for (let _0x368f6e = 1; _0x368f6e <= 31; _0x368f6e++) {
-        const _0x2a3ca9 = new Date(_0x51ac46.year, _0x51ac46.month - 1, _0x368f6e), _0x15b2db = _0x51ac46.year + "-" + String(_0x51ac46.month).padStart(2, "0") + "-" + String(_0x368f6e).padStart(2, "0"), _0x5d4fd5 = getLunarString(_0x15b2db);
-        _0x41022d += "<th data-hld=\"" + _0x15b2db + "\">\n            <div class=\"d-flex flex-column align-items-center\">\n                <span class=\"fs-6\">" + _0x368f6e + "</span>\n                <span class=\"text-muted\" style=\"font-size: 0.75rem;\">(" + _0x5d4fd5 + ")</span>\n            </div>\n        </th>";
-    }
-    el_summaryEmployeeHeader.innerHTML = _0x41022d;
-    const _0x7a37b5 = {}, _0x449c1d = _0x5a7906 => {
-        const _0x54c975 = _0x5a7906.toLocaleLowerCase("vi-VN");
-        if (!_0x7a37b5[_0x54c975])
-            _0x7a37b5[_0x54c975] = { "name": _0x5a7906, "count": 0, "hours": 0, "days": {}, "offDays": {} };
-        return _0x7a37b5[_0x54c975];
+
+function buildEmployeeMonthHtml(info) {
+    const people = {};
+    const getPerson = name => {
+        const k = name.toLocaleLowerCase("vi-VN");
+        if (!people[k]) people[k] = { name: name, count: 0, hours: 0, days: {}, offDays: {} };
+        return people[k];
     };
-    _0x1d5fa7.forEach(_0x47f90d => {
-        if (_0x163bb4) {
-            const _0x5f915f = (_0x47f90d.otdate + " " + _0x47f90d.otshift + " " + _0x47f90d.othours + " " + _0x47f90d.ottask + " " + _0x47f90d.createdby).toLowerCase();
-            if (!_0x5f915f.includes(_0x163bb4))
-                return;
-        }
-        const _0x246285 = _0x449c1d(getSummaryUserName(_0x47f90d)), _0x37f8d1 = getSummaryHours(_0x47f90d.othours || _0x47f90d.OtHours);
-        _0x246285.count += 1, _0x246285.hours += _0x37f8d1;
-        const _0x2617d1 = parseSummaryDate(_0x47f90d.otdate || _0x47f90d.OtDate);
-        if (_0x2617d1)
-            _0x246285.days[_0x2617d1.getDate()] = (_0x246285.days[_0x2617d1.getDate()] || 0) + _0x37f8d1;
-    }), getSummaryHolidayRecords().forEach(_0x18f360 => {
-        if (_0x163bb4) {
-            const _0x55f3df = (_0x18f360.otdate + " " + _0x18f360.otshift + " " + _0x18f360.othours + " " + _0x18f360.ottask + " " + _0x18f360.createdby).toLowerCase();
-            if (!_0x55f3df.includes(_0x163bb4))
-                return;
-        }
-        const _0x4ed43a = _0x449c1d(getSummaryUserName(_0x18f360)), _0x2bf830 = parseSummaryDate(_0x18f360.hldate || _0x18f360.HolidayDate);
-        if (_0x2bf830)
-            _0x4ed43a.offDays[_0x2bf830.getDate()] = true;
-    }), Object.values(_0x7a37b5).forEach(_0x2caf40 => { Object.keys(_0x2caf40.offDays).forEach(_0x413121 => delete _0x2caf40.days[_0x413121]); });
-    const _0x1ab93f = Object.values(_0x7a37b5).sort((_0xbba94a, _0x4ef6d2) => _0xbba94a.name.localeCompare(_0x4ef6d2.name, "vi"));
-    if (!_0x1ab93f.length) {
-        el_summaryEmployeeTbody.innerHTML = "<tr><td colspan=\"35\" class=\"text-center text-muted py-4\">Tháng này chưa có dữ liệu tăng ca/nghỉ.</td></tr>";
-        return;
+    getSummaryOtRecordsFor(info.key).forEach(r => {
+        if (!summaryMatchesSearch(summaryOtSearchText(r))) return;
+        const p = getPerson(getSummaryUserName(r)), h = getSummaryHours(r.othours || r.OtHours);
+        p.count += 1;
+        p.hours += h;
+        const d = parseSummaryDate(r.otdate || r.OtDate);
+        if (d) p.days[d.getDate()] = (p.days[d.getDate()] || 0) + h;
+    });
+    getSummaryHolidayRecordsFor(info.key).forEach(r => {
+        if (!summaryMatchesSearch(summaryHolidaySearchText(r))) return;
+        const p = getPerson(getSummaryUserName(r)), d = parseSummaryDate(r.hldate || r.HolidayDate);
+        if (d) p.offDays[d.getDate()] = true;
+    });
+    Object.values(people).forEach(p => Object.keys(p.offDays).forEach(d => delete p.days[d]));
+    const list = Object.values(people).sort((a, b) => a.name.localeCompare(b.name, "vi"));
+    if (!list.length) return '<tr><td colspan="35" class="text-center text-muted py-4">Tháng này chưa có dữ liệu tăng ca/nghỉ.</td></tr>';
+    // Dòng lịch âm của tháng (không dùng colspan để xuất Excel đúng cột)
+    let html = '<tr class="summary-lunar-row"><td></td><td>Âm lịch</td><td></td><td></td>';
+    for (let d = 1; d <= 31; d++) {
+        html += d <= info.daysInMonth ? '<td data-hld="' + summaryDayKey(info, d) + '">(' + getLunarString(summaryDayKey(info, d)) + ")</td>" : "<td></td>";
     }
-    let _0x3f4b78 = "";
-    _0x1ab93f.forEach((_0x5002bc, _0xa2f91e) => {
-        _0x3f4b78 += "<tr>\n        <td>" + (_0xa2f91e + 1) + "</td>\n        <td><strong>" + escapeHtml(_0x5002bc.name) + "</strong></td>\n        <td class=\"ot-count\">" + _0x5002bc.count + "</td>\n        <td class=\"ot-total\">" + escapeHtml(formatSummaryTotalHours(_0x5002bc.hours)) + "h</td>";
-        for (let _0x13c317 = 1; _0x13c317 <= 31; _0x13c317++) {
-            const _0x4fa3d3 = new Date(_0x51ac46.year, _0x51ac46.month - 1, _0x13c317), _0x4476de = _0x51ac46.year + "-" + String(_0x51ac46.month).padStart(2, "0") + "-" + String(_0x13c317).padStart(2, "0"), _0x3369d3 = _0x13c317 <= _0x51ac46.daysInMonth && _0x4fa3d3.getDay() === 0, _0x320daf = _0x13c317 <= _0x51ac46.daysInMonth && !!_0x5002bc.offDays[_0x13c317], _0x42976d = _0x13c317 <= _0x51ac46.daysInMonth && !_0x320daf && _0x5002bc.days[_0x13c317] > 0;
-            let _0x38df91 = _0x320daf ? "<span class=\"off-mark\">Off</span>" : _0x42976d ? escapeHtml(formatSummaryHours(_0x5002bc.days[_0x13c317])) + "h" : "";
-            _0x3f4b78 += "<td data-hld=\"" + _0x4476de + "\">" + _0x38df91 + "</td>";
+    html += "</tr>";
+    list.forEach((p, i) => {
+        html += "<tr><td>" + (i + 1) + "</td><td><strong>" + escapeHtml(p.name) + '</strong></td><td class="ot-count">' + p.count + '</td><td class="ot-total">' + escapeHtml(formatSummaryTotalHours(p.hours)) + "h</td>";
+        for (let d = 1; d <= 31; d++) {
+            if (d > info.daysInMonth) { html += "<td></td>"; continue; }
+            const off = !!p.offDays[d], hasOt = !off && p.days[d] > 0;
+            const text = off ? '<span class="off-mark">Off</span>' : hasOt ? escapeHtml(formatSummaryHours(p.days[d])) + "h" : "";
+            html += '<td data-hld="' + summaryDayKey(info, d) + '">' + text + "</td>";
         }
-        _0x3f4b78 += "</tr>";
-    }), el_summaryEmployeeTbody.innerHTML = _0x3f4b78;
+        html += "</tr>";
+    });
+    return html;
 }
+
+function buildOtListMonthHtml(info) {
+    const sign = SUMMARY_LIST_NEWEST_FIRST ? -1 : 1;
+    const rows = getSummaryOtRecordsFor(info.key).sort((a, b) => sign * (new Date(a.otdate || a.OtDate) - new Date(b.otdate || b.OtDate)));
+    let html = "";
+    rows.forEach(r => {
+        if (!summaryMatchesSearch(summaryOtSearchText(r))) return;
+        const dateStr = formatDateDDMMYYYY(r.otdate || r.OtDate), by = r.createdby || r.CreatedBy || "";
+        const byName = by ? by.charAt(0).toLocaleUpperCase("vi-VN") + by.slice(1).toLocaleLowerCase("vi-VN") : "";
+        html += '<tr data-hld="' + dateStr + '"><td><strong>' + escapeHtml(byName) + "</strong></td><td><span>" + dateStr + "</span></td>"
+            + "<td>" + escapeHtml(r.otshift || r.Shift) + '</td><td><span class="text-success fw-bold">' + escapeHtml(r.othours || r.OtHours) + "h</span></td>"
+            + "<td>" + escapeHtml(r.ottask || r.OtTask || "-") + '</td><td class="small text-muted">' + escapeHtml(summaryFormatDateTime(r.created || r.Created)) + "</td>"
+            + '<td><span class="badge bg-light text-dark border">' + (escapeHtml(r.updatedby || r.UpdatedBy) || "-") + '</span></td><td class="small text-muted">' + escapeHtml(summaryFormatDateTime(r.updated || r.Updated)) + "</td></tr>";
+    });
+    return html || '<tr><td colspan="8" class="text-center text-muted">Chưa có dữ liệu tăng ca trong tháng này.</td></tr>';
+}
+
+function buildHolidayListMonthHtml(info) {
+    const sign = SUMMARY_LIST_NEWEST_FIRST ? -1 : 1;
+    const rows = getSummaryHolidayRecordsFor(info.key).sort((a, b) => sign * (new Date(a.hldate || a.HolidayDate) - new Date(b.hldate || b.HolidayDate)));
+    let html = "";
+    rows.forEach(r => {
+        if (!summaryMatchesSearch(summaryHolidaySearchText(r))) return;
+        const dateStr = formatDateDDMMYYYY(r.hldate || r.HolidayDate), by = r.createdby || r.CreatedBy || "";
+        const byName = by ? by.charAt(0).toLocaleUpperCase("vi-VN") + by.slice(1).toLocaleLowerCase("vi-VN") : "";
+        html += '<tr data-hld="' + dateStr + '"><td><strong>' + escapeHtml(byName) + "</strong></td><td><span>" + dateStr + "</span></td>"
+            + '<td><span class="badge bg-info text-dark">' + escapeHtml(r.hltype || r.LeaveType) + "</span></td><td>" + escapeHtml(r.hlreason || r.Reason || "-") + "</td>"
+            + '<td class="small text-muted">' + escapeHtml(summaryFormatDateTime(r.created || r.Created)) + '</td><td><span class="badge bg-light text-dark border">' + (escapeHtml(r.updatedby || r.UpdatedBy) || "-") + '</span></td>'
+            + '<td class="small text-muted">' + escapeHtml(summaryFormatDateTime(r.updated || r.Updated)) + "</td></tr>";
+    });
+    return html || '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu nghỉ phép trong tháng này.</td></tr>';
+}
+
+// ---------- Các "pane" (4 bảng) ----------
+function getSummaryPanes() {
+    return [
+        { id: "weekly", tbody: el_summaryWeeklyTbody, cols: 7, build: buildWeeklyMonthHtml, tail: SUMMARY_WEEKLY_LEGEND },
+        { id: "employee", tbody: el_summaryEmployeeTbody, cols: 35, build: buildEmployeeMonthHtml, tail: "" },
+        { id: "ot", tbody: el_summaryOtTbody, cols: 8, build: buildOtListMonthHtml, tail: "" },
+        { id: "holiday", tbody: el_summaryHolidayTbody, cols: 7, build: buildHolidayListMonthHtml, tail: "" }
+    ].filter(p => p.tbody);
+}
+function summaryMonthBlockHtml(pane, key) {
+    return '<tr class="summary-month-header" data-month="' + key + '"><th colspan="' + pane.cols + '">' + summaryMonthTitle(key) + "</th></tr>" + pane.build(summaryMonthInfoFromKey(key));
+}
+function isSummaryElVisible(el) { return !!el && el.getClientRects().length > 0; }
+function getVisibleSummaryPane() { return getSummaryPanes().find(p => isSummaryElVisible(p.tbody)) || null; }
+
+// Phần tử đang thực sự cuộn dọc chứa bảng (hoặc cả trang nếu không có khung cuộn riêng)
+function getSummaryScroller(el) {
+    const cands = [];
+    for (let a = el.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement) {
+        const oy = getComputedStyle(a).overflowY;
+        if (oy === "auto" || oy === "scroll" || oy === "overlay") cands.push(a);
+    }
+    return cands.find(a => a.scrollHeight > a.clientHeight + 1)
+        || cands.find(a => getComputedStyle(a).maxHeight !== "none")
+        || cands[cands.length - 1]
+        || document.scrollingElement;
+}
+function summaryScrollerTop(scroller) {
+    return scroller === document.scrollingElement ? 0 : scroller.getBoundingClientRect().top;
+}
+function getSummaryHeadHeight(pane) {
+    const table = pane.tbody.closest("table"), th = table && table.querySelector("thead th");
+    if (!th || getComputedStyle(th).position !== "sticky") return 0;
+    return table.querySelector("thead").offsetHeight || 0;
+}
+function refreshSummaryStickyTops() {
+    getSummaryPanes().forEach(p => {
+        const table = p.tbody.closest("table");
+        if (table && isSummaryElVisible(p.tbody)) table.style.setProperty("--summary-month-top", getSummaryHeadHeight(p) + "px");
+    });
+}
+function injectSummaryScrollStyles() {
+    if (document.getElementById("summaryScrollStyles")) return;
+    const st = document.createElement("style");
+    st.id = "summaryScrollStyles";
+    st.textContent = ".summary-month-header th{position:sticky;top:var(--summary-month-top,0px);z-index:5;background-color:#dbeafe!important;color:#1e3a8a!important;font-weight:700!important;font-size:.95rem;text-align:left!important;padding:.5rem 1rem!important;border-top:2px solid #93c5fd;}"
+        + ".summary-lunar-row td{font-size:.75rem;color:#64748b;background-color:#f8fafc;}"
+        + ".summary-lunar-row td[data-hld]{font-weight:400;}";
+    document.head.appendChild(st);
+}
+
+// ---------- Dựng / tải thêm ----------
+function summaryRenderHeaders() {
+    if (el_summaryWeeklyHeader) {
+        el_summaryWeeklyHeader.innerHTML = ["THỨ 2", "THỨ 3", "THỨ 4", "THỨ 5", "THỨ 6", "THỨ 7", "CHỦ NHẬT"].map(t => "<th>" + t + "</th>").join("");
+    }
+    if (el_summaryEmployeeHeader) {
+        let h = "<th>STT</th><th>TÊN</th><th>SỐ LẦN OT</th><th>TỔNG GIỜ OT</th>";
+        for (let d = 1; d <= 31; d++) h += "<th>" + d + "</th>";
+        el_summaryEmployeeHeader.innerHTML = h;
+    }
+}
+function summaryRenderAll() {
+    summaryRenderHeaders();
+    getSummaryPanes().forEach(p => {
+        p.tbody.innerHTML = summaryView.months.map(k => summaryMonthBlockHtml(p, k)).join("") + p.tail;
+    });
+    applyHolidayBackgrounds();
+}
+function summaryLoadNext() {
+    if (!summaryView.months.length) return false;
+    const key = summaryAddMonths(summaryView.months[summaryView.months.length - 1], 1);
+    if (key > getSummaryMonthBounds().max) return false;
+    summaryView.months.push(key);
+    getSummaryPanes().forEach(p => {
+        const tail = p.tbody.querySelector("tr.summary-tail-row"), html = summaryMonthBlockHtml(p, key);
+        if (tail) tail.insertAdjacentHTML("beforebegin", html); else p.tbody.insertAdjacentHTML("beforeend", html);
+    });
+    applyHolidayBackgrounds();
+    return true;
+}
+function summaryLoadPrev() {
+    if (!summaryView.months.length) return false;
+    const key = summaryAddMonths(summaryView.months[0], -1);
+    if (key < getSummaryMonthBounds().min) return false;
+    const panes = getSummaryPanes();
+    const snap = panes.map(p => { const s = getSummaryScroller(p.tbody); return { s: s, h: s.scrollHeight, t: s.scrollTop, vis: isSummaryElVisible(p.tbody) }; });
+    summaryView.months.unshift(key);
+    panes.forEach(p => p.tbody.insertAdjacentHTML("afterbegin", summaryMonthBlockHtml(p, key)));
+    applyHolidayBackgrounds();
+    summaryView.suppressUntil = performance.now() + 120;
+    // giữ nguyên vị trí đang xem sau khi chèn tháng cũ lên trên
+    snap.forEach(x => { if (x.vis) x.s.scrollTop = x.t + (x.s.scrollHeight - x.h); });
+    return true;
+}
+// Nếu nội dung chưa đủ dài để cuộn thì tự tải thêm tháng sau cho tới khi cuộn được
+function ensureSummaryFilled() {
+    const pane = getVisibleSummaryPane();
+    if (!pane) return;
+    for (let i = 0; i < 12; i++) {
+        const s = getSummaryScroller(pane.tbody);
+        if (s.scrollHeight > s.clientHeight + SUMMARY_SCROLL_THRESHOLD + 20) break;
+        if (!summaryLoadNext()) break;
+    }
+}
+function summaryResetMonths(key) {
+    summaryView.months = [key];
+    summaryView.originKey = key;
+    summaryView.anchorKey = key;
+    summaryRenderAll();
+    getSummaryPanes().forEach(p => { if (isSummaryElVisible(p.tbody)) getSummaryScroller(p.tbody).scrollTop = 0; });
+    summaryView.suppressUntil = performance.now() + 120;
+    refreshSummaryStickyTops();
+    ensureSummaryFilled();
+}
+function summaryRerenderInPlace() {
+    const snap = getSummaryPanes().map(p => { const s = getSummaryScroller(p.tbody); return { s: s, t: s.scrollTop, vis: isSummaryElVisible(p.tbody) }; });
+    summaryRenderAll();
+    summaryView.suppressUntil = performance.now() + 120;
+    snap.forEach(x => { if (x.vis) x.s.scrollTop = x.t; });
+    refreshSummaryStickyTops();
+    ensureSummaryFilled();
+}
+
+// ---------- Cuộn tới một tháng / biết đang xem tháng nào ----------
+function scrollSummaryToMonth(key) {
+    if (!summaryView.months.includes(key)) return;
+    summaryView.suppressUntil = performance.now() + 250;
+    refreshSummaryStickyTops();
+    getSummaryPanes().forEach(p => {
+        if (!isSummaryElVisible(p.tbody)) return; // tab đang ẩn: sẽ căn lại khi tab được mở
+        const s = getSummaryScroller(p.tbody), headH = getSummaryHeadHeight(p);
+        for (let i = 0; i < 8; i++) {
+            const row = p.tbody.querySelector('tr.summary-month-header[data-month="' + key + '"]');
+            if (!row) return;
+            const delta = row.getBoundingClientRect().top - summaryScrollerTop(s) - headH;
+            const room = s.scrollHeight - s.clientHeight;
+            // phía dưới tháng đích chưa đủ nội dung để đưa tiêu đề lên đầu -> tải thêm tháng sau
+            if (s.scrollTop + delta > room + 1 && summaryLoadNext()) continue;
+            s.scrollTop = Math.max(0, s.scrollTop + delta);
+            break;
+        }
+    });
+    summaryView.anchorKey = key;
+    summaryScheduleBottomCheck(300);
+}
+function getSummaryPaneCurrentMonth(pane) {
+    const s = getSummaryScroller(pane.tbody), limit = summaryScrollerTop(s) + getSummaryHeadHeight(pane) + 8;
+    let current = summaryView.months[0] || "";
+    pane.tbody.querySelectorAll("tr.summary-month-header").forEach(row => { if (row.getBoundingClientRect().top <= limit) current = row.dataset.month; });
+    return current;
+}
+function updateSummaryAnchorFromScroll() {
+    const pane = getVisibleSummaryPane();
+    if (!pane) return;
+    const current = getSummaryPaneCurrentMonth(pane);
+    if (current && current !== summaryView.anchorKey) {
+        summaryView.anchorKey = current;
+        if (el_summaryMonth) el_summaryMonth.value = current; // chỉ cập nhật hiển thị, không kích hoạt sự kiện change
+    }
+}
+function scheduleSummarySpy() {
+    if (summaryView.spyPending) return;
+    summaryView.spyPending = true;
+    requestAnimationFrame(() => { summaryView.spyPending = false; updateSummaryAnchorFromScroll(); });
+}
+
+// Kiểm tra đáy trễ: phòng khi cuộn chạm đáy đúng lúc đang tạm ngưng nhận sự kiện (ví dụ ngay sau khi nhảy tháng)
+function summaryCheckBottom() {
+    summaryView.bottomPending = false;
+    const pane = getVisibleSummaryPane();
+    if (!pane || performance.now() < summaryView.suppressUntil) return;
+    const s = getSummaryScroller(pane.tbody);
+    if (s.scrollTop + s.clientHeight >= s.scrollHeight - SUMMARY_SCROLL_THRESHOLD) summaryLoadNext();
+}
+function summaryScheduleBottomCheck(ms) {
+    if (summaryView.bottomPending) return;
+    summaryView.bottomPending = true;
+    setTimeout(summaryCheckBottom, ms);
+}
+
+// ---------- Sự kiện cuộn / lăn chuột / vuốt ----------
+function findSummaryPaneForTarget(target) {
+    return getSummaryPanes().find(p => {
+        if (!isSummaryElVisible(p.tbody)) return false;
+        const s = getSummaryScroller(p.tbody);
+        return s === document.scrollingElement ? true : s.contains(target);
+    }) || null;
+}
+function onSummaryScroll(e) {
+    const el = e.target === document ? document.scrollingElement : e.target;
+    if (!(el instanceof Element)) return;
+    const pane = getSummaryPanes().find(p => isSummaryElVisible(p.tbody) && getSummaryScroller(p.tbody) === el);
+    if (!pane) return;
+    const top = el.scrollTop, last = summaryView.lastTop.has(el) ? summaryView.lastTop.get(el) : top;
+    summaryView.lastTop.set(el, top);
+    if (performance.now() < summaryView.suppressUntil) summaryScheduleBottomCheck(summaryView.suppressUntil - performance.now() + 40);
+    else {
+        const dir = top - last;
+        if (dir < 0 && top <= SUMMARY_SCROLL_THRESHOLD) summaryLoadPrev();
+        else if (dir > 0 && top + el.clientHeight >= el.scrollHeight - SUMMARY_SCROLL_THRESHOLD) summaryLoadNext();
+    }
+    scheduleSummarySpy();
+}
+function onSummaryWheel(e) {
+    const pane = findSummaryPaneForTarget(e.target);
+    if (!pane) return;
+    const s = getSummaryScroller(pane.tbody);
+    if (e.deltaY < 0 && s.scrollTop <= 0) summaryLoadPrev();
+    else if (e.deltaY > 0 && s.scrollTop + s.clientHeight >= s.scrollHeight - 1) summaryLoadNext();
+}
+function onSummaryTouchStart(e) { summaryView.touchY = e.touches && e.touches.length ? e.touches[0].clientY : null; }
+function onSummaryTouchMove(e) {
+    if (summaryView.touchY === null || !e.touches || !e.touches.length) return;
+    const pane = findSummaryPaneForTarget(e.target);
+    if (!pane) return;
+    const y = e.touches[0].clientY, dy = y - summaryView.touchY, s = getSummaryScroller(pane.tbody);
+    if (dy > 12 && s.scrollTop <= 0) { summaryLoadPrev(); summaryView.touchY = y; }
+    else if (dy < -12 && s.scrollTop + s.clientHeight >= s.scrollHeight - 1) { summaryLoadNext(); summaryView.touchY = y; }
+}
+function onSummaryTabShown() {
+    setTimeout(() => {
+        const pane = getVisibleSummaryPane();
+        if (!pane || !summaryView.months.length) return;
+        refreshSummaryStickyTops();
+        ensureSummaryFilled();
+        // căn tab vừa mở về đúng tháng đang xem ở tab trước
+        if (summaryView.months.includes(summaryView.anchorKey) && getSummaryPaneCurrentMonth(pane) !== summaryView.anchorKey) scrollSummaryToMonth(summaryView.anchorKey);
+    }, 0);
+}
+function setupSummaryScroll() {
+    if (summaryView.ready) return;
+    summaryView.ready = true;
+    injectSummaryScrollStyles();
+    document.addEventListener("scroll", onSummaryScroll, true);
+    document.addEventListener("wheel", onSummaryWheel, { passive: true, capture: true });
+    document.addEventListener("touchstart", onSummaryTouchStart, { passive: true, capture: true });
+    document.addEventListener("touchmove", onSummaryTouchMove, { passive: true, capture: true });
+    document.addEventListener("shown.bs.tab", onSummaryTabShown);
+    window.addEventListener("resize", () => { refreshSummaryStickyTops(); });
+    // Phòng trường hợp HTML chưa gắn sự kiện đổi tháng vào renderSummaryDashboard
+    el_summaryMonth && el_summaryMonth.addEventListener("change", () => {
+        setTimeout(() => { if (getSummaryMonthKey() !== summaryView.anchorKey) renderSummaryDashboard(); }, 0);
+    });
+}
+
+// ---------- Điểm vào (giữ nguyên tên hàm cũ) ----------
 function renderSummaryDashboard() {
-    const _0x782231 = getSummaryMonthInfo();
-    if (!_0x782231)
-        return;
-    if (el_summaryMonth && !el_summaryMonth.value)
-        el_summaryMonth.value = _0x782231.key;
-    renderSummaryLists();
-    const _0x126662 = getSummaryOtRecords();
-    renderSummaryWeeklyTable(_0x126662, _0x782231), renderSummaryEmployeeTable(_0x126662, _0x782231), applyHolidayBackgrounds(), updateLunarAttributes();
-}
-function renderSummaryLists() {
-    const _0x4a1423 = (el_filterSummarySearch.value || "").toLowerCase(), _0x135b1e = [getSummaryMonthKey()], _0x4141c1 = (rawOTData || []).filter(_0x4517b6 => {
-        const _0x2ccdee = _0x4517b6.otdate || _0x4517b6.OtDate;
-        if (!_0x2ccdee)
-            return false;
-        const _0x11533d = new Date(_0x2ccdee);
-        if (isNaN(_0x11533d.getTime()))
-            return false;
-        const _0x406941 = _0x11533d.getFullYear() + "-" + String(_0x11533d.getMonth() + 1).padStart(2, "0");
-        return _0x135b1e.includes(_0x406941);
-    }).sort((_0x1d1142, _0x590e27) => new Date(_0x590e27.otdate || _0x590e27.OtDate) - new Date(_0x1d1142.otdate || _0x1d1142.OtDate));
-    if (_0x4141c1.length === 0)
-        el_summaryOtTbody.innerHTML = "<tr><td colspan=\"8\" class=\"text-center text-muted\">Chưa có dữ liệu tăng ca trong tháng đã chọn.</td></tr>";
-    else {
-        let _0x56ef85 = "";
-        _0x4141c1.forEach(_0x1d91ef => {
-            if (_0x4a1423) {
-                const _0x50bdd = (_0x1d91ef.otdate + " " + _0x1d91ef.otshift + " " + _0x1d91ef.othours + " " + _0x1d91ef.ottask + " " + _0x1d91ef.createdby).toLowerCase();
-                if (!_0x50bdd.includes(_0x4a1423))
-                    return;
-            }
-            const _0x50e38e = _0x1d91ef.created || _0x1d91ef.Created, _0x2601bf = _0x1d91ef.updated || _0x1d91ef.Updated;
-            let _0x1df7b1 = _0x50e38e ? new Date(_0x50e38e).toLocaleString("vi-VN") : "-", _0x5a9167 = _0x2601bf ? new Date(_0x2601bf).toLocaleString("vi-VN") : "-", _0x45fbb6 = formatDateDDMMYYYY(_0x1d91ef.otdate || _0x1d91ef.OtDate);
-            const _0x18bd2d = _0x1d91ef.createdby || _0x1d91ef.CreatedBy || "", _0x395a33 = _0x18bd2d ? _0x18bd2d.charAt(0).toLocaleUpperCase("vi-VN") + _0x18bd2d.slice(1).toLocaleLowerCase("vi-VN") : "";
-            let _0x1d5890 = escapeHtml(_0x395a33);
-            _0x56ef85 += "\n            <tr data-hld=\"" + _0x45fbb6 + "\">\n                <td><strong>" + _0x1d5890 + "</strong></td>\n                <td><span>" + _0x45fbb6 + "</span></td>\n                <td>" + escapeHtml(_0x1d91ef.otshift || _0x1d91ef.Shift) + "</td>\n                <td><span class=\"text-success fw-bold\">" + escapeHtml(_0x1d91ef.othours || _0x1d91ef.OtHours) + "h</span></td>\n                <td>" + escapeHtml(_0x1d91ef.ottask || _0x1d91ef.OtTask || "-") + "</td>\n                <td class=\"small text-muted\">" + escapeHtml(_0x1df7b1) + "</td>\n                <td><span class=\"badge bg-light text-dark border\">" + (escapeHtml(_0x1d91ef.updatedby || _0x1d91ef.UpdatedBy) || "-") + "</span></td>\n                <td class=\"small text-muted\">" + escapeHtml(_0x5a9167) + "</td>\n            </tr>";
-        }), _0x56ef85.length == 0 && (_0x56ef85 = "<tr><td colspan=\"7\">Không có dữ liệu</td></tr>"), el_summaryOtTbody.innerHTML = _0x56ef85;
-    }
-    const _0x239492 = (rawHolidayData || []).filter(_0x3a4cb6 => {
-        const _0x4cd974 = _0x3a4cb6.hldate || _0x3a4cb6.HolidayDate;
-        if (!_0x4cd974)
-            return false;
-        const _0xa5101c = new Date(_0x4cd974);
-        if (isNaN(_0xa5101c.getTime()))
-            return false;
-        const _0x2313fd = _0xa5101c.getFullYear() + "-" + String(_0xa5101c.getMonth() + 1).padStart(2, "0");
-        return _0x135b1e.includes(_0x2313fd);
-    }).sort((_0x4e5679, _0x140d8a) => new Date(_0x140d8a.hldate || _0x140d8a.HolidayDate) - new Date(_0x4e5679.hldate || _0x4e5679.HolidayDate));
-    if (_0x239492.length === 0)
-        el_summaryHolidayTbody.innerHTML = "<tr><td colspan=\"7\" class=\"text-center text-muted\">Chưa có dữ liệu nghỉ phép trong tháng đã chọn.</td></tr>";
-    else {
-        let _0x127988 = "";
-        _0x239492.forEach(_0x5c43f6 => {
-            if (_0x4a1423) {
-                const _0x2fb636 = (_0x5c43f6.otdate + " " + _0x5c43f6.otshift + " " + _0x5c43f6.othours + " " + _0x5c43f6.ottask + " " + _0x5c43f6.createdby).toLowerCase();
-                if (!_0x2fb636.includes(_0x4a1423))
-                    return;
-            }
-            const _0x5927a5 = _0x5c43f6.created || _0x5c43f6.Created, _0x57a2d7 = _0x5c43f6.updated || _0x5c43f6.Updated;
-            let _0x1ce73d = _0x5927a5 ? new Date(_0x5927a5).toLocaleString("vi-VN") : "-", _0x4a44d7 = _0x57a2d7 ? new Date(_0x57a2d7).toLocaleString("vi-VN") : "-", _0x25744d = formatDateDDMMYYYY(_0x5c43f6.hldate || _0x5c43f6.HolidayDate);
-            const _0x238218 = _0x5c43f6.createdby || _0x5c43f6.CreatedBy || "", _0x3950b8 = _0x238218 ? _0x238218.charAt(0).toLocaleUpperCase("vi-VN") + _0x238218.slice(1).toLocaleLowerCase("vi-VN") : "";
-            let _0x7a4827 = escapeHtml(_0x3950b8);
-            _0x127988 += "\n            <tr data-hld=\"" + _0x25744d + "\">\n                <td><strong>" + _0x7a4827 + "</strong></td>\n                <td><span>" + _0x25744d + "</span></td>\n                <td><span class=\"badge bg-info text-dark\">" + escapeHtml(_0x5c43f6.hltype || _0x5c43f6.LeaveType) + "</span></td>\n                <td>" + escapeHtml(_0x5c43f6.hlreason || _0x5c43f6.Reason || "-") + "</td>\n                <td class=\"small text-muted\">" + escapeHtml(_0x1ce73d) + "</td>\n                <td><span class=\"badge bg-light text-dark border\">" + (escapeHtml(_0x5c43f6.updatedby || _0x5c43f6.UpdatedBy) || "-") + "</span></td>\n                <td class=\"small text-muted\">" + escapeHtml(_0x4a44d7) + "</td>\n            </tr>";
-        }), _0x127988.length == 0 && (_0x127988 = "<tr><td colspan=\"7\">Không có dữ liệu</td></tr>"), el_summaryHolidayTbody.innerHTML = _0x127988;
+    const info = getSummaryMonthInfo();
+    if (!info) return;
+    if (el_summaryMonth && !el_summaryMonth.value) el_summaryMonth.value = info.key;
+    setupSummaryScroll();
+    const key = info.key;
+    if (!summaryView.months.length) {
+        summaryResetMonths(key);                // lần dựng đầu tiên
+    } else if (key !== summaryView.anchorKey) {
+        if (summaryView.months.includes(key)) scrollSummaryToMonth(key); // tháng đã tải -> cuộn tới
+        else summaryResetMonths(key);           // tháng chưa tải -> dựng lại từ tháng đó
+    } else {
+        summaryRerenderInPlace();               // tải lại dữ liệu / đổi ô tìm kiếm: giữ nguyên vị trí cuộn
     }
 }
 function renderSummaryTables() { renderSummaryDashboard(); }
+
 function exportSummaryExcel() { const _0xa23bf2 = XLSX.utils.book_new(), _0x34e31d = createStyledSheetFromTable("summaryOtTable"); XLSX.utils.book_append_sheet(_0xa23bf2, _0x34e31d, "Tổng Hợp Tăng Ca"); const _0x486080 = createStyledSheetFromTable("summaryHolidayTable"); XLSX.utils.book_append_sheet(_0xa23bf2, _0x486080, "Tổng Hợp Ngày Nghỉ"); const _0x43c42b = createStyledSheetFromTable("summaryWeeklyTable"); XLSX.utils.book_append_sheet(_0xa23bf2, _0x43c42b, "Tổng Hợp Theo Tuần"); const _0x53a9ff = createStyledSheetFromTable("summaryEmployeeHeaderTable"); XLSX.utils.book_append_sheet(_0xa23bf2, _0x53a9ff, "Tổng Hợp Nhân Viên"); const _0x265c7a = new Date().toISOString().slice(0, 10); XLSX.writeFile(_0xa23bf2, "Bao_Cao_" + _0x265c7a + ".xlsx"); }
 function renderGroupedData() {
     const _0x4b0aed = currentUser.username || "", _0x1f4fd3 = currentUser.role || "user", _0x4dcc18 = el_filterMonth.value, _0x4facf1 = (el_filterOtSearch.value || "").toLowerCase();
