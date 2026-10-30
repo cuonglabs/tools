@@ -31,13 +31,13 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .logo{width:160px;display:flex;align-items:center;justify-content:center;border-right:1px solid #999}
 .logo img{height:30px}
 .ttl{flex:1;display:flex;align-items:center;justify-content:center;font-weight:700}
-.meta{width:190px;border-left:1px solid #999}
+.meta{width:220px;border-left:1px solid #999}
 .mr{height:22px;padding:0 6px;line-height:21px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mr+.mr{border-top:1px solid #999}
 .bx{border:1px solid #999;border-radius:6px;padding:3px 8px;overflow:hidden;min-height:0}
 .tx{white-space:pre-wrap;word-break:break-word;padding:3px 0 0 14px}
 .bx.ovf{border:2px solid #d62828}
-.imgs{flex:4.8 1 0;display:flex;gap:8px;min-height:0}
+.imgs{flex:5 1 0;display:flex;gap:8px;min-height:0}
 .ib{flex:1;display:flex;flex-direction:column;border:1px solid #999;border-radius:6px;overflow:hidden;min-width:0}
 .il{padding:1px 8px;border-bottom:1px solid #999;flex:none}
 .ig{flex:1;position:relative;min-height:0;cursor:pointer}
@@ -45,16 +45,31 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .ic i{display:block;width:100%;height:100%;border-radius:4px;background-position:center;background-repeat:no-repeat}
 .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#8aa;font-size:14px;padding:10px}
 .ft{flex:none;height:16px;display:flex;justify-content:space-between;font-size:12px;padding:0 4px}
+.ov{position:fixed;inset:0;background:#000a;z-index:3000;display:none;align-items:center;justify-content:center;padding:12px}
+.pn{background:#fff;border-radius:12px;padding:14px;max-height:92vh;overflow:auto}
+#cfr{border-radius:8px;background:#eee center/cover no-repeat;touch-action:none;cursor:grab;margin:auto}
+.dr{display:flex;gap:6px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:8px;margin-bottom:6px}
+.dr.cur{border-color:var(--blue);background:#f1f7ff}
+#sigc{width:100%;aspect-ratio:600/220;border:2px dashed #7aa7d8;border-radius:10px;background:#fff;touch-action:none}
+.info{flex:none;height:112px;display:flex;border:1px solid #999;border-radius:6px;overflow:hidden}
+.g12{flex:1;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:46px 1fr;min-width:0}
+.c{padding:3px 8px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;overflow:hidden;min-width:0}
+.c:nth-child(3),.c:nth-child(6){border-right:0}.c:nth-child(n+4){border-bottom:0}
+.c small,.sg small{display:block;font-size:11px;color:#666;line-height:1.2}
+.c span{display:block;line-height:1.2;word-break:break-word}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s6{grid-column:span 6}
+.sg{width:200px;flex:none;border-left:1px solid #999;padding:3px 8px;text-align:center;display:flex;flex-direction:column;align-items:center}
+#p-sig{max-height:74px;max-width:100%;margin:auto;display:none}
 #toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:24px;z-index:2000;display:none;max-width:92%;text-align:center}
 </style>
 </head>
 <body>
 <nav class="navbar bg-white shadow-sm sticky-top">
  <div class="container-fluid">
-  <span class="navbar-brand fw-bold" style="color:var(--blue)">📋 Báo cáo kỹ thuật</span>
+  <span class="navbar-brand fw-bold d-none d-sm-inline" style="color:var(--blue)">📋 Báo cáo kỹ thuật</span>
   <div class="d-flex gap-2">
-   <button class="btn btn-danger" data-act="pdf">📄 Xuất PDF</button>
-   <button class="btn btn-success" data-act="xlsx">📊 Xuất Excel</button>
+   <button class="btn btn-outline-primary" data-act="drafts">📂 Đã lưu</button><button class="btn btn-danger" data-act="pdf">📄 PDF</button>
+   <button class="btn btn-success" data-act="xlsx">📊 Excel</button>
   </div>
  </div>
 </nav>
@@ -72,14 +87,22 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
        <div class="meta"><div class="mr" id="p-date"></div><div class="mr" id="p-name"></div></div>
       </div>
       <div class="bx" id="b-subject" style="flex:none;height:48px"><b>Chủ đề:</b> <span class="tx" style="padding:0 0 0 6px" id="p-subject"></span></div>
-      <div class="bx" id="b-desc" style="flex:2.4 1 0"><b>Mô tả nội dung:</b><div class="tx" id="p-desc"></div></div>
+      <div class="bx" id="b-desc" style="flex:2.2 1 0"><b>Mô tả nội dung:</b><div class="tx" id="p-desc"></div></div>
       <div class="imgs">
        <div class="ib"><div class="il">Hình ảnh trước:</div><div class="ig" id="p-before" data-side="before"></div></div>
        <div class="ib"><div class="il">Hình ảnh sau:</div><div class="ig" id="p-after" data-side="after"></div></div>
       </div>
-      <div class="bx" id="b-action" style="flex:3.4 1 0"><b>Hành động:</b><div class="tx" id="p-action"></div></div>
-      <div class="bx" id="b-mats" style="flex:1.4 1 0"><b>Vật tư &amp; Nguyên liệu:</b><div class="tx" id="p-mats"></div></div>
-      <div class="bx" id="b-done" style="flex:1.4 1 0"><b>Hoàn thành &amp; Áp dụng:</b><div class="tx" id="p-done"></div></div>
+      <div class="bx" id="b-action" style="flex:3 1 0"><b>Hành động:</b><div class="tx" id="p-action"></div></div>
+      <div class="bx" id="b-mats" style="flex:1.3 1 0"><b>Vật tư &amp; Nguyên liệu:</b><div class="tx" id="p-mats"></div></div>
+      <div class="bx" id="b-done" style="flex:1.3 1 0"><b>Hoàn thành &amp; Áp dụng:</b><div class="tx" id="p-done"></div></div>
+      <div class="info"><div class="g12">
+       <div class="c s4"><small>Mã số máy</small><span id="p-mc"></span></div>
+       <div class="c s4"><small>Ngày giờ xảy ra</small><span id="p-t1"></span></div>
+       <div class="c s4"><small>Ngày giờ hoàn thành</small><span id="p-t2"></span></div>
+       <div class="c s3"><small>Thời gian stop</small><span id="p-stop"></span></div>
+       <div class="c s6"><small>Người xử lý</small><span id="p-who"></span></div>
+       <div class="c s3"><small>Tổng manpower</small><span id="p-mp"></span></div>
+      </div><div class="sg"><small>Chữ ký người lập</small><img id="p-sig" alt=""></div></div>
      </div>
      <div class="ft"><span>Báo cáo kỹ thuật</span><span>Trang 1 / 1</span></div>
     </div>
@@ -93,6 +116,8 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
  <button class="btn flex-fill py-3 rounded-0" data-tab="form">✏️ Nhập liệu</button>
  <button class="btn flex-fill py-3 rounded-0" data-tab="prev">👁 Xem trước</button>
 </div>
+<div class="ov" id="crop"><div class="pn"><div class="fw-bold mb-2">✂ Kéo ảnh để chọn vùng giữ lại</div><div id="cfr"></div><div class="small text-muted my-2">Khung này là hình dạng ảnh trong báo cáo.</div><button class="btn btn-primary w-100" data-act="cropdone">Xong</button></div></div>
+<div class="ov" id="drafts"><div class="pn" style="max-width:520px;width:100%"><div class="d-flex justify-content-between align-items-center mb-2"><b class="fs-5">📂 Báo cáo đã lưu</b><button class="btn btn-sm btn-outline-secondary" data-act="dclose">✕ Đóng</button></div><button class="btn btn-success w-100 mb-2" data-act="new">➕ Làm báo cáo mới</button><div id="dlist"></div></div></div>
 <input type="file" id="fi" accept="image/*" multiple hidden>
 <input type="file" id="fc" accept="image/*" capture="environment" hidden>
 <div id="toast"></div>
@@ -104,9 +129,9 @@ $('logoimg').src=LOGO;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const fd=s=>s?s.split('-').reverse().join('-'):'';
-const blank=()=>({date:today(),name:ls('fjk_name')||'',subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
+const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:'',subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
 let S=blank(), busy=false, side0='before', tab='form';
-try{Object.assign(S,JSON.parse(ls('fjk_rpt')||'{}'))}catch(e){}
+
 
 const TXT={
  subject:['Chủ đề','Ví dụ: Sửa lỗi kẹt băng tải máy cắt số 3',2],
@@ -130,17 +155,21 @@ function imgCard(n,s){return `<div class="cardx"><h2><span><i>${n}</i>${SIDE[s]}
  <div class="dz" data-side="${s}"><div class="fs-4">🖼</div><b>Kéo thả ảnh vào đây</b> hoặc bấm để chọn<div class="small">Tối đa ${MAX} ảnh</div></div>
  <div class="d-flex gap-2 mt-2"><button class="btn btn-outline-primary flex-fill" data-cam="${s}">📸 Chụp ảnh</button><button class="btn btn-outline-primary flex-fill" data-pick="${s}">📁 Chọn ảnh</button></div>
  <div class="d-flex flex-wrap gap-3 mt-3" id="th-${s}"></div>
- <div class="small text-muted mt-2">Ảnh đầu tiên là ảnh lớn nhất. Nút xanh ◀ đưa ảnh lên trước, nút xám ↻ xoay ảnh.</div>
+ <div class="small text-muted mt-2">✂ Chạm vào ảnh để kéo chọn vùng cắt. Ảnh đầu tiên là ảnh lớn nhất. Nút xanh ◀ đưa ảnh lên trước, nút xám ↻ xoay ảnh.</div>
  <div class="row g-2 mt-1"><div class="col-6"><label class="small">Bố cục ảnh</label><select class="form-select" data-lay="${s}">${Object.entries(LAYS).map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>
  <div class="col-6"><label class="small">Cách vừa khung</label><select class="form-select" data-fit="${s}"><option value="cover">Cắt cho đầy khung</option><option value="contain">Giữ nguyên, không cắt</option></select></div></div></div>`}
 
+const card=(n,t,b)=>`<div class="cardx"><h2><span><i>${n}</i>${t}</span></h2>${b}</div>`;
+const fld=(k,l,ty='text',ph='')=>`<label class="form-label mb-1 mt-2">${l}</label><input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}">`;
+const bl='<div class="mt-2 p-2 rounded" style="background:#eef5ff">';
 $('pane-form').innerHTML=
- `<div class="cardx"><h2><span><i>1</i>Thông tin chung</span></h2>
-  <label class="form-label mb-1">Ngày</label><input type="date" class="form-control mb-2" data-k="date">
-  <label class="form-label mb-1">Nhân viên</label><input class="form-control" data-k="name" placeholder="Họ và tên"></div>`+
- textCard(2,'subject')+textCard(3,'desc')+imgCard(4,'before')+imgCard(5,'after')+
- textCard(6,'action')+textCard(7,'mats')+textCard(8,'done')+
- `<button class="btn btn-outline-primary w-100 mb-2" data-act="share">📤 Chia sẻ PDF (Zalo, Email...)</button><button class="btn btn-outline-secondary w-100 mb-3" data-act="reset">🗑 Làm báo cáo mới (xóa hết)</button>`;
+ card(1,'Thông tin chung',`<label class="form-label mb-1">Ngày lập báo cáo</label><input type="date" class="form-control" data-k="date">${bl}Mã số báo cáo: <b id="codeshow"></b></div>`+fld('name','Người lập báo cáo','text','Họ và tên')+fld('mc','Mã số máy','text','Nhập mã số máy'))+
+ card(2,'Thời gian',fld('t1','Ngày - giờ xảy ra','datetime-local')+fld('t2','Ngày - giờ hoàn thành','datetime-local')+`${bl}Thời gian stop: <b id="stopshow"></b></div><div class="warn" id="w-t">⚠ Giờ hoàn thành đang sớm hơn giờ xảy ra.</div><label class="form-label mb-1 mt-2 small">Muốn tự nhập thời gian stop (phút)?</label><input type="number" min="0" class="form-control" data-k="stopMan" placeholder="Để trống = tự tính">`)+
+ textCard(3,'subject')+textCard(4,'desc')+imgCard(5,'before')+imgCard(6,'after')+
+ textCard(7,'action')+textCard(8,'mats')+textCard(9,'done')+
+ card(10,'Nhân sự',fld('who','Người xử lý (ngăn cách bằng dấu phẩy)','text','Ví dụ: Cường, Nam, Hải')+`<label class="form-label mb-1 mt-2">Tổng manpower (giờ)</label><div class="input-group"><input type="number" min="0" step="0.5" class="form-control" data-k="mp"><button class="btn btn-outline-primary" data-act="mpcalc">🧮 Tự tính</button></div><div class="small text-muted">Tự tính = số người × thời gian từ lúc xảy ra đến lúc hoàn thành.</div>`)+
+ card(11,'Chữ ký người lập báo cáo',`<canvas id="sigc" width="600" height="220"></canvas><button class="btn btn-outline-secondary w-100 mt-2" data-act="sigclear">🧽 Ký lại</button>`)+
+ `<button class="btn btn-outline-primary w-100 mb-2" data-act="share">📤 Chia sẻ PDF (Zalo, Email...)</button><button class="btn btn-outline-secondary w-100 mb-3" data-act="new">➕ Làm báo cáo mới</button>`;
 
 function fill(){document.querySelectorAll('[data-k]').forEach(e=>e.value=S[e.dataset.k]||'');
  document.querySelectorAll('[data-lay]').forEach(e=>e.value=S.lay[e.dataset.lay]);
@@ -157,23 +186,80 @@ function slots(n,m){
  const o=[];rows.forEach((c,y)=>{for(let x=0;x<c;x++)o.push([x/c,y/rows.length,1/c,1/rows.length])});return o}
 
 function render(){
- $('p-date').textContent='Ngày: '+(fd(S.date)||'dd-mm-yyyy');
+ $('p-date').textContent='Mã số: '+code();
  $('p-name').textContent='N.viên: '+S.name;
+ $('codeshow').textContent=code();$('stopshow').textContent=stopTxt()||'(chưa đủ thông tin)';
+ $('w-t').style.display=(S.t1&&S.t2&&new Date(S.t2)<new Date(S.t1))?'block':'none';
+ $('p-mc').textContent=S.mc;$('p-t1').textContent=fdt(S.t1);$('p-t2').textContent=fdt(S.t2);
+ $('p-stop').textContent=stopTxt();$('p-who').textContent=whoTxt();$('p-mp').textContent=mpTxt();
+ $('p-sig').style.display=S.sig?'block':'none';if(S.sig)$('p-sig').src=S.sig;
  for(const k in TXT)$('p-'+k).textContent=S[k];
  for(const s in SIDE){
   const a=S[s],g=$('p-'+s);
-  g.innerHTML=a.length?slots(a.length,S.lay[s]).map((r,i)=>`<div class="ic" style="left:${r[0]*100}%;top:${r[1]*100}%;width:${r[2]*100}%;height:${r[3]*100}%"><i style="background-image:url('${a[i].src}');background-size:${S.fit[s]}"></i></div>`).join(''):'<div class="ph noexp">＋ Kéo thả ảnh vào đây<br>hoặc bấm để chọn ảnh</div>';
-  $('th-'+s).innerHTML=a.map((i,x)=>`<div class="th" style="background-image:url('${i.src}')"><b data-del="${s}:${x}">×</b><em data-rot="${s}:${x}">↻</em>${x?`<u data-mv="${s}:${x}">◀</u>`:''}</div>`).join('');
+  g.innerHTML=a.length?slots(a.length,S.lay[s]).map((r,i)=>`<div class="ic" style="left:${r[0]*100}%;top:${r[1]*100}%;width:${r[2]*100}%;height:${r[3]*100}%"><i style="background-image:url('${a[i].src}');background-size:${S.fit[s]};background-position:${S.fit[s]==='cover'?(a[i].fx??.5)*100+'% '+(a[i].fy??.5)*100+'%':'center'}"></i></div>`).join(''):'<div class="ph noexp">＋ Kéo thả ảnh vào đây<br>hoặc bấm để chọn ảnh</div>';
+  $('th-'+s).innerHTML=a.map((i,x)=>`<div class="th" data-crop="${s}:${x}" style="background-image:url('${i.src}')"><b data-del="${s}:${x}">×</b><em data-rot="${s}:${x}">↻</em>${x?`<u data-mv="${s}:${x}">◀</u>`:''}</div>`).join('');
  }
  for(const k in TXT){const o=overflow(k);$('b-'+k).classList.toggle('ovf',o);$('w-'+k).style.display=o?'block':'none'}
 }
 const overflow=k=>{const b=$('b-'+k);return b.scrollHeight>b.clientHeight+1};
 const anyOver=()=>Object.keys(TXT).some(overflow);
-function save(){try{localStorage.setItem('fjk_rpt',JSON.stringify(S))}catch(e){toast('Bộ nhớ trình duyệt đầy – hãy xuất file ngay',3000)}}
+let st;
+const isEmpty=()=>!(S.subject||S.desc||S.action||S.mats||S.done||S.mc||S.who||S.sig||S.before.length||S.after.length);
+const flush=async()=>{clearTimeout(st);if(!isEmpty()){S.updated=Date.now();await dbPut(S)}};
+function save(){ls('fjk_cur',S.id);clearTimeout(st);st=setTimeout(flush,600)}
 
 document.addEventListener('input',e=>{const d=e.target.dataset||{};
  if(d.lay||d.fit){(d.lay?S.lay:S.fit)[d.lay||d.fit]=e.target.value;save();render();return}
  if(!d.k)return;S[d.k]=e.target.value;if(d.k==='name')ls('fjk_name',S.name);save();render()});
+
+/* ---------- Mã số, thời gian ---------- */
+const code=()=>'PLE-'+(S.date||'yyyy-mm-dd');
+const fdt=v=>v?v.slice(0,10).split('-').reverse().join('-')+' '+v.slice(11,16):'';
+const durMin=()=>{if(!S.t1||!S.t2)return null;const m=Math.round((new Date(S.t2)-new Date(S.t1))/60000);return m>=0?m:null};
+const stopMin=()=>(S.stopMan!==''&&!isNaN(+S.stopMan))?+S.stopMan:durMin();
+function stopTxt(){const m=stopMin();if(m===null)return'';if(m<60)return m+' phút';return String(+(m/60).toFixed(2)).replace('.',',')+' giờ'}
+const whoTxt=()=>S.who.split(',').map(x=>x.trim()).filter(Boolean).join(', ');
+const mpTxt=()=>(S.mp!==''&&!isNaN(+S.mp))?String(+S.mp).replace('.',',')+' giờ':'';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Lưu nhiều báo cáo (IndexedDB) ---------- */
+let DB=null;
+const idb=()=>new Promise(ok=>{try{const q=indexedDB.open('fjk',1);q.onupgradeneeded=()=>q.result.createObjectStore('d',{keyPath:'id'});q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)}catch(e){ok(null)}});
+const tx=(m,fn)=>new Promise(ok=>{if(!DB)return ok(null);try{const t=DB.transaction('d',m),q=fn(t.objectStore('d'));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>ok(null)}catch(e){ok(null)}});
+const dbPut=o=>tx('readwrite',s=>s.put(o)),dbDel=id=>tx('readwrite',s=>s.delete(id)),dbGet=id=>tx('readonly',s=>s.get(id)),dbAll=()=>tx('readonly',s=>s.getAll());
+const closeD=()=>$('drafts').style.display='none';
+async function openDrafts(){await flush();const a=((await dbAll())||[]).sort((x,y)=>y.updated-x.updated);
+ $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">PLE-${esc(d.date)} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
+ $('drafts').style.display='flex'}
+async function openRep(id){await flush();const d=await dbGet(id);if(d){S=Object.assign(blank(),d);ls('fjk_cur',S.id);fill();render();drawSig()}closeD();setTab('form')}
+async function newRep(){await flush();S=blank();ls('fjk_cur',S.id);fill();render();drawSig();closeD();setTab('form')}
+async function rmRep(id){if(!confirm('Xóa báo cáo này?'))return;await dbDel(id);if(id===S.id){S=blank();ls('fjk_cur',S.id);fill();render();drawSig()}openDrafts()}
+
+/* ---------- Chọn vùng cắt ảnh ---------- */
+let CR=null;
+function openCrop(s,x){
+ if(S.fit[s]!=='cover')return toast('Đang chọn "Giữ nguyên, không cắt". Hãy đổi sang "Cắt cho đầy khung" để chọn vùng cắt.',4500);
+ const im=S[s][x],q=slots(S[s].length,S.lay[s])[x],ar=(q[2]*480)/(q[3]*400),bw=Math.min(innerWidth*.84,420),bh=bw/ar,f=$('cfr');
+ f.style.width=bw+'px';f.style.height=bh+'px';f.style.backgroundImage=`url('${im.src}')`;
+ CR={im,bw,bh,sc:Math.max(bw/im.w,bh/im.h),px:null};cropPos();$('crop').style.display='flex'}
+const cropPos=()=>{$('cfr').style.backgroundPosition=`${(CR.im.fx??.5)*100}% ${(CR.im.fy??.5)*100}%`};
+const cl=v=>Math.max(0,Math.min(1,v));
+$('cfr').addEventListener('pointerdown',e=>{if(!CR)return;CR.px=e.clientX;CR.py=e.clientY;CR.fx=CR.im.fx??.5;CR.fy=CR.im.fy??.5;$('cfr').setPointerCapture(e.pointerId)});
+$('cfr').addEventListener('pointermove',e=>{if(!CR||CR.px===null)return;
+ const ow=CR.im.w*CR.sc-CR.bw,oh=CR.im.h*CR.sc-CR.bh;
+ if(ow>1)CR.im.fx=cl(CR.fx-(e.clientX-CR.px)/ow);if(oh>1)CR.im.fy=cl(CR.fy-(e.clientY-CR.py)/oh);cropPos()});
+const cropEnd=()=>{if(CR&&CR.px!==null){CR.px=null;save();render()}};
+$('cfr').addEventListener('pointerup',cropEnd);$('cfr').addEventListener('pointercancel',cropEnd);
+
+/* ---------- Chữ ký ---------- */
+const sc=$('sigc'),sx=sc.getContext('2d');let dw=false;
+const sp=e=>{const r=sc.getBoundingClientRect();return[(e.clientX-r.left)*sc.width/r.width,(e.clientY-r.top)*sc.height/r.height]};
+sc.addEventListener('pointerdown',e=>{e.preventDefault();dw=true;sc.setPointerCapture(e.pointerId);const[x,y]=sp(e);
+ sx.lineWidth=4;sx.lineCap=sx.lineJoin='round';sx.strokeStyle='#111';sx.beginPath();sx.moveTo(x,y);sx.lineTo(x+.1,y+.1);sx.stroke();sx.beginPath();sx.moveTo(x,y)});
+sc.addEventListener('pointermove',e=>{if(!dw)return;const[x,y]=sp(e);sx.lineTo(x,y);sx.stroke();sx.beginPath();sx.moveTo(x,y)});
+const sigEnd=()=>{if(!dw)return;dw=false;S.sig=sc.toDataURL('image/png');save();render()};
+sc.addEventListener('pointerup',sigEnd);sc.addEventListener('pointercancel',sigEnd);
+async function drawSig(){sx.clearRect(0,0,sc.width,sc.height);if(S.sig){try{sx.drawImage(await loadI(S.sig),0,0)}catch(e){}}}
 
 /* ---------- Gợi ý ---------- */
 let CH={};
@@ -193,15 +279,17 @@ function insert(k,i){const t=CH[k][i],f=document.querySelector(`[data-k="${k}"]`
 async function rotate(s,x){const im=S[s][x],i=await loadI(im.src),c=document.createElement('canvas');c.width=im.h;c.height=im.w;
  const g=c.getContext('2d');g.translate(c.width,0);g.rotate(Math.PI/2);g.drawImage(i,0,0);
  S[s][x]={src:c.toDataURL('image/jpeg',.85),w:im.h,h:im.w};save();render()}
-let rec=null;
+let rec=null,recBtn=null;
+function micStop(){const r0=rec;rec=null;try{r0&&r0.abort()}catch(e){}if(recBtn){recBtn.textContent='🎤 Nói';recBtn=null}}
 function mic(k,btn){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR)return toast('Trình duyệt này chưa hỗ trợ nhập giọng nói. Hãy dùng Chrome/Safari và mở bằng địa chỉ https',4500);
- if(rec){rec.stop();return}
- rec=new SR();rec.lang='vi-VN';
- rec.onresult=e=>{const f=document.querySelector(`[data-k="${k}"]`);S[k]=(S[k]?S[k].replace(/\s+$/,'')+' ':'')+e.results[0][0].transcript;f.value=S[k];save();render()};
- rec.onerror=()=>toast('Không nghe được, hãy thử lại',2500);
- rec.onend=()=>{rec=null;btn.textContent='🎤 Nói'};
- btn.textContent='⏹ Đang nghe...';rec.start()}
+ if(rec){try{rec.stop()}catch(e){}setTimeout(micStop,1500);return}
+ const r=new SR();rec=r;recBtn=btn;r.lang='vi-VN';r.interimResults=false;r.maxAlternatives=1;
+ r.onresult=e=>{const f=document.querySelector(`[data-k="${k}"]`);S[k]=(S[k]?S[k].replace(/\s+$/,'')+' ':'')+e.results[0][0].transcript;f.value=S[k];save();render()};
+ r.onerror=e=>{toast(/not-allowed/.test(e.error)?'Chưa được cho phép dùng micro':e.error==='no-speech'?'Không nghe thấy tiếng nói, hãy thử lại':'Lỗi micro, hãy thử lại',3000);if(rec===r)micStop()};
+ r.onend=()=>{if(rec===r)micStop()};
+ btn.textContent='⏹ Đang nghe...';
+ try{r.start()}catch(e){micStop();toast('Không bật được micro, hãy thử lại',3000)}}
 
 /* ---------- Ảnh ---------- */
 const comp=f=>new Promise((ok,no)=>{const u=URL.createObjectURL(f),i=new Image();
@@ -230,6 +318,9 @@ document.addEventListener('click',e=>{const t=e.target;let el;
  if(el=t.closest('[data-del]')){const[s,x]=el.dataset.del.split(':');S[s].splice(+x,1);save();render();return}
  if(el=t.closest('[data-mv]')){const[s,x]=el.dataset.mv.split(':').map((v,i)=>i?+v:v);[S[s][x-1],S[s][x]]=[S[s][x],S[s][x-1]];save();render();return}
  if(el=t.closest('[data-rot]')){const[s,x]=el.dataset.rot.split(':');rotate(s,+x);return}
+ if(el=t.closest('[data-crop]')){const[s,x]=el.dataset.crop.split(':');openCrop(s,+x);return}
+ if(el=t.closest('[data-open]')){openRep(el.dataset.open);return}
+ if(el=t.closest('[data-rm]')){rmRep(el.dataset.rm);return}
  if(el=t.closest('[data-mic]'))return mic(el.dataset.mic,el);
  if(el=t.closest('[data-sg]'))return toggleSg(el.dataset.sg);
  if(el=t.closest('[data-ins]')){const[k,i]=el.dataset.ins.split(':');return insert(k,+i)}
@@ -241,7 +332,14 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(a==='pdf')run('⏳ Đang tạo PDF...',()=>exportPDF());
   if(a==='share')run('⏳ Đang tạo PDF để chia sẻ...',()=>exportPDF(1));
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
-  if(a==='reset'&&confirm('Xóa toàn bộ nội dung để làm báo cáo mới?')){S=blank();save();fill();render();scrollTo(0,0)}}
+  if(a==='new')newRep();
+  if(a==='drafts')openDrafts();
+  if(a==='dclose')closeD();
+  if(a==='cropdone'){CR=null;$('crop').style.display='none'}
+  if(a==='sigclear'){S.sig='';drawSig();save();render()}
+  if(a==='mpcalc'){const n=whoTxt().split(', ').filter(Boolean).length,m=durMin();
+   if(!n||m===null)return toast('Hãy nhập Người xử lý và Ngày giờ xảy ra/hoàn thành trước',3500);
+   S.mp=String(+(n*m/60).toFixed(2));fill();save();render()}}
 });
 
 /* ---------- Giao diện ---------- */
@@ -257,11 +355,11 @@ let tt;function toast(m,ms=0){const t=$('toast');t.textContent=m;t.style.display
 
 /* ---------- Xuất file ---------- */
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'').slice(0,30);
-const fname=()=>'BaoCaoKyThuat_'+(fd(S.date)||'')+(S.subject?'_'+slug(S.subject):'');
+const fname=()=>'BaoCaoKyThuat_'+code()+(S.subject?'_'+slug(S.subject):'');
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 async function run(msg,fn){
  if(busy)return;
- const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()]].filter(x=>!x[1]).map(x=>x[0]);
+ const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()],['Mã số máy',S.mc.trim()],['Thời gian xảy ra/hoàn thành',S.t1&&S.t2],['Người xử lý',whoTxt()],['Chữ ký',S.sig]].filter(x=>!x[1]).map(x=>x[0]);
  if(miss.length&&!confirm('Báo cáo còn thiếu: '+miss.join(', ')+'.\nVẫn xuất file?'))return;
  if(anyOver()&&!confirm('Có ô chữ quá dài (viền đỏ), phần cuối sẽ bị cắt. Vẫn xuất file?'))return;
  busy=true;toast(msg);const prev=tab;
@@ -286,7 +384,7 @@ const loadI=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.
 async function cropTo(im,ar){const i=await loadI(im.src);let sw=i.width,sh=i.height;
  if(sw/sh>ar)sw=sh*ar;else sh=sw/ar;
  const W=Math.min(1000,Math.round(sw)),c=document.createElement('canvas');c.width=W;c.height=Math.round(W/ar);
- c.getContext('2d').drawImage(i,(i.width-sw)/2,(i.height-sh)/2,sw,sh,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.85)}
+ c.getContext('2d').drawImage(i,(i.width-sw)*(im.fx??.5),(i.height-sh)*(im.fy??.5),sw,sh,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.85)}
 
 async function exportXLSX(){
  const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet('Báo cáo',{views:[{showGridLines:false}]});
@@ -294,7 +392,7 @@ async function exportXLSX(){
  ws.getColumn(1).width=.3;ws.getColumn(2).width=1.5;ws.getColumn(27).width=1.5;ws.getColumn(28).width=.3;
  for(let i=3;i<=26;i++)ws.getColumn(i).width=5;                // 1 cột ≈ 40px, 1 dòng ảnh 15pt = 20px
  const bd={style:'thin',color:{argb:'FF999999'}},B={top:bd,left:bd,bottom:bd,right:bd};
- const F=o=>({name:'Arial',size:12,...o}),T=21.5;
+ const F=o=>({name:'Arial',size:12,...o}),T=19;
  let r=1;
  const H=(n,h)=>{for(let i=0;i<n;i++)ws.getRow(r+i).height=h};
  const gap=()=>{ws.getRow(r).height=6;r++};
@@ -307,7 +405,7 @@ async function exportXLSX(){
  H(2,16);const hr=r;
  box(r,r+1,1,6,'');
  box(r,r+1,7,18,'BÁO CÁO KỸ THUẬT',{font:{bold:true},v:'middle',h:'center'});
- box(r,r,19,24,'Ngày: '+(fd(S.date)||'dd-mm-yyyy'),{v:'middle'});
+ box(r,r,19,24,'Mã số: '+code(),{v:'middle'});
  box(r+1,r+1,19,24,'N.viên: '+S.name,{v:'middle'});r+=2;gap();
  H(2,T);box(r,r+1,1,24,rt('Chủ đề:',S.subject));r+=2;gap();
  H(6,T);lc(r,r+5,'Mô tả nội dung:',S.desc);r+=6;gap();
@@ -316,6 +414,13 @@ async function exportXLSX(){
  H(12,T);lc(r,r+11,'Hành động:',S.action);r+=12;gap();
  H(5,T);lc(r,r+4,'Vật tư & Nguyên liệu:',S.mats);r+=5;gap();
  H(5,T);lc(r,r+4,'Hoàn thành & Áp dụng:',S.done);r+=5;
+ gap();H(2,36);const ir=r,GR={size:10,color:{argb:'FF666666'}};
+ const ic=(rr,c1,c2,l,v)=>box(rr,rr,c1,c2,{richText:[{text:l,font:F(GR)},{text:'\n'+v,font:F()}]},{v:'middle'});
+ ic(ir,1,6,'Mã số máy',S.mc);ic(ir,7,12,'Ngày giờ xảy ra',fdt(S.t1));ic(ir,13,18,'Ngày giờ hoàn thành',fdt(S.t2));
+ ic(ir+1,1,4,'Thời gian stop',stopTxt());ic(ir+1,5,14,'Người xử lý',whoTxt());ic(ir+1,15,18,'Tổng manpower',mpTxt());
+ box(ir,ir+1,19,24,{richText:[{text:'Chữ ký người lập',font:F(GR)}]},{h:'center'});r+=2;
+ if(S.sig){const si=await loadI(S.sig),k=Math.min(220/si.width,66/si.height),w=Math.round(si.width*k),h=Math.round(si.height*k),X=(240-w)/2,Y=24+(66-h)/2,id=wb.addImage({base64:S.sig,extension:'png'});
+  ws.addImage(id,{tl:{nativeCol:X0+18+Math.floor(X/40),nativeColOff:Math.round((X%40)*9525),nativeRow:ir-1+Math.floor(Y/48),nativeRowOff:Math.round((Y%48)*9525)},ext:{width:w,height:h},editAs:'oneCell'})}
  ws.getRow(r).height=6;const last=r;r++;ws.getRow(r).height=2;
  /* đường bao đậm quanh toàn bộ khung (cột B..AA, dòng 2..last) */
  const M={style:'medium',color:{argb:'FF000000'}};
@@ -342,7 +447,9 @@ async function exportXLSX(){
  dl(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),fname()+'.xlsx');
 }
 
-fill();setTab('form');render();
+(async()=>{DB=await idb();const cur=ls('fjk_cur'),d=cur&&await dbGet(cur);
+ if(d)S=Object.assign(blank(),d);else{try{Object.assign(S,JSON.parse(ls('fjk_rpt')||'{}'))}catch(e){}}
+ fill();setTab('form');render();drawSig()})();
 </script>
 </body>
 </html>
