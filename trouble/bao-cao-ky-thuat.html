@@ -72,6 +72,19 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .s3{grid-column:span 3}.s4{grid-column:span 4}.s6{grid-column:span 6}
 .sg{width:210px;flex:none;border-left:1px solid #999;padding:3px 8px;text-align:center;display:flex;flex-direction:column;align-items:center}
 #p-sig{max-height:74px;max-width:100%;margin:auto;display:none}
+@page{size:A4 portrait;margin:0}
+@media print{
+ html,body{width:210mm;height:297mm;margin:0!important;padding:0!important;overflow:hidden;background:#fff!important}
+ .navbar,#tabs,#pane-form,.ov,#toast,.noexp{display:none!important}
+ .container-fluid{padding:0!important;margin:0!important;max-width:none!important}
+ .row{display:block!important;margin:0!important}
+ #pane-prev{display:block!important;position:static!important;width:210mm!important;max-width:none!important;flex:none!important;padding:5mm!important;margin:0!important}
+ #pv{width:756px!important}
+ #holder{width:756px!important;height:1083px!important;margin:0!important;box-shadow:none!important;overflow:visible!important}
+ .sheet{position:static!important;transform:none!important;width:756px!important;height:1083px!important}
+ .bx.ovf{border:1px solid #999!important}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 #toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:24px;z-index:2000;display:none;max-width:92%;text-align:center}
 </style>
 </head>
@@ -79,16 +92,18 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 <nav class="navbar bg-white shadow-sm sticky-top">
  <div class="container-fluid">
   <span class="navbar-brand fw-bold d-none d-sm-inline" style="color:var(--blue)">📋 Báo cáo kỹ thuật</span>
-  <div class="d-flex gap-1 flex-fill flex-sm-grow-0 justify-content-between">
-   <div class="d-flex gap-1">
-    <button class="btn btn-outline-secondary" data-act="new" title="Làm báo cáo mới">➕<span class="d-none d-sm-inline"> Mới</span></button>
-    <button class="btn btn-outline-secondary" data-act="drafts" title="Báo cáo đã lưu">📂<span class="d-none d-sm-inline"> Đã lưu</span></button>
-   </div>
+  <div class="d-flex gap-1 flex-fill flex-sm-grow-0 justify-content-between align-items-center">
+   <button class="btn btn-outline-secondary" data-act="new" title="Làm báo cáo mới">➕<span class="d-none d-sm-inline"> Mới</span></button>
    <div class="btn-group" title="Ngôn ngữ báo cáo (xem trước, PDF, Excel)"><button class="btn btn-primary" data-lang="vi">VI</button><button class="btn btn-outline-primary" data-lang="en">EN</button></div>
-   <div class="d-flex gap-1">
-    <button class="btn btn-danger" data-act="pdf">📄 PDF</button>
-    <button class="btn btn-success" data-act="xlsx">📊 Excel</button>
+   <div class="d-flex gap-1 position-relative">
     <button class="btn btn-outline-primary" data-act="share" title="Chia sẻ PDF qua Zalo, Email..."><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span class="d-none d-sm-inline"> Gửi</span></button>
+    <button class="dots" data-menu title="Menu" aria-label="Menu">⋮</button>
+    <div class="dropdown-menu shadow" id="hmenu" style="right:0;left:auto;top:100%;margin-top:6px;min-width:170px">
+     <button class="dropdown-item py-2" data-act="drafts">📂 Đã lưu</button>
+     <button class="dropdown-item py-2" data-act="pdf">📄 PDF</button>
+     <button class="dropdown-item py-2" data-act="print" title="In hoặc lưu PDF bằng trình duyệt: chữ vector, rất nhẹ">🖨 In</button>
+     <button class="dropdown-item py-2" data-act="xlsx">📊 Excel</button>
+    </div>
    </div>
   </div>
  </div>
@@ -430,6 +445,9 @@ document.addEventListener('drop',e=>{e.preventDefault();document.querySelectorAl
  const t=e.target.closest&&e.target.closest('[data-side]');if(t&&e.dataTransfer.files.length)addFiles(t.dataset.side,e.dataTransfer.files)});
 
 document.addEventListener('click',e=>{const t=e.target;let el;
+ const mn=$('hmenu');
+ if(t.closest('[data-menu]')){mn.classList.toggle('show');return}
+ if(!t.closest('#hmenu')||t.closest('.dropdown-item'))mn.classList.remove('show');
  if(el=t.closest('[data-del]')){const[s,x]=el.dataset.del.split(':');S[s].splice(+x,1);save();render();return}
  if(el=t.closest('[data-mv]')){const[s,x]=el.dataset.mv.split(':').map((v,i)=>i?+v:v);[S[s][x-1],S[s][x]]=[S[s][x],S[s][x-1]];save();render();return}
  if(el=t.closest('[data-rot]')){const[s,x]=el.dataset.rot.split(':');rotate(s,+x);return}
@@ -453,6 +471,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
  if(el=t.closest('[data-tab]'))return setTab(el.dataset.tab);
  if(el=t.closest('[data-act]')){const a=el.dataset.act;
   if(a==='pdf')run('⏳ Đang tạo PDF...',()=>exportPDF());
+  if(a==='print')run('🖨 Đang mở hộp thoại in...',doPrint);
   if(a==='share')run('⏳ Đang tạo PDF để chia sẻ...',()=>exportPDF(1));
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
   if(a==='new')newRep();
@@ -502,6 +521,12 @@ async function run(msg,fn){
  catch(e){console.error(e);toast('❌ Lỗi: '+e.message,5000)}
  busy=false;footTs=null;if(tab!==prev)setTab(prev);else render()}
 
+function doPrint(){return new Promise(async res=>{
+ if($('pv').clientWidth===0){setTab('prev');await new Promise(r=>setTimeout(r,200))}
+ const old=document.title;document.title=fname();       // tên mặc định của file PDF khi lưu
+ const done=()=>{document.title=old;removeEventListener('afterprint',done);res()};
+ addEventListener('afterprint',done);setTimeout(done,30000);
+ await new Promise(r=>setTimeout(r,150));print()})}
 async function exportPDF(share){
  if($('pv').clientWidth===0){setTab('prev');await new Promise(r=>setTimeout(r,150))}
  scrollTo(0,0);
