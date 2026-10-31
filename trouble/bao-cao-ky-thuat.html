@@ -103,6 +103,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
      <button class="dropdown-item py-2" data-act="pdf">📄 PDF</button>
      <button class="dropdown-item py-2" data-act="print" title="In hoặc lưu PDF bằng trình duyệt: chữ vector, rất nhẹ">🖨 In</button>
      <button class="dropdown-item py-2" data-act="xlsx">📊 Excel</button>
+     <button class="dropdown-item py-2" data-act="dlcur" title="Tải file .json của báo cáo đang sửa để mang sang máy khác">💾 Tải file JSON</button>
     </div>
    </div>
   </div>
@@ -304,6 +305,8 @@ async function openDrafts(){await flush();const a=((await dbAll())||[]).sort((x,
  $('drafts').style.display='flex'}
 async function openRep(id){await flush();const d=await dbGet(id);if(d){S=Object.assign(blank(),d);ls('fjk_cur',S.id);fill();render();drawSig()}closeD();setTab('form')}
 async function newRep(){await flush();if(!isEmpty()){remember();toast('Báo cáo vừa rồi đã được lưu trong mục 📂 Đã lưu',3000)}sigOn=false;S=blank();ls('fjk_cur',S.id);fill();render();drawSig();closeD();setTab('form')}
+function dlCur(){if(isEmpty())return toast('Báo cáo đang trống, chưa có gì để tải',3000);
+ S.updated=Date.now();dl(new Blob([JSON.stringify(S)],{type:'application/json'}),fnameOf(S)+'.json');toast('✅ Đã tải file báo cáo (.json)',3000)}
 async function dlRep(id){await flush();const d=await dbGet(id);if(!d)return toast('Không đọc được báo cáo',3000);
  dl(new Blob([JSON.stringify(d)],{type:'application/json'}),fnameOf(d)+'.json');toast('✅ Đã tải xuống file báo cáo (.json)',3000)}
 $('fj').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -476,6 +479,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
   if(a==='new')newRep();
   if(a==='upl')$('fj').click();
+  if(a==='dlcur')dlCur();
   if(a==='annundo'&&AN){AN.shapes.pop();annDraw()}
   if(a==='annclear'&&AN){AN.shapes=[];annDraw()}
   if(a==='anncancel'){AN=null;$('ann').style.display='none'}
