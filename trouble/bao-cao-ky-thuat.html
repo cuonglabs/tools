@@ -21,7 +21,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .th{position:relative;width:76px;height:76px;border:1px solid #bbb;border-radius:6px;background:#fff center/cover no-repeat}
 .th b{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#d62828;color:#fff;text-align:center;line-height:25px;cursor:pointer}
 .th em{position:absolute;bottom:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#555;color:#fff;text-align:center;line-height:26px;cursor:pointer;font-style:normal;font-size:15px}
-.th u{position:absolute;bottom:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;text-align:center;line-height:26px;cursor:pointer;text-decoration:none;font-size:12px}
+.th u{position:absolute;top:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;text-align:center;line-height:26px;cursor:pointer;text-decoration:none;font-size:12px}
 .chip{display:inline-block;border:1px solid #e3b505;background:#fff9e0;border-radius:16px;padding:5px 12px;font-size:14px;margin:0 6px 6px 0;cursor:pointer;text-align:left;white-space:pre-line}
 .warn{color:#c1121f;font-size:14px;margin-top:4px;display:none}
 #holder{position:relative;margin:0 auto;overflow:hidden;box-shadow:0 2px 12px #0003;background:#fff}
@@ -32,7 +32,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .logo img{height:30px}
 .ttl{flex:1;display:flex;align-items:center;justify-content:center;font-weight:700}
 .meta{width:210px;border-left:1px solid #999}
-.mr{height:22px;padding:0 6px;line-height:21px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mr{font-size:13.33px;height:22px;padding:0 6px;line-height:21px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mr+.mr{border-top:1px solid #999}
 .bx{border:1px solid #999;border-radius:6px;padding:3px 8px;overflow:hidden;min-height:0}
 .tx{white-space:pre-wrap;word-break:break-word;padding:3px 0 0 14px}
@@ -40,7 +40,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .imgs{flex:5 1 0;display:flex;gap:8px;min-height:0}
 .ib{flex:1;display:flex;flex-direction:column;border:1px solid #999;border-radius:6px;overflow:hidden;min-width:0}
 .il{padding:1px 8px;border-bottom:1px solid #999;flex:none}
-.ig{flex:1;position:relative;min-height:0;cursor:pointer}
+.ig{flex:1;position:relative;min-height:0}
 .ic{position:absolute;padding:3px;box-sizing:border-box}
 .ic i{display:block;width:100%;height:100%;border-radius:4px;background-position:center;background-repeat:no-repeat}
 .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#8aa;font-size:14px;padding:10px}
@@ -61,7 +61,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .guide{font-size:13px;color:#5a6b80;background:#f4f7fb;border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5}
 .sw{width:26px;height:26px;border-radius:50%;border:2px solid #ccc;display:inline-block;cursor:pointer}
 .sw.on{border:3px solid #000;box-shadow:0 0 0 2px #fff inset}
-.th .an{position:absolute;top:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:#e11d1d;color:#fff;text-align:center;line-height:26px;cursor:pointer;font-style:normal;font-size:14px}
+.th .an{position:absolute;bottom:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:#7c3aed;color:#fff;text-align:center;line-height:26px;cursor:pointer;font-style:normal;font-size:14px}
 .navbar .btn{padding:.3rem .5rem;font-size:14px}
 .info{flex:none;height:112px;display:flex;border:1px solid #999;border-radius:6px;overflow:hidden}
 .g12{flex:1;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:46px 1fr;min-width:0}
@@ -88,7 +88,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
    <div class="d-flex gap-1">
     <button class="btn btn-danger" data-act="pdf">📄 PDF</button>
     <button class="btn btn-success" data-act="xlsx">📊 Excel</button>
-    <button class="btn btn-outline-primary" data-act="share" title="Chia sẻ PDF qua Zalo, Email...">📤<span class="d-none d-sm-inline"> Gửi</span></button>
+    <button class="btn btn-outline-primary" data-act="share" title="Chia sẻ PDF qua Zalo, Email..."><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span class="d-none d-sm-inline"> Gửi</span></button>
    </div>
   </div>
  </div>
@@ -124,7 +124,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
        <div class="c s3"><small data-i="mp">Tổng manpower</small><span id="p-mp"></span></div>
       </div><div class="sg"><small data-i="sign">Người lập ký tên</small><img id="p-sig" alt=""></div></div>
      </div>
-     <div class="ft"><span data-i="foot">Báo cáo kỹ thuật</span><span data-i="page">Trang 1 / 1</span></div>
+     <div class="ft"><span id="p-foot"></span><span data-i="page">Trang 1 / 1</span></div>
     </div>
    </div></div>
   </div>
@@ -136,7 +136,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
  <button class="btn flex-fill py-3 rounded-0" data-tab="prev">👁 Xem trước</button>
 </div>
 <div class="ov" id="crop"><div class="pn"><div class="fw-bold mb-2">✂ Kéo ảnh để chọn vùng giữ lại</div><div id="cfr"></div><div class="small text-muted my-2">Khung này là hình dạng ảnh trong báo cáo.</div><button class="btn btn-primary w-100" data-act="cropdone">Xong</button></div></div>
-<div class="ov" id="drafts"><div class="pn" style="max-width:520px;width:100%"><div class="d-flex justify-content-between align-items-center mb-2"><b class="fs-5">📂 Báo cáo đã lưu</b><button class="btn btn-sm btn-outline-secondary" data-act="dclose">✕ Đóng</button></div><button class="btn btn-success w-100 mb-2" data-act="new">➕ Làm báo cáo mới</button><div id="dlist"></div></div></div>
+<div class="ov" id="drafts"><div class="pn" style="max-width:520px;width:100%"><div class="d-flex justify-content-between align-items-center mb-2"><b class="fs-5">📂 Báo cáo đã lưu</b><button class="btn btn-sm btn-outline-secondary" data-act="dclose">✕ Đóng</button></div><button class="btn btn-success w-100 mb-2" data-act="new">➕ Làm báo cáo mới</button><button class="btn btn-outline-primary w-100 mb-2" data-act="upl">⬆ Tải lên báo cáo (.json)</button><div id="dlist"></div></div></div>
 <div class="ov" id="ann"><div class="pn" style="width:100%;max-width:760px">
  <div class="d-flex flex-wrap gap-1 mb-2 align-items-center">
   <button class="btn btn-sm btn-outline-primary" data-tool="oval">⭕ Oval</button><button class="btn btn-sm btn-outline-primary" data-tool="rect">▭ Chữ nhật</button><button class="btn btn-sm btn-outline-primary" data-tool="arrow">➜ Mũi tên</button><button class="btn btn-sm btn-outline-primary" data-tool="pen">✏ Tự do</button>
@@ -145,6 +145,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
  <div style="text-align:center"><canvas id="annc" style="touch-action:none;max-width:100%;border:1px solid #ccc;border-radius:6px;cursor:crosshair"></canvas></div>
  <div class="d-flex gap-2 mt-2"><button class="btn btn-outline-secondary" data-act="annundo">↶ Hoàn tác</button><button class="btn btn-outline-secondary" data-act="annclear">🧹 Xóa hết</button><button class="btn btn-outline-secondary ms-auto" data-act="anncancel">Hủy</button><button class="btn btn-primary" data-act="anndone">✔ Xong</button></div>
 </div></div>
+<input type="file" id="fj" accept=".json,application/json" hidden>
 <input type="file" id="fi" accept="image/*" multiple hidden>
 <input type="file" id="fc" accept="image/*" capture="environment" hidden>
 <div id="toast"></div>
@@ -155,7 +156,7 @@ const $=id=>document.getElementById(id), MAX=6;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const fd=s=>s?s.split('-').reverse().join('-'):'';
-const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
+const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
 let S=blank(), busy=false, side0='before', tab='form';
 
 
@@ -180,6 +181,10 @@ const I18N={
  vi:{title:'BÁO CÁO KỸ THUẬT',code:'Mã số',staff:'N.viên',subject:'Chủ đề:',desc:'Mô tả nội dung:',action:'Hành động:',before:'Hình ảnh trước:',after:'Hình ảnh sau:',mats:'Vật tư & Nguyên liệu:',done:'Hoàn thành & Áp dụng:',mc:'Mã số máy',start:'Ngày giờ bắt đầu',finish:'Ngày giờ hoàn thành',stop:'Thời gian stop',who:'Người xử lý',mp:'Tổng manpower',sign:'Người lập ký tên',foot:'Báo cáo kỹ thuật',page:'Trang 1 / 1',pagef:'Trang &P / &N',min:'phút',hr:'giờ'},
  en:{title:'TECHNICAL REPORT',code:'No.',staff:'Staff',subject:'Subject:',desc:'Description:',action:'Action taken:',before:'Before:',after:'After:',mats:'Materials & Parts:',done:'Completion & Application:',mc:'Machine code',start:'Start date/time',finish:'Completion date/time',stop:'Downtime',who:'Handled by',mp:'Total manpower',sign:'Prepared by (signature)',foot:'Technical report',page:'Page 1 / 1',pagef:'Page &P / &N',min:'min',hr:'h'}};
 const tr=k=>I18N[S.lang||'vi'][k];
+const FORM_NO='BM-5234',MON={vi:['Th1','Th2','Th3','Th4','Th5','Th6','Th7','Th8','Th9','Th10','Th11','Th12'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']};
+let footTs=null;
+const stamp=(d=new Date())=>{const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+MON[S.lang||'vi'][d.getMonth()]+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())};
+const footTxt=()=>FORM_NO+' ― '+tr('foot')+' ― '+(footTs||stamp());
 const txt=k=>(S.lang==='en'&&S.en[k]&&S.enSrc[k]===S[k])?S.en[k]:S[k];
 const LAYS={auto:'Tự động',row:'Xếp ngang (1 hàng)',col:'Xếp dọc (1 cột)',g2:'Lưới 2 cột',g3:'Lưới 3 cột',hero:'1 ảnh lớn + ảnh nhỏ'};
 
@@ -192,7 +197,7 @@ function imgCard(n,s){return `<div class="cardx"><h2><span><i>${n}.</i>${SIDE[s]
   <div class="d-flex gap-2 mb-2"><button class="btn btn-outline-primary flex-fill" data-cam="${s}">📸 Chụp ảnh</button><button class="btn btn-outline-primary flex-fill" data-pick="${s}">📁 Chọn ảnh</button></div>
   <div class="row g-2"><div class="col-6"><label class="small">Bố cục ảnh</label><select class="form-select" data-lay="${s}">${Object.entries(LAYS).map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>
   <div class="col-6"><label class="small">Cách vừa khung</label><select class="form-select" data-fit="${s}"><option value="cover">Cắt cho đầy khung</option><option value="contain">Giữ nguyên, không cắt</option></select></div></div>
-  <div class="guide">${s==='before'?'Ảnh chụp hiện trạng trước khi xử lý.':'Ảnh chụp kết quả sau khi xử lý.'} Tối đa ${MAX} ảnh. Nút đỏ ✎ để vẽ, đánh dấu lên ảnh. Chạm vào ảnh nhỏ để kéo chọn vùng cắt. ◀ đưa ảnh lên trước (ảnh đầu là ảnh lớn nhất), ↻ xoay ảnh, × xóa ảnh.</div>
+  <div class="guide">${s==='before'?'Ảnh chụp hiện trạng trước khi xử lý.':'Ảnh chụp kết quả sau khi xử lý.'} Tối đa ${MAX} ảnh. Nút tím ✎ để vẽ, đánh dấu lên ảnh. Chạm vào ảnh nhỏ để kéo chọn vùng cắt. ◀ đưa ảnh lên trước (ảnh đầu là ảnh lớn nhất), ↻ xoay ảnh, × xóa ảnh.</div>
  </div></div>`}
 
 const GD={
@@ -210,14 +215,14 @@ const card=(n,t,b,m)=>`<div class="cardx"><h2><span><i>${n}.</i>${t}</span>${m?`
 const fld=(k,l,ty='text',ph='')=>{const ac=/^(mc|name|who)$/.test(k);return `<label class="form-label mb-1 mt-2">${l}</label>`+(ac?'<div class="position-relative">':'')+`<input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}"${ac?` data-ac="${k}" autocomplete="off"`:''}>`+(ac?`<div class="ac" id="ac-${k}"></div></div>`:'')};
 const bl='<div class="mt-2 p-2 rounded" style="background:#eef5ff">';
 $('pane-form').innerHTML=
- card(1,'Thông tin chung',`<label class="form-label mb-1">Ngày lập báo cáo</label><input type="date" class="form-control" data-k="date">`+fld('name','Người lập báo cáo','text','Họ và tên')+fld('mc','Mã số máy','text','Gõ để tìm hoặc tự nhập')+`<div class="d-none" id="mo-code">${bl}Mã số báo cáo: <b id="codeshow"></b></div>${guide('info')}</div>`,'mo-code')+
+ card(1,'Thông tin chung',`<label class="form-label mb-1">Ngày lập báo cáo</label><input type="date" class="form-control" data-k="date">`+fld('name','Người lập báo cáo','text','Họ và tên')+fld('mc','Mã số máy','text','Gõ để tìm hoặc tự nhập')+`<div class="d-none" id="mo-code">${bl}Mã số báo cáo: <b id="codeshow"></b></div><label class="form-label mb-1 mt-2 small">Cỡ chữ nội dung báo cáo</label><select class="form-select" data-fs><option value="12">12 pt (chuẩn)</option><option value="11">11 pt (nhiều chữ hơn)</option><option value="10">10 pt (nhiều nhất)</option></select>${guide('info')}</div>`,'mo-code')+
  card(2,'Thời gian',fld('t1','Ngày - giờ bắt đầu','datetime-local')+fld('t2','Ngày - giờ hoàn thành','datetime-local')+`<div class="warn" id="w-t">⚠ Giờ hoàn thành đang sớm hơn giờ bắt đầu.</div><div class="d-none" id="mo-stop">${bl}Thời gian stop: <b id="stopshow"></b></div><label class="form-label mb-1 mt-2 small">Tự nhập thời gian stop (phút), để trống = tự tính</label><input type="number" min="0" class="form-control" data-k="stopMan">${guide('time')}</div>`,'mo-stop')+
  textCard(3,'subject')+textCard(4,'desc')+textCard(5,'action')+imgCard(6,'before')+imgCard(7,'after')+textCard(8,'mats')+textCard(9,'done')+
  card(10,'Nhân sự',fld('who','Người xử lý (ngăn cách bằng dấu phẩy)','text','Ví dụ: Cường, Nam, Hải')+`<label class="form-label mb-1 mt-2">Tổng manpower (giờ)</label><div class="input-group"><input type="number" min="0" step="0.5" class="form-control" data-k="mp" placeholder="Số người × số giờ. VD: 3×2 = 6"><button class="btn btn-outline-primary" data-act="mpcalc" title="Số người × thời gian từ bắt đầu đến hoàn thành">🧮 Tự tính</button></div><div class="d-none" id="mo-who">${guide('who')}</div>`,'mo-who')+
  `<div class="cardx"><h2><span><i>11.</i>Người lập ký tên</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="sigbtn" data-act="sigtoggle">✍ Sửa</button><button class="dots" data-more="mo-sig" title="Lưu chữ ký và hướng dẫn">⋮</button></span></h2><div style="position:relative"><canvas id="sigc" width="600" height="220"></canvas><div id="sigh"></div></div><div class="d-none mt-2" id="mo-sig"><div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>${guide('sig')}</div></div>`;
 
 function fillEN(){document.querySelectorAll('[data-en]').forEach(e=>e.value=S.en[e.dataset.en]||'')}
-function fill(){fillEN();document.querySelectorAll('[data-k]').forEach(e=>e.value=S[e.dataset.k]||'');
+function fill(){fillEN();document.querySelectorAll('[data-fs]').forEach(e=>e.value=S.fs||12);document.querySelectorAll('[data-k]').forEach(e=>e.value=S[e.dataset.k]||'');
  document.querySelectorAll('[data-lay]').forEach(e=>e.value=S.lay[e.dataset.lay]);
  document.querySelectorAll('[data-fit]').forEach(e=>e.value=S.fit[e.dataset.fit])}
 
@@ -231,7 +236,8 @@ function slots(n,m){
  const rows=m==='row'?[n]:m==='col'?Array(n).fill(1):m==='g2'?ch(2):m==='g3'?ch(3):AUTO[n];
  const o=[];rows.forEach((c,y)=>{for(let x=0;x<c;x++)o.push([x/c,y/rows.length,1/c,1/rows.length])});return o}
 
-function render(){applyLang();
+function fitMeta(){document.querySelectorAll('.mr').forEach(e=>{let f=13.33;e.style.fontSize=f+'px';while(e.scrollWidth>e.clientWidth&&f>8){f-=.5;e.style.fontSize=f+'px'}})}
+function render(){applyLang();$('sheet').style.fontSize=((S.fs||12)*4/3)+'px';$('p-foot').textContent=footTxt();
  $('p-date').textContent=tr('code')+': '+code();
  $('p-name').textContent=tr('staff')+': '+S.name;
  $('codeshow').textContent=code();$('stopshow').textContent=stopTxt('vi')||'(chưa đủ thông tin)';
@@ -242,10 +248,11 @@ function render(){applyLang();
  for(const k in TXT)$('p-'+k).textContent=txt(k);
  for(const s in SIDE){
   const a=S[s],g=$('p-'+s);
-  g.innerHTML=a.length?slots(a.length,S.lay[s]).map((r,i)=>`<div class="ic" style="left:${r[0]*100}%;top:${r[1]*100}%;width:${r[2]*100}%;height:${r[3]*100}%"><i style="background-image:url('${a[i].src}');background-size:${S.fit[s]};background-position:${S.fit[s]==='cover'?(a[i].fx??.5)*100+'% '+(a[i].fy??.5)*100+'%':'center'}"></i></div>`).join(''):'<div class="ph noexp">＋ Kéo thả ảnh vào đây<br>hoặc bấm để chọn ảnh</div>';
+  g.innerHTML=a.length?slots(a.length,S.lay[s]).map((r,i)=>`<div class="ic" style="left:${r[0]*100}%;top:${r[1]*100}%;width:${r[2]*100}%;height:${r[3]*100}%"><i style="background-image:url('${a[i].src}');background-size:${S.fit[s]};background-position:${S.fit[s]==='cover'?(a[i].fx??.5)*100+'% '+(a[i].fy??.5)*100+'%':'center'}"></i></div>`).join(''):'<div class="ph noexp">Chưa có ảnh</div>';
   $('th-'+s).innerHTML=a.map((i,x)=>`<div class="th" data-crop="${s}:${x}" style="background-image:url('${i.src}')"><b data-del="${s}:${x}">×</b><em data-rot="${s}:${x}">↻</em><i class="an" data-ann="${s}:${x}">✎</i>${x?`<u data-mv="${s}:${x}">◀</u>`:''}</div>`).join('');
  }
  for(const k in TXT){const o=overflow(k);$('b-'+k).classList.toggle('ovf',o);$('w-'+k).style.display=o?'block':'none'}
+ fitMeta();
 }
 const overflow=k=>{const b=$('b-'+k);return b.scrollHeight>b.clientHeight+1};
 const anyOver=()=>Object.keys(TXT).some(overflow);
@@ -256,6 +263,7 @@ function save(){ls('fjk_cur',S.id);clearTimeout(st);st=setTimeout(flush,600)}
 
 document.addEventListener('input',e=>{const d=e.target.dataset||{};
  if(d.lay||d.fit){(d.lay?S.lay:S.fit)[d.lay||d.fit]=e.target.value;save();render();return}
+ if(d.fs){S.fs=+e.target.value;save();render();return}
  if(d.en){S.en[d.en]=e.target.value;S.enSrc[d.en]=S[d.en];save();render();return}
  if(!d.k)return;S[d.k]=e.target.value;if(S.lang==='en'&&TXT[d.k]){clearTimeout(trT);trT=setTimeout(()=>ensureEN(true),1500)}if(d.k==='name')ls('fjk_name',S.name);save();render();if(d.ac)acShow(e.target)});
 
@@ -277,10 +285,17 @@ const tx=(m,fn)=>new Promise(ok=>{if(!DB)return ok(null);try{const t=DB.transact
 const dbPut=o=>tx('readwrite',s=>s.put(o)),dbDel=id=>tx('readwrite',s=>s.delete(id)),dbGet=id=>tx('readonly',s=>s.get(id)),dbAll=()=>tx('readonly',s=>s.getAll());
 const closeD=()=>$('drafts').style.display='none';
 async function openDrafts(){await flush();const a=((await dbAll())||[]).sort((x,y)=>y.updated-x.updated);
- $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">PLE-${esc(d.date)} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
+ $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">PLE-${esc(d.date)} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-secondary" data-dl="${d.id}" title="Tải xuống file để mang sang máy khác">⬇</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
  $('drafts').style.display='flex'}
 async function openRep(id){await flush();const d=await dbGet(id);if(d){S=Object.assign(blank(),d);ls('fjk_cur',S.id);fill();render();drawSig()}closeD();setTab('form')}
 async function newRep(){await flush();if(!isEmpty()){remember();toast('Báo cáo vừa rồi đã được lưu trong mục 📂 Đã lưu',3000)}sigOn=false;S=blank();ls('fjk_cur',S.id);fill();render();drawSig();closeD();setTab('form')}
+async function dlRep(id){await flush();const d=await dbGet(id);if(!d)return toast('Không đọc được báo cáo',3000);
+ dl(new Blob([JSON.stringify(d)],{type:'application/json'}),fnameOf(d)+'.json');toast('✅ Đã tải xuống file báo cáo (.json)',3000)}
+$('fj').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ try{const d=JSON.parse(await f.text());if(!d||typeof d!=='object'||!Array.isArray(d.before)||!Array.isArray(d.after))throw 0;
+  await flush();S=Object.assign(blank(),d);S.id='r'+Date.now();S.updated=Date.now();await dbPut(S);ls('fjk_cur',S.id);
+  fill();render();drawSig();closeD();setTab('form');toast('✅ Đã mở báo cáo từ file',3000)}
+ catch(err){toast('File không đúng định dạng báo cáo (.json)',4000)}};
 async function rmRep(id){if(!confirm('Xóa báo cáo này?'))return;await dbDel(id);if(id===S.id){S=blank();ls('fjk_cur',S.id);fill();render();drawSig()}openDrafts()}
 
 /* ---------- Chọn vùng cắt ảnh ---------- */
@@ -424,6 +439,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
  if(el=t.closest('[data-col]')){if(AN){AN.col=el.dataset.col;annUI()}return}
  if(el=t.closest('[data-ann]')){const[s,x]=el.dataset.ann.split(':');openAnn(s,+x);return}
  if(el=t.closest('[data-crop]')){const[s,x]=el.dataset.crop.split(':');openCrop(s,+x);return}
+ if(el=t.closest('[data-dl]')){dlRep(el.dataset.dl);return}
  if(el=t.closest('[data-open]')){openRep(el.dataset.open);return}
  if(el=t.closest('[data-rm]')){rmRep(el.dataset.rm);return}
  if(el=t.closest('[data-acv]')){const k=el.dataset.ack,f=document.querySelector(`[data-k="${k}"]`);let v=el.dataset.acv;
@@ -433,13 +449,14 @@ document.addEventListener('click',e=>{const t=e.target;let el;
  if(el=t.closest('[data-ins]')){const[k,i]=el.dataset.ins.split(':');return insert(k,+i)}
  if(el=t.closest('[data-cam]'))return pick(el.dataset.cam,1);
  if(el=t.closest('[data-pick]'))return pick(el.dataset.pick);
- if(el=t.closest('.dz,.ig'))return pick(el.dataset.side);
+ if(el=t.closest('.dz'))return pick(el.dataset.side);
  if(el=t.closest('[data-tab]'))return setTab(el.dataset.tab);
  if(el=t.closest('[data-act]')){const a=el.dataset.act;
   if(a==='pdf')run('⏳ Đang tạo PDF...',()=>exportPDF());
   if(a==='share')run('⏳ Đang tạo PDF để chia sẻ...',()=>exportPDF(1));
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
   if(a==='new')newRep();
+  if(a==='upl')$('fj').click();
   if(a==='annundo'&&AN){AN.shapes.pop();annDraw()}
   if(a==='annclear'&&AN){AN.shapes=[];annDraw()}
   if(a==='anncancel'){AN=null;$('ann').style.display='none'}
@@ -469,7 +486,10 @@ let tt;function toast(m,ms=0){const t=$('toast');t.textContent=m;t.style.display
 
 /* ---------- Xuất file ---------- */
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'').slice(0,30);
-const fname=()=>'BaoCaoKyThuat_'+code()+(S.subject?'_'+slug(S.subject):'');
+const clean=s=>s.replace(/[\\/:*?"<>|\r\n\t]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80);
+function fnameOf(d){const sj=(d.lang==='en'&&d.en&&d.en.subject&&d.enSrc&&d.enSrc.subject===d.subject)?d.en.subject:d.subject;
+ return 'PLE-'+(d.date||'yyyy-mm-dd')+(sj&&clean(sj)?'_'+clean(sj):'')}
+const fname=()=>fnameOf(S);
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 async function run(msg,fn){
  if(busy)return;
@@ -477,10 +497,10 @@ async function run(msg,fn){
  const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()],['Mã số máy',S.mc.trim()],['Thời gian bắt đầu/hoàn thành',S.t1&&S.t2],['Người xử lý',whoTxt()],['Người lập ký tên',S.sig]].filter(x=>!x[1]).map(x=>x[0]);
  if(miss.length&&!confirm('Báo cáo còn thiếu: '+miss.join(', ')+'.\nVẫn xuất file?'))return;
  if(anyOver()&&!confirm('Có ô chữ quá dài (viền đỏ), phần cuối sẽ bị cắt. Vẫn xuất file?'))return;
- busy=true;toast(msg);const prev=tab;
+ busy=true;toast(msg);const prev=tab;footTs=stamp();render();
  try{await fn();remember();toast('✅ Đã xuất xong, kiểm tra thư mục Tải xuống',3500)}
  catch(e){console.error(e);toast('❌ Lỗi: '+e.message,5000)}
- busy=false;if(tab!==prev)setTab(prev)}
+ busy=false;footTs=null;if(tab!==prev)setTab(prev);else render()}
 
 async function exportPDF(share){
  if($('pv').clientWidth===0){setTab('prev');await new Promise(r=>setTimeout(r,150))}
@@ -508,12 +528,12 @@ async function exportXLSX(){
  ws.getColumn(1).width=wc(2);ws.getColumn(2).width=wc(12);ws.getColumn(27).width=wc(12);ws.getColumn(28).width=wc(2);
  for(let i=3;i<=26;i++)ws.getColumn(i).width=wc(CW);
  const bd={style:'thin',color:{argb:'FF999999'}},B={top:bd,left:bd,bottom:bd,right:bd};
- const F=o=>({name:'Arial',size:12,...o}),GR={size:9,color:{argb:'FF666666'}};
+ const F=o=>({name:'Arial',size:S.fs||12,...o}),GR={size:9,color:{argb:'FF666666'}};
  let r=1;
  const row=h=>{ws.getRow(r).height=h;return r++};
  const rt=(l,v)=>({richText:[{text:l,font:F({bold:true})},{text:' '+v,font:F()}]});
  const box=(r1,r2,c1,c2,v,o={})=>{ws.mergeCells(r1,c1+X0,r2,c2+X0);const c=ws.getCell(r1,c1+X0);c.value=v;c.font=F(o.font);
-  c.alignment={wrapText:true,vertical:o.v||'top',horizontal:o.h||'left',indent:o.indent||0};
+  c.alignment={wrapText:!o.sh,shrinkToFit:!!o.sh,vertical:o.v||'top',horizontal:o.h||'left',indent:o.indent||0};
   for(let y=r1;y<=r2;y++)for(let x=c1;x<=c2;x++)ws.getCell(y,x+X0).border={...B,...(o.b||{})}};
  const lc=(a,b,label,v)=>{box(a,a,1,24,label,{font:{bold:true},indent:1,b:{bottom:undefined}});box(a+1,b,1,24,v,{indent:2,b:{top:undefined}})};
  const tb=(k,hc)=>{const a=row(17),b=row(hc);lc(a,b,tr(k),txt(k));row(6)};
@@ -522,8 +542,8 @@ async function exportXLSX(){
  const h1=row(17.25);row(17.25);
  box(h1,h1+1,1,5,'');
  box(h1,h1+1,6,17,tr('title'),{font:{bold:true},v:'middle',h:'center'});
- box(h1,h1,18,24,tr('code')+': '+code(),{v:'middle',indent:1});
- box(h1+1,h1+1,18,24,tr('staff')+': '+S.name,{v:'middle',indent:1});
+ box(h1,h1,18,24,tr('code')+': '+code(),{v:'middle',indent:1,sh:1,font:{size:10}});
+ box(h1+1,h1+1,18,24,tr('staff')+': '+S.name,{v:'middle',indent:1,sh:1,font:{size:10}});
  row(6);
  const s1=row(36);box(s1,s1,1,24,rt(tr('subject'),txt('subject')),{v:'middle',indent:1});row(6);
  tb('desc',83.5);tb('action',118);
@@ -559,7 +579,7 @@ async function exportXLSX(){
   }
  }
  ws.pageSetup={paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,horizontalCentered:true,margins:{left:.2,right:.2,top:.2,bottom:.4,header:.1,footer:.12}};
- ws.headerFooter.oddFooter='&L&"Arial,Regular"&9'+tr('foot')+'&R&"Arial,Regular"&9'+tr('pagef');
+ ws.headerFooter.oddFooter='&L&"Arial,Regular"&9'+footTxt()+'&R&"Arial,Regular"&9'+tr('pagef');
  const buf=await wb.xlsx.writeBuffer();
  dl(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),fname()+'.xlsx');
 }
