@@ -50,9 +50,10 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 #cfr{border-radius:8px;background:#eee center/cover no-repeat;touch-action:none;cursor:grab;margin:auto}
 .dr{display:flex;gap:6px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:8px;margin-bottom:6px}
 .dr.cur{border-color:var(--blue);background:#f1f7ff}
-#sigc{width:100%;aspect-ratio:600/220;border:2px dashed #b9c9de;border-radius:10px;background:#fff;touch-action:pan-y;display:block}
-#sigc.on{touch-action:none;border:2px solid var(--blue)}
-#sigh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9ab;pointer-events:none}
+
+.sigcv{width:100%;aspect-ratio:600/220;border:2px dashed #b9c9de;border-radius:10px;background:#fff;touch-action:pan-y;display:block}
+.sigcv.on{touch-action:none;border:2px solid var(--blue)}
+.sigh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9ab;pointer-events:none}
 .dots{border:0;background:none;font-size:24px;line-height:1;padding:0 8px;color:#555}
 .sgbox{max-height:170px;overflow:auto}
 .ac{position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:1px solid #9bb8dc;border-radius:8px;box-shadow:0 4px 14px #0003;max-height:230px;overflow:auto;display:none;margin-top:2px}
@@ -71,8 +72,10 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .c small,.sg small{display:block;font-size:12px;color:#666;line-height:1.2}
 .c span{display:block;line-height:1.2;word-break:break-word}
 .s3{grid-column:span 3}.s4{grid-column:span 4}.s6{grid-column:span 6}
-.sg{width:210px;flex:none;border-left:1px solid #999;padding:3px 8px;text-align:center;display:flex;flex-direction:column;align-items:center}
-#p-sig{max-height:74px;max-width:100%;margin:auto;display:none}
+.sgs{display:flex;flex:none;width:240px}
+.sn{font-size:13.33px;line-height:1.2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:16px}
+.sg{flex:1;min-width:0;border-left:1px solid #999;padding:3px 8px;text-align:center;display:flex;flex-direction:column;align-items:center}
+#p-sig,#p-sig2{max-height:62px;max-width:100%;margin:auto;display:none}
 @page{size:A4 portrait;margin:0}
 @media print{
  html,body{width:210mm;height:297mm;margin:0!important;padding:0!important;overflow:hidden;background:#fff!important}
@@ -100,6 +103,9 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
     <button class="btn btn-outline-primary" data-act="share" title="Chia sẻ PDF qua Zalo, Email..."><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span class="d-none d-sm-inline"> Gửi</span></button>
     <button class="dots" data-menu title="Menu" aria-label="Menu">⋮</button>
     <div class="dropdown-menu shadow" id="hmenu" style="right:0;left:auto;top:100%;margin-top:6px;min-width:170px">
+     <button class="dropdown-item py-2" data-act="srvsave"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> Lưu lên server</button>
+     <button class="dropdown-item py-2" data-act="srvlink"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg> Sao chép link xem</button>
+     <div class="dropdown-divider"></div>
      <button class="dropdown-item py-2" data-act="drafts">📂 Đã lưu</button>
      <button class="dropdown-item py-2" data-act="pdf">📄 PDF</button>
      <button class="dropdown-item py-2" data-act="print" title="In hoặc lưu PDF bằng trình duyệt: chữ vector, rất nhẹ"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg> In</button>
@@ -140,7 +146,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
        <div class="c s3"><small data-i="stop">Thời gian stop</small><span id="p-stop"></span></div>
        <div class="c s6"><small data-i="who">Người xử lý</small><span id="p-who"></span></div>
        <div class="c s3"><small data-i="mp">Tổng manpower</small><span id="p-mp"></span></div>
-      </div><div class="sg"><small data-i="sign">Người lập ký tên</small><img id="p-sig" alt=""></div></div>
+      </div><div class="sgs"><div class="sg"><small data-i="sign">Người lập ký tên</small><img id="p-sig" alt=""><span class="sn" id="p-sn1"></span></div><div class="sg"><small data-i="sign2">Người xác nhận</small><img id="p-sig2" alt=""><span class="sn" id="p-sn2"></span></div></div></div>
      </div>
      <div class="ft"><span id="p-foot"></span><span data-i="page">Trang 1 / 1</span></div>
     </div>
@@ -174,7 +180,7 @@ const $=id=>document.getElementById(id), MAX=6;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const fd=s=>s?s.split('-').reverse().join('-'):'';
-const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
+const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',sig2:'',confirmer:'',serverId:'',reportNo:'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
 let S=blank(), busy=false, side0='before', tab='form';
 
 
@@ -196,8 +202,8 @@ let MC=[];
 const SIDE={before:'Hình ảnh trước',after:'Hình ảnh sau'};
 const AW=360,AH=280;                       // vùng ảnh mỗi bên (px), khớp xem trước/PDF/Excel
 const I18N={
- vi:{title:'BÁO CÁO KỸ THUẬT',code:'Mã số',staff:'N.viên',subject:'Chủ đề:',desc:'Mô tả nội dung:',action:'Hành động:',before:'Hình ảnh trước:',after:'Hình ảnh sau:',mats:'Vật tư & Nguyên liệu:',done:'Hoàn thành & Áp dụng:',mc:'Mã số máy',start:'Ngày giờ bắt đầu',finish:'Ngày giờ hoàn thành',stop:'Thời gian stop',who:'Người xử lý',mp:'Tổng manpower',sign:'Người lập ký tên',foot:'Báo cáo kỹ thuật',page:'Trang 1 / 1',pagef:'Trang &P / &N',min:'phút',hr:'giờ'},
- en:{title:'TECHNICAL REPORT',code:'No.',staff:'Staff',subject:'Subject:',desc:'Description:',action:'Action taken:',before:'Before:',after:'After:',mats:'Materials & Parts:',done:'Completion & Application:',mc:'Machine code',start:'Start date/time',finish:'Completion date/time',stop:'Downtime',who:'Handled by',mp:'Total manpower',sign:'Prepared by (signature)',foot:'Technical report',page:'Page 1 / 1',pagef:'Page &P / &N',min:'min',hr:'h'}};
+ vi:{title:'BÁO CÁO KỸ THUẬT',code:'Mã số',staff:'N.viên',subject:'Chủ đề:',desc:'Mô tả nội dung:',action:'Hành động:',before:'Hình ảnh trước:',after:'Hình ảnh sau:',mats:'Vật tư & Nguyên liệu:',done:'Hoàn thành & Áp dụng:',mc:'Mã số máy',start:'Ngày giờ bắt đầu',finish:'Ngày giờ hoàn thành',stop:'Thời gian stop',who:'Người xử lý',mp:'Tổng manpower',sign:'Người lập ký tên',sign2:'Người xác nhận',foot:'Báo cáo kỹ thuật',page:'Trang 1 / 1',pagef:'Trang &P / &N',min:'phút',hr:'giờ'},
+ en:{title:'TECHNICAL REPORT',code:'No.',staff:'Staff',subject:'Subject:',desc:'Description:',action:'Action taken:',before:'Before:',after:'After:',mats:'Materials & Parts:',done:'Completion & Application:',mc:'Machine code',start:'Start date/time',finish:'Completion date/time',stop:'Downtime',who:'Handled by',mp:'Total manpower',sign:'Prepared by',sign2:'Confirmed by',foot:'Technical report',page:'Page 1 / 1',pagef:'Page &P / &N',min:'min',hr:'h'}};
 const tr=k=>I18N[S.lang||'vi'][k];
 const FORM_NO='BM-5234',MON={vi:['Th1','Th2','Th3','Th4','Th5','Th6','Th7','Th8','Th9','Th10','Th11','Th12'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']};
 let footTs=null;
@@ -218,8 +224,9 @@ function imgCard(n,s){return `<div class="cardx"><h2><span><i>${n}.</i>${SIDE[s]
   <div class="guide">${s==='before'?'Ảnh chụp hiện trạng trước khi xử lý.':'Ảnh chụp kết quả sau khi xử lý.'} Tối đa ${MAX} ảnh. Nút tím ✎ để vẽ, đánh dấu lên ảnh. Chạm vào ảnh nhỏ để kéo chọn vùng cắt. ◀ đưa ảnh lên trước (ảnh đầu là ảnh lớn nhất), ↻ xoay ảnh, × xóa ảnh.</div>
  </div></div>`}
 
+function sigCard(n,k,title,save){return `<div class="cardx"><h2><span><i>${n}.</i>${title}</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear" data-sk="${k}">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="b_${k}" data-act="sigtoggle" data-sk="${k}">✍ Sửa</button><button class="dots" data-more="mo-${k}" title="${save?'Lưu chữ ký và hướng dẫn':'Hướng dẫn'}">⋮</button></span></h2>${k==='sig2'?fld('confirmer','Họ và tên người xác nhận (hiện dưới chữ ký)','text','Họ và tên'):''}<div style="position:relative" class="mt-2"><canvas class="sigcv" id="c_${k}" width="600" height="220"></canvas><div class="sigh" id="h_${k}"></div></div><div class="d-none mt-2" id="mo-${k}">${save?`<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>`:''}${guide(k)}</div></div>`}
 const GD={
- info:'Ngày lập quyết định Mã số báo cáo (PLE-năm-tháng-ngày), mặc định là hôm nay. Người lập và Mã số máy: chạm vào ô để chọn lại giá trị đã dùng, hoặc gõ vài ký tự để tìm (VD: "blk pre 03"). Máy không có trong danh sách thì cứ nhập tay. Nút VI/EN trên thanh trên cùng đổi ngôn ngữ báo cáo (xem trước, PDF, Excel); chữ bạn nhập được tự dịch sang tiếng Anh và có thể sửa trong ⋮ của từng mục.',
+ info:'Mã số báo cáo do server cấp khi bấm "Lưu lên server" (dạng PLE-năm-tháng-số thứ tự); trước đó hiện mã tạm PLE-năm-tháng-ngày theo Ngày lập (mặc định hôm nay). Người lập và Mã số máy: chạm vào ô để chọn lại giá trị đã dùng, hoặc gõ vài ký tự để tìm (VD: "blk pre 03"). Máy không có trong danh sách thì cứ nhập tay. Nút VI/EN trên thanh trên cùng đổi ngôn ngữ báo cáo (xem trước, PDF, Excel); chữ bạn nhập được tự dịch sang tiếng Anh và có thể sửa trong ⋮ của từng mục.',
  time:'Chọn ngày giờ bắt đầu và hoàn thành (24 giờ). Thời gian stop tự tính từ hai mốc này: dưới 60 phút hiện phút, từ 60 phút trở lên hiện giờ (VD: 90 phút = 1,5 giờ). Nếu thực tế khác, nhập số phút vào ô phía trên.',
  subject:'Ghi ngắn gọn trong 1 dòng: việc đã làm + tên máy. VD: Thay sensor máy FV-BLK-PRE-03.',
  desc:'Mô tả vấn đề: máy/vị trí, hiện tượng, thời điểm phát hiện, ảnh hưởng đến sản xuất. Mỗi ý một dòng cho dễ đọc.',
@@ -227,17 +234,18 @@ const GD={
  mats:'Mỗi dòng một loại: tên vật tư – số lượng (VD: Sensor – 1 cái). Không dùng vật tư thì ghi "Không sử dụng vật tư".',
  done:'Ghi kết quả sau xử lý và phạm vi áp dụng. Chọn mẫu "máy hoạt động bình thường từ giờ hoàn thành" để tự điền thời gian.',
  who:'Người xử lý: nhập tên, ngăn cách bằng dấu phẩy (VD: Cường, Nam). Tổng manpower (giờ) = số người × số giờ làm; VD: 3 người làm 2 giờ = 6 giờ. Bấm "Tự tính" để máy tính theo giờ bắt đầu và hoàn thành.',
- sig:'Bấm "Sửa" rồi ký bằng ngón tay hoặc chuột, ký xong bấm "Xong". "Ký lại" xóa chữ ký hiện tại. "Lưu chữ ký" để mọi báo cáo mới tự có sẵn chữ ký này.'};
+ sig:'Bấm "Sửa" rồi ký bằng ngón tay hoặc chuột, ký xong bấm "Xong". "Ký lại" xóa chữ ký hiện tại. "Lưu chữ ký" để mọi báo cáo mới tự có sẵn chữ ký này. Họ tên hiện dưới chữ ký lấy từ mục 1 (Người lập báo cáo).',
+ sig2:'Người xác nhận (ví dụ trưởng nhóm, giám sát) đọc lại nội dung báo cáo rồi ký tại đây. Bấm "Sửa" để ký, ký xong bấm "Xong"; "Ký lại" xóa chữ ký. Chữ ký này không được lưu sẵn cho báo cáo mới.'};
 const guide=k=>`<div class="guide">${GD[k]}</div>`;
 const card=(n,t,b,m)=>`<div class="cardx"><h2><span><i>${n}.</i>${t}</span>${m?`<button class="dots" data-more="${m}" title="Tùy chọn, gợi ý và hướng dẫn">⋮</button>`:''}</h2>${b}</div>`;
-const fld=(k,l,ty='text',ph='')=>{const ac=/^(mc|name|who)$/.test(k);return `<label class="form-label mb-1 mt-2">${l}</label>`+(ac?'<div class="position-relative">':'')+`<input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}"${ac?` data-ac="${k}" autocomplete="off"`:''}>`+(ac?`<div class="ac" id="ac-${k}"></div></div>`:'')};
+const fld=(k,l,ty='text',ph='')=>{const ac=/^(mc|name|who|confirmer)$/.test(k);return `<label class="form-label mb-1 mt-2">${l}</label>`+(ac?'<div class="position-relative">':'')+`<input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}"${ac?` data-ac="${k}" autocomplete="off"`:''}>`+(ac?`<div class="ac" id="ac-${k}"></div></div>`:'')};
 const bl='<div class="mt-2 p-2 rounded" style="background:#eef5ff">';
 $('pane-form').innerHTML=
  card(1,'Thông tin chung',`<label class="form-label mb-1">Ngày lập báo cáo</label><input type="date" class="form-control" data-k="date">`+fld('name','Người lập báo cáo','text','Họ và tên')+fld('mc','Mã số máy','text','Gõ để tìm hoặc tự nhập')+`<div class="d-none" id="mo-code">${bl}Mã số báo cáo: <b id="codeshow"></b></div><label class="form-label mb-1 mt-2 small">Cỡ chữ nội dung báo cáo</label><select class="form-select" data-fs><option value="12">12 pt (chuẩn)</option><option value="11">11 pt (nhiều chữ hơn)</option><option value="10">10 pt (nhiều nhất)</option></select>${guide('info')}</div>`,'mo-code')+
  card(2,'Thời gian',fld('t1','Ngày - giờ bắt đầu','datetime-local')+fld('t2','Ngày - giờ hoàn thành','datetime-local')+`<div class="warn" id="w-t">⚠ Giờ hoàn thành đang sớm hơn giờ bắt đầu.</div><div class="d-none" id="mo-stop">${bl}Thời gian stop: <b id="stopshow"></b></div><label class="form-label mb-1 mt-2 small">Tự nhập thời gian stop (phút), để trống = tự tính</label><input type="number" min="0" class="form-control" data-k="stopMan">${guide('time')}</div>`,'mo-stop')+
  textCard(3,'subject')+textCard(4,'desc')+textCard(5,'action')+imgCard(6,'before')+imgCard(7,'after')+textCard(8,'mats')+textCard(9,'done')+
  card(10,'Nhân sự',fld('who','Người xử lý (ngăn cách bằng dấu phẩy)','text','Ví dụ: Cường, Nam, Hải')+`<label class="form-label mb-1 mt-2">Tổng manpower (giờ)</label><div class="input-group"><input type="number" min="0" step="0.5" class="form-control" data-k="mp" placeholder="Số người × số giờ. VD: 3×2 = 6"><button class="btn btn-outline-primary" data-act="mpcalc" title="Số người × thời gian từ bắt đầu đến hoàn thành">🧮 Tự tính</button></div><div class="d-none" id="mo-who">${guide('who')}</div>`,'mo-who')+
- `<div class="cardx"><h2><span><i>11.</i>Người lập ký tên</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="sigbtn" data-act="sigtoggle">✍ Sửa</button><button class="dots" data-more="mo-sig" title="Lưu chữ ký và hướng dẫn">⋮</button></span></h2><div style="position:relative"><canvas id="sigc" width="600" height="220"></canvas><div id="sigh"></div></div><div class="d-none mt-2" id="mo-sig"><div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>${guide('sig')}</div></div>`;
+ sigCard(11,'sig','Người lập ký tên',true)+sigCard(12,'sig2','Người xác nhận ký tên',false);
 const SYM=[
  ['Điện & đơn vị',[['Ω','Ôm'],['mΩ','Mili ôm'],['kΩ','Kilô ôm'],['MΩ','Mêga ôm'],['µ','Micro'],['µA','Micro ampe'],['µF','Micro fara'],['µV','Micro vôn'],['µs','Micro giây'],['µm','Micro mét'],['mm²','Milimét vuông'],['m³','Mét khối'],['cm³','Xentimét khối']]],
  ['Nhiệt độ & góc',[['°','Độ'],['°C','Độ C'],['°F','Độ F'],['′','Phút (góc)'],['″','Giây (góc)'],['∠','Góc']]],
@@ -250,7 +258,7 @@ const SYM=[
 const SYMT=['Điện','Nhiệt độ','Toán','Mũi tên','Đánh dấu','Hy Lạp','Chỉ số','Khác'];
 function symTab(i){document.querySelectorAll('[data-symtab]').forEach(b=>{const on=+b.dataset.symtab===i;b.classList.toggle('btn-primary',on);b.classList.toggle('btn-outline-primary',!on)});
  $('symbody').innerHTML=SYM[i][1].map(([c,n])=>`<button class="btn btn-outline-secondary btn-sm sym" data-cp="${c}" title="${n}">${c}</button>`).join('')}
-$('pane-form').insertAdjacentHTML('beforeend',card(12,'Ký tự đặc biệt',
+$('pane-form').insertAdjacentHTML('beforeend',card(13,'Ký tự đặc biệt',
  `<div class="d-flex gap-1 flex-nowrap overflow-auto pb-1">${SYMT.map((n,i)=>`<button class="btn btn-sm btn-outline-primary flex-shrink-0" data-symtab="${i}">${n}</button>`).join('')}</div><div class="d-flex flex-wrap gap-1 mt-2" id="symbody"></div>`+
  `<div class="d-none" id="mo-sym"><div class="guide">Chọn nhóm ở hàng trên (vuốt ngang để xem thêm nhóm), rồi bấm vào ký tự để sao chép. Sau đó dán (Ctrl+V, hoặc chạm giữ ô nhập và chọn Dán) vào ô bạn cần, trong ứng dụng này hoặc ở nơi khác. Ký tự ghép như mΩ, µA đã gộp sẵn. Trên máy tính, rê chuột vào ký tự để xem tên. Một số ký tự (✓ ✗ ⚠ ★) có thể hiển thị khác nhau tùy font của máy.</div></div>`,'mo-sym'));
 symTab(0);
@@ -270,7 +278,7 @@ function slots(n,m){
  const rows=m==='row'?[n]:m==='col'?Array(n).fill(1):m==='g2'?ch(2):m==='g3'?ch(3):AUTO[n];
  const o=[];rows.forEach((c,y)=>{for(let x=0;x<c;x++)o.push([x/c,y/rows.length,1/c,1/rows.length])});return o}
 
-function fitMeta(){document.querySelectorAll('.mr').forEach(e=>{let f=13.33;e.style.fontSize=f+'px';while(e.scrollWidth>e.clientWidth&&f>8){f-=.5;e.style.fontSize=f+'px'}})}
+function fitMeta(){document.querySelectorAll('.mr,.sn').forEach(e=>{let f=13.33;e.style.fontSize=f+'px';while(e.scrollWidth>e.clientWidth&&f>8){f-=.5;e.style.fontSize=f+'px'}})}
 function render(){applyLang();$('sheet').style.fontSize=((S.fs||12)*4/3)+'px';$('p-foot').textContent=footTxt();
  $('p-date').textContent=tr('code')+': '+code();
  $('p-name').textContent=tr('staff')+': '+S.name;
@@ -278,7 +286,7 @@ function render(){applyLang();$('sheet').style.fontSize=((S.fs||12)*4/3)+'px';$(
  $('w-t').style.display=(S.t1&&S.t2&&new Date(S.t2)<new Date(S.t1))?'block':'none';
  $('p-mc').textContent=S.mc;$('p-t1').textContent=fdt(S.t1);$('p-t2').textContent=fdt(S.t2);
  $('p-stop').textContent=stopTxt();$('p-who').textContent=whoTxt();$('p-mp').textContent=mpTxt();
- $('p-sig').style.display=S.sig?'block':'none';if(S.sig)$('p-sig').src=S.sig;sigUI();
+ for(const k of ['sig','sig2']){const im=$('p-'+k);im.style.display=S[k]?'block':'none';if(S[k])im.src=S[k]}$('p-sn1').textContent=S.name;$('p-sn2').textContent=S.confirmer;sigUI();
  for(const k in TXT)$('p-'+k).textContent=txt(k);
  for(const s in SIDE){
   const a=S[s],g=$('p-'+s);
@@ -292,8 +300,8 @@ const overflow=k=>{const b=$('b-'+k);return b.scrollHeight>b.clientHeight+1};
 const anyOver=()=>Object.keys(TXT).some(overflow);
 let st;
 const isEmpty=()=>!(S.subject||S.desc||S.action||S.mats||S.done||S.mc||S.who||S.before.length||S.after.length);
-const flush=async()=>{clearTimeout(st);if(!isEmpty()){S.updated=Date.now();await dbPut(S)}};
-function save(){ls('fjk_cur',S.id);clearTimeout(st);st=setTimeout(flush,600)}
+const flush=async()=>{clearTimeout(st);if(VIEW)return;if(!isEmpty()){S.updated=Date.now();await dbPut(S)}};
+function save(){if(VIEW)return;ls('fjk_cur',S.id);clearTimeout(st);st=setTimeout(flush,600)}
 
 document.addEventListener('input',e=>{const d=e.target.dataset||{};
  if(d.lay||d.fit){(d.lay?S.lay:S.fit)[d.lay||d.fit]=e.target.value;save();render();return}
@@ -302,7 +310,7 @@ document.addEventListener('input',e=>{const d=e.target.dataset||{};
  if(!d.k)return;S[d.k]=e.target.value;if(S.lang==='en'&&TXT[d.k]){clearTimeout(trT);trT=setTimeout(()=>ensureEN(true),1500)}if(d.k==='name')ls('fjk_name',S.name);save();render();if(d.ac)acShow(e.target)});
 
 /* ---------- Mã số, thời gian ---------- */
-const code=()=>'PLE-'+(S.date||'yyyy-mm-dd');
+const code=()=>S.reportNo||('PLE-'+(S.date||'yyyy-mm-dd'));
 const fdt=v=>v?v.slice(0,10).split('-').reverse().join('-')+' '+v.slice(11,16):'';
 const durMin=()=>{if(!S.t1||!S.t2)return null;const m=Math.round((new Date(S.t2)-new Date(S.t1))/60000);return m>=0?m:null};
 const stopMin=()=>(S.stopMan!==''&&!isNaN(+S.stopMan))?+S.stopMan:durMin();
@@ -319,10 +327,10 @@ const tx=(m,fn)=>new Promise(ok=>{if(!DB)return ok(null);try{const t=DB.transact
 const dbPut=o=>tx('readwrite',s=>s.put(o)),dbDel=id=>tx('readwrite',s=>s.delete(id)),dbGet=id=>tx('readonly',s=>s.get(id)),dbAll=()=>tx('readonly',s=>s.getAll());
 const closeD=()=>$('drafts').style.display='none';
 async function openDrafts(){await flush();const a=((await dbAll())||[]).sort((x,y)=>y.updated-x.updated);
- $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">PLE-${esc(d.date)} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-secondary" data-dl="${d.id}" title="Tải xuống file để mang sang máy khác">⬇</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
+ $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">${esc(d.reportNo||'PLE-'+d.date)} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-secondary" data-dl="${d.id}" title="Tải xuống file để mang sang máy khác">⬇</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
  $('drafts').style.display='flex'}
 async function openRep(id){await flush();const d=await dbGet(id);if(d){S=Object.assign(blank(),d);ls('fjk_cur',S.id);fill();render();drawSig()}closeD();setTab('form')}
-async function newRep(){await flush();if(!isEmpty()){remember();toast('Báo cáo vừa rồi đã được lưu trong mục 📂 Đã lưu',3000)}sigOn=false;S=blank();ls('fjk_cur',S.id);fill();render();drawSig();closeD();setTab('form')}
+async function newRep(){await flush();if(!isEmpty()){remember();toast('Báo cáo vừa rồi đã được lưu trong mục 📂 Đã lưu',3000)}for(const k in SIGS)SIGS[k].on=false;S=blank();ls('fjk_cur',S.id);fill();render();drawSig();closeD();setTab('form')}
 function dlCur(){if(isEmpty())return toast('Báo cáo đang trống, chưa có gì để tải',3000);
  S.updated=Date.now();dl(new Blob([JSON.stringify(S)],{type:'application/json'}),fnameOf(S)+'.json');toast('✅ Đã tải file báo cáo (.json)',3000)}
 async function dlRep(id){await flush();const d=await dbGet(id);if(!d)return toast('Không đọc được báo cáo',3000);
@@ -350,18 +358,18 @@ $('cfr').addEventListener('pointermove',e=>{if(!CR||CR.px===null)return;
 const cropEnd=()=>{if(CR&&CR.px!==null){CR.px=null;save();render()}};
 $('cfr').addEventListener('pointerup',cropEnd);$('cfr').addEventListener('pointercancel',cropEnd);
 
-/* ---------- Chữ ký ---------- */
-const sc=$('sigc'),sx=sc.getContext('2d');let dw=false;
-const sp=e=>{const r=sc.getBoundingClientRect();return[(e.clientX-r.left)*sc.width/r.width,(e.clientY-r.top)*sc.height/r.height]};
-sc.addEventListener('pointerdown',e=>{if(!sigOn)return;e.preventDefault();dw=true;sc.setPointerCapture(e.pointerId);const[x,y]=sp(e);
- sx.lineWidth=4;sx.lineCap=sx.lineJoin='round';sx.strokeStyle='#111';sx.beginPath();sx.moveTo(x,y);sx.lineTo(x+.1,y+.1);sx.stroke();sx.beginPath();sx.moveTo(x,y)});
-sc.addEventListener('pointermove',e=>{if(!dw)return;const[x,y]=sp(e);sx.lineTo(x,y);sx.stroke();sx.beginPath();sx.moveTo(x,y)});
-const sigEnd=()=>{if(!dw)return;dw=false;S.sig=sc.toDataURL('image/png');save();render()};
-sc.addEventListener('pointerup',sigEnd);sc.addEventListener('pointercancel',sigEnd);
-let sigOn=false;
-function sigUI(){sc.classList.toggle('on',sigOn);$('sigbtn').textContent=sigOn?'✔ Xong':'✍ Sửa';
- const h=$('sigh');h.textContent='Bấm "Sửa" để ký';h.style.display=(!sigOn&&!S.sig)?'flex':'none'}
-async function drawSig(){sx.clearRect(0,0,sc.width,sc.height);if(S.sig){try{sx.drawImage(await loadI(S.sig),0,0)}catch(e){}}}
+/* ---------- Chữ ký (2 ô: người lập, người xác nhận) ---------- */
+const SIGS={sig:{on:false,dw:false},sig2:{on:false,dw:false}};
+for(const k in SIGS){const p=SIGS[k];p.cv=$('c_'+k);p.g=p.cv.getContext('2d');
+ const pos=e=>{const r=p.cv.getBoundingClientRect();return[(e.clientX-r.left)*p.cv.width/r.width,(e.clientY-r.top)*p.cv.height/r.height]};
+ p.cv.addEventListener('pointerdown',e=>{if(!p.on)return;e.preventDefault();p.dw=true;p.cv.setPointerCapture(e.pointerId);const[x,y]=pos(e),g=p.g;
+  g.lineWidth=4;g.lineCap=g.lineJoin='round';g.strokeStyle='#111';g.beginPath();g.moveTo(x,y);g.lineTo(x+.1,y+.1);g.stroke();g.beginPath();g.moveTo(x,y)});
+ p.cv.addEventListener('pointermove',e=>{if(!p.dw)return;const[x,y]=pos(e),g=p.g;g.lineTo(x,y);g.stroke();g.beginPath();g.moveTo(x,y)});
+ const end=()=>{if(!p.dw)return;p.dw=false;S[k]=p.cv.toDataURL('image/png');save();render()};
+ p.cv.addEventListener('pointerup',end);p.cv.addEventListener('pointercancel',end)}
+function sigUI(){for(const k in SIGS){const p=SIGS[k];p.cv.classList.toggle('on',p.on);$('b_'+k).textContent=p.on?'✔ Xong':'✍ Sửa';
+ const h=$('h_'+k);h.textContent='Bấm "Sửa" để ký';h.style.display=(!p.on&&!S[k])?'flex':'none'}}
+async function drawSig(){for(const k in SIGS){const p=SIGS[k];p.g.clearRect(0,0,p.cv.width,p.cv.height);if(S[k]){try{p.g.drawImage(await loadI(S[k]),0,0)}catch(e){}}}}
 
 /* ---------- Ngôn ngữ báo cáo & dịch ---------- */
 function applyLang(){const d=I18N[S.lang||'vi'];document.querySelectorAll('[data-i]').forEach(e=>e.textContent=d[e.dataset.i]);
@@ -421,7 +429,7 @@ async function copyTxt(s){let ok=false;
 const norm=s=>s.toUpperCase().replace(/[^A-Z0-9]/g,'');
 function acShow(el,focus){const k=el.dataset.ac,box=$('ac-'+k),q=norm(k==='who'?el.value.split(',').pop():el.value);
  let h=recents(k);if(k==='who')h=[...new Set(h.flatMap(v=>v.split(',').map(x=>x.trim()).filter(Boolean)))];
- const L=(!q||(focus&&k==='name'))?h.slice(0,8):[...new Set([...h,...(k==='mc'?MC:[])])].filter(v=>norm(v).includes(q)).sort((a,b)=>norm(b).startsWith(q)-norm(a).startsWith(q)).slice(0,10);
+ const L=(!q||(focus&&(k==='name'||k==='confirmer')))?h.slice(0,8):[...new Set([...h,...(k==='mc'?MC:[])])].filter(v=>norm(v).includes(q)).sort((a,b)=>norm(b).startsWith(q)-norm(a).startsWith(q)).slice(0,10);
  box.innerHTML=L.length?L.map(v=>`<div data-acv="${esc(v)}" data-ack="${k}">${k==='mc'&&h.includes(v)?'🕘 ':''}${esc(v)}</div>`).join(''):(q&&k==='mc'?'<div class="text-muted">Không có trong danh sách – bạn cứ nhập tay</div>':'');
  box.style.display=box.innerHTML?'block':'none'}
 document.addEventListener('focusin',e=>{if(e.target.dataset&&e.target.dataset.ac)acShow(e.target,true)});
@@ -435,7 +443,7 @@ let CH={};
 const recents=k=>{try{return(JSON.parse(ls('fjk_rc')||'{}')[k])||[]}catch(e){return[]}};
 function pushHist(k,v){v=(v||'').trim();if(!v||v.length>200)return;let o={};try{o=JSON.parse(ls('fjk_rc')||'{}')}catch(e){}
  o[k]=[v,...(o[k]||[]).filter(x=>x!==v)].slice(0,8);ls('fjk_rc',JSON.stringify(o))}
-function remember(){for(const k of [...Object.keys(TXT),'mc','who','name'])pushHist(k,k==='who'?whoTxt():S[k])}
+function remember(){for(const k of [...Object.keys(TXT),'mc','who','name','confirmer'])pushHist(k,k==='who'?whoTxt():S[k])}
 function buildSg(k){const box=$('sg-'+k);CH[k]=[...SG[k],...recents(k)];
  box.innerHTML=CH[k].map((t,i)=>`<span class="chip" data-ins="${k}:${i}">${i===0&&TPL[k]?(TPLN[k]||'📝 Điền mẫu'):i<SG[k].length?'＋ '+t.trim():'🕘 '+t.slice(0,60)}</span>`).join('')}
 function insert(k,i){const t=CH[k][i].replace('{T}',fdt(S.t2)||'dd-mm-yyyy HH:mm'),f=document.querySelector(`[data-k="${k}"]`);
@@ -502,6 +510,8 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(a==='pdf')run('⏳ Đang tạo PDF...',()=>exportPDF());
   if(a==='print')run('🖨 Đang mở hộp thoại in...',doPrint);
   if(a==='html')run('⏳ Đang tạo file HTML...',exportHTML);
+  if(a==='srvsave')saveServer();
+  if(a==='srvlink')srvLink();
   if(a==='share')run('⏳ Đang tạo PDF để chia sẻ...',()=>exportPDF(1));
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
   if(a==='new')newRep();
@@ -514,8 +524,8 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(a==='drafts')openDrafts();
   if(a==='dclose')closeD();
   if(a==='cropdone'){CR=null;$('crop').style.display='none'}
-  if(a==='sigclear'){S.sig='';sigOn=true;drawSig();save();render()}
-  if(a==='sigtoggle'){sigOn=!sigOn;sigUI()}
+  if(a==='sigclear'){const k=el.dataset.sk;S[k]='';SIGS[k].on=true;drawSig();save();render()}
+  if(a==='sigtoggle'){const k=el.dataset.sk;SIGS[k].on=!SIGS[k].on;sigUI()}
   if(a==='sigsave'){if(!S.sig)return toast('Chưa có chữ ký để lưu. Hãy bấm "Sửa" để ký trước.',3500);ls('fjk_sig',S.sig);toast('✅ Đã lưu chữ ký. Báo cáo mới sẽ tự có chữ ký này.',3500)}
   if(a==='sigdel'){try{localStorage.removeItem('fjk_sig')}catch(e){}toast('Đã xóa chữ ký đã lưu (báo cáo hiện tại giữ nguyên).',3500)}
   if(a==='mpcalc'){const n=whoTxt().split(', ').filter(Boolean).length,m=durMin();
@@ -538,13 +548,13 @@ let tt;function toast(m,ms=0){const t=$('toast');t.textContent=m;t.style.display
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'').slice(0,30);
 const clean=s=>s.replace(/[\\/:*?"<>|\r\n\t]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80);
 function fnameOf(d){const sj=(d.lang==='en'&&d.en&&d.en.subject&&d.enSrc&&d.enSrc.subject===d.subject)?d.en.subject:d.subject;
- return 'PLE-'+(d.date||'yyyy-mm-dd')+(sj&&clean(sj)?'_'+clean(sj):'')}
+ return (d.reportNo||'PLE-'+(d.date||'yyyy-mm-dd'))+(sj&&clean(sj)?'_'+clean(sj):'')}
 const fname=()=>fnameOf(S);
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 async function run(msg,fn){
  if(busy)return;
  if(S.lang==='en'&&stale().length){const ok=await ensureEN();if(!ok&&!confirm('Chưa dịch được sang tiếng Anh. Vẫn xuất (giữ tiếng Việt)?'))return}
- const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()],['Mã số máy',S.mc.trim()],['Thời gian bắt đầu/hoàn thành',S.t1&&S.t2],['Người xử lý',whoTxt()],['Người lập ký tên',S.sig]].filter(x=>!x[1]).map(x=>x[0]);
+ const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()],['Mã số máy',S.mc.trim()],['Thời gian bắt đầu/hoàn thành',S.t1&&S.t2],['Người xử lý',whoTxt()],['Người lập ký tên',S.sig],['Người xác nhận ký tên',S.sig2],['Tên người xác nhận',S.confirmer.trim()]].filter(x=>!x[1]).map(x=>x[0]);
  if(miss.length&&!confirm('Báo cáo còn thiếu: '+miss.join(', ')+'.\nVẫn xuất file?'))return;
  if(anyOver()&&!confirm('Có ô chữ quá dài (viền đỏ), phần cuối sẽ bị cắt. Vẫn xuất file?'))return;
  busy=true;toast(msg);const prev=tab;footTs=new Date();render();
@@ -559,7 +569,7 @@ function doPrint(){return new Promise(async res=>{
  addEventListener('afterprint',done);setTimeout(done,30000);
  await new Promise(r=>setTimeout(r,150));print()})}
 const TXTSEL='#sheet [data-i],#p-date,#p-name,#p-subject,#p-desc,#p-action,#p-mats,#p-done,#p-mc,#p-t1,#p-t2,#p-stop,#p-who,#p-mp,#p-foot';
-async function exportHTML(){
+async function buildViewHTML(){
  if($('pv').clientWidth===0){setTab('prev');await new Promise(r=>setTimeout(r,200))}
  if(stale().length)await ensureEN(true);               // bảo đảm đã có bản tiếng Anh
  const orig=S.lang,D={},T={};
@@ -579,8 +589,9 @@ async function exportHTML(){
   '\nbody{background:#e9eef5;padding:12px}#lgbar{display:flex;justify-content:center;gap:8px;margin:0 auto 10px}.lgb{border:1px solid #0b5cab;background:#fff;color:#0b5cab;padding:6px 20px;border-radius:6px;font:700 14px Arial,sans-serif;cursor:pointer}.lgb.on{background:#0b5cab;color:#fff}@media print{#lgbar{display:none!important}}</style></head><body>'+
   '<div id="lgbar"><button class="lgb" id="b_vi">VI</button><button class="lgb on" id="b_en">EN</button></div>'+
   '<div id="pane-prev"><div id="pv"><div id="holder">'+c.outerHTML+'</div></div></div><script>'+js+'<\/script></body></html>';
- dl(new Blob([html],{type:'text/html;charset=utf-8'}),T.en+'.html');
+ return{html,name:T.en}
 }
+async function exportHTML(){const r=await buildViewHTML();dl(new Blob([r.html],{type:'text/html;charset=utf-8'}),r.name+'.html')}
 async function exportPDF(share){
  if($('pv').clientWidth===0){setTab('prev');await new Promise(r=>setTimeout(r,150))}
  scrollTo(0,0);
@@ -631,9 +642,11 @@ async function exportXLSX(){
  tb('mats',42);tb('done',42);
  const ir=row(34.5);row(49.5);
  const ic=(rr,c1,c2,l,v)=>box(rr,rr,c1,c2,{richText:[{text:l,font:F(GR)},{text:'\n'+v,font:F()}]},{v:'middle',indent:1});
- ic(ir,1,6,tr('mc'),S.mc);ic(ir,7,12,tr('start'),fdt(S.t1));ic(ir,13,17,tr('finish'),fdt(S.t2));
- ic(ir+1,1,4,tr('stop'),stopTxt());ic(ir+1,5,13,tr('who'),whoTxt());ic(ir+1,14,17,tr('mp'),mpTxt());
- box(ir,ir+1,18,24,{richText:[{text:tr('sign'),font:F(GR)}]},{h:'center'});
+ ic(ir,1,5,tr('mc'),S.mc);ic(ir,6,10,tr('start'),fdt(S.t1));ic(ir,11,16,tr('finish'),fdt(S.t2));
+ ic(ir+1,1,4,tr('stop'),stopTxt());ic(ir+1,5,12,tr('who'),whoTxt());ic(ir+1,13,16,tr('mp'),mpTxt());
+ for(const [c1,c2,key,nm] of [[17,20,'sign',S.name],[21,24,'sign2',S.confirmer]]){
+  box(ir,ir,c1,c2,{richText:[{text:tr(key),font:F(GR)}]},{h:'center',b:{bottom:undefined}});
+  box(ir+1,ir+1,c1,c2,nm,{h:'center',v:'bottom',sh:1,font:{size:10},b:{top:undefined}})}
  const pb=row(8);row(1);
  /* đường bao đậm */
  const M={style:'medium',color:{argb:'FF000000'}};
@@ -643,8 +656,9 @@ async function exportXLSX(){
  if(LOGO){const[lw,lh]=fitBox(LOGO_R*100,100,130,34),lx=(150-lw)/2,p=yAt((46-lh)/2,h1,[23,23]),lid=wb.addImage({base64:LOGO,extension:/^data:image\/jpe?g/.test(LOGO)?'jpeg':'png'});
   ws.addImage(lid,{tl:{nativeCol:X0+Math.floor(lx/CW),nativeColOff:Math.round((lx%CW)*9525),nativeRow:p.row,nativeRowOff:p.off},ext:{width:lw,height:lh},editAs:'oneCell'})}
  /* chữ ký */
- if(S.sig){const si=await loadI(S.sig),k=Math.min(190/si.width,70/si.height),w=Math.round(si.width*k),h=Math.round(si.height*k),X=(210-w)/2,p=yAt(30+(76-h)/2,ir,[46,66]),id=wb.addImage({base64:S.sig,extension:'png'});
-  ws.addImage(id,{tl:{nativeCol:X0+17+Math.floor(X/CW),nativeColOff:Math.round((X%CW)*9525),nativeRow:p.row,nativeRowOff:p.off},ext:{width:w,height:h},editAs:'oneCell'})}
+ for(const [key,c0] of [['sig',16],['sig2',20]]){if(!S[key])continue;
+  const si=await loadI(S[key]),kk=Math.min(104/si.width,66/si.height),w=Math.round(si.width*kk),h=Math.round(si.height*kk),X=(120-w)/2,p=yAt(18+(70-h)/2,ir,[46,66]),id=wb.addImage({base64:S[key],extension:'png'});
+  ws.addImage(id,{tl:{nativeCol:X0+c0+Math.floor(X/CW),nativeColOff:Math.round((X%CW)*9525),nativeRow:p.row,nativeRowOff:p.off},ext:{width:w,height:h},editAs:'oneCell'})}
  /* ảnh: cắt/đổi cỡ đúng bằng ô hiển thị (độ phân giải gấp đôi để in nét) */
  for(const [si,s] of ['before','after'].entries()){
   const a=S[s],sl=slots(a.length,S.lay[s]),cover=S.fit[s]==='cover';
@@ -663,9 +677,39 @@ async function exportXLSX(){
  dl(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),fname()+'.xlsx');
 }
 
+/* ---------- Supabase (gọi REST trực tiếp, chạy được khi không cần thư viện ngoài) ---------- */
+let CFG={url:'',key:''},VIEW=false;
+const sbOK=()=>!!(CFG.url&&CFG.key);
+async function sb(path,opt={}){const h={apikey:CFG.key,'Content-Type':'application/json',...(opt.headers||{})};if(/^eyJ/.test(CFG.key))h.Authorization='Bearer '+CFG.key;
+ const r=await fetch(CFG.url+'/rest/v1/'+path,{...opt,headers:h}),tx=await r.text();let j=null;try{j=tx?JSON.parse(tx):null}catch(e){}
+ if(!r.ok)throw new Error((j&&(j.message||j.hint||j.details))||('HTTP '+r.status));return j}
+const payload=()=>{const c=JSON.parse(JSON.stringify(S));for(const k of ['id','updated','serverId','reportNo'])delete c[k];return c};
+function applyRow(row){S=Object.assign(blank(),row.content||{});S.serverId=row.id;S.reportNo=row.reportno;S.id='s_'+row.id}
+async function fetchReport(id){const r=await sb('reports?id=eq.'+encodeURIComponent(id)+'&select=*');if(!r||!r[0])throw new Error('Không tìm thấy báo cáo "'+id+'"');return r[0]}
+async function saveServer(){
+ if(busy)return;
+ if(!sbOK())return toast('Chưa cấu hình server: điền anonKey trong file config.json',5000);
+ if(!S.name.trim())return toast('Hãy nhập "Người lập báo cáo" (mục 1) trước khi lưu lên server',4000);
+ busy=true;toast('☁ Đang lưu lên server...');
+ try{
+  if(stale().length)await ensureEN(true);
+  const body=payload();
+  if(!S.serverId){let row=null;
+   for(let i=0;i<3&&!row;i++){try{row=(await sb('reports',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({reportno:'',content:body,createby:S.name.trim()})}))[0]}
+    catch(e){if(!/already exists|duplicate/i.test(e.message)||i===2)throw e}}
+   const old=S.id;S.serverId=row.id;S.reportNo=row.reportno;S.id='s_'+row.id;ls('fjk_cur',S.id);await dbDel(old);
+   try{history.replaceState(null,'','?edit='+row.id)}catch(e){}}
+  else{const r=await sb('reports?id=eq.'+encodeURIComponent(S.serverId),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({content:body,modifiedby:S.name.trim()})});
+   if(!r||!r.length)throw new Error('Không tìm thấy báo cáo trên server (id '+S.serverId+')')}
+  await flush();render();toast('✅ Đã lưu lên server: '+S.reportNo,4000)}
+ catch(e){toast('❌ Không lưu được: '+e.message,6000)}
+ busy=false}
+function srvLink(){if(!S.serverId)return toast('Hãy lưu lên server trước để có link',3500);copyTxt(location.href.split(/[?#]/)[0]+'?view='+S.serverId)}
+const QS=new URLSearchParams(location.search);
 const fitBox=(w,h,bw,bh)=>{const s=Math.min(bw/w,bh/h);return[Math.round(w*s),Math.round(h*s)]};
 const rd=b=>new Promise(ok=>{const f=new FileReader();f.onload=()=>ok(f.result);f.readAsDataURL(b)});
 async function loadAssets(){const bad=[];
+ try{const r=await fetch('config.json',{cache:'no-cache'});if(r.ok){const j=await r.json();CFG.url=(j.supabaseUrl||'').replace(/\/+$/,'');CFG.key=(j.anonKey||'').trim()}}catch(e){}
  try{const r=await fetch('logo.png',{cache:'no-cache'});if(!r.ok)throw 0;LOGO=await rd(await r.blob());
   const i=await loadI(LOGO);LOGO_R=i.width/i.height;const[w,h]=fitBox(i.width,i.height,130,34),g=$('logoimg');g.style.width=w+'px';g.style.height=h+'px';g.src=LOGO}
  catch(e){LOGO=null;bad.push('logo.png');$('logoimg').src='logo.png'}
@@ -673,9 +717,25 @@ async function loadAssets(){const bad=[];
   MC=[...new Set((await r.text()).replace(/^\uFEFF/,'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean))]}
  catch(e){bad.push('machine-code-list.txt')}
  if(bad.length)toast('Không tải được: '+bad.join(', ')+'. Hãy mở trang bằng web server (http/https), không mở trực tiếp file.',7000)}
-(async()=>{DB=await idb();const cur=ls('fjk_cur'),d=cur&&await dbGet(cur);
- if(d)S=Object.assign(blank(),d);else{try{Object.assign(S,JSON.parse(ls('fjk_rpt')||'{}'))}catch(e){}}
- fill();setTab('form');render();drawSig();loadAssets()})();
+(async()=>{DB=await idb();
+ const qv=QS.get('view'),qe=QS.get('edit');
+ if(qv){VIEW=true;document.body.style.visibility='hidden';          // chế độ xem: dựng lại đúng như file HTML tải về
+  try{await loadAssets();if(!sbOK())throw new Error('Chưa cấu hình server (config.json)');
+   applyRow(await fetchReport(qv));fill();setTab('prev');render();await new Promise(r=>setTimeout(r,300));
+   const r=await buildViewHTML();document.open();document.write(r.html);document.close()}
+  catch(e){document.body.style.visibility='visible';document.body.innerHTML='<div style="padding:24px;font:16px Arial,sans-serif">Không mở được báo cáo: '+esc(e.message)+'</div>'}
+  return}
+ let fromServer=false;
+ if(qe){await loadAssets();
+  try{if(!sbOK())throw new Error('Chưa cấu hình server (config.json)');
+   const row=await fetchReport(qe),loc=await dbGet('s_'+row.id),srvT=Date.parse(row.modifiedtime||row.createtime)||0;
+   if(loc&&loc.updated>srvT&&confirm('Trên máy có bản chỉnh sửa mới hơn bản trên server. Dùng bản trên máy?')){S=Object.assign(blank(),loc);S.serverId=row.id;S.reportNo=row.reportno}
+   else applyRow(row);
+   ls('fjk_cur',S.id);fromServer=true}
+  catch(e){toast('❌ Không mở được báo cáo để sửa: '+e.message,6000)}}
+ if(!fromServer){const cur=ls('fjk_cur'),d=cur&&await dbGet(cur);
+  if(d)S=Object.assign(blank(),d);else{try{Object.assign(S,JSON.parse(ls('fjk_rpt')||'{}'))}catch(e){}}}
+ fill();setTab('form');render();drawSig();if(!qe)loadAssets()})();
 </script>
 </body>
 </html>
