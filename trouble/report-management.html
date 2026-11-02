@@ -1,628 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reports Dashboard</title>
-
+<title>Quản lý báo cáo</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
-
-body{
-    background:#f5f6fa;
-}
-
-.card-stat{
-    border:none;
-    border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.table-container{
-    background:white;
-    padding:15px;
-    border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.table th,
-.table td{
-    text-align:center;
-    vertical-align:middle;
-    white-space:nowrap;
-}
-
-textarea{
-    font-family:consolas;
-}
-
-@media(max-width:768px){
-
-    h2{
-        font-size:1.3rem;
-    }
-
-    .table{
-        font-size:.85rem;
-    }
-
-    .btn{
-        font-size:.8rem;
-    }
-
-}
-
+body{background:#f5f6fa}
+.card-stat{border:0;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);cursor:pointer}
+.card-stat.on{outline:2px solid #0b5cab}
+.box{background:#fff;padding:15px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.table th,.table td{vertical-align:middle;white-space:nowrap;text-align:center}
+.table td.s{white-space:normal;min-width:180px;max-width:320px;text-align:left}
+.st{min-width:120px;font-weight:600}
+@media(max-width:768px){h2{font-size:1.3rem}.table{font-size:.85rem}.btn{font-size:.8rem}}
 </style>
 </head>
-
 <body>
-
 <div class="container-fluid p-3">
+ <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h2 class="m-0">Quản lý báo cáo</h2>
+  <div class="d-flex align-items-center gap-2"><label class="small text-muted mb-0" for="who">Người thao tác</label><input id="who" class="form-control form-control-sm" style="width:170px" placeholder="Họ và tên"></div>
+ </div>
+ <div id="warn" class="alert alert-danger d-none"></div>
 
-    <h2 class="mb-3">
-        Report Management
-    </h2>
+ <div class="row g-3 mb-3" id="stats"></div>
 
-    <div class="row g-3 mb-3">
-
-        <div class="col-6 col-md-3">
-            <div class="card card-stat">
-                <div class="card-body text-center">
-                    <div>Total</div>
-                    <h3 id="totalReports">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card card-stat">
-                <div class="card-body text-center">
-                    <div>NEW</div>
-                    <h3 id="newReports">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card card-stat">
-                <div class="card-body text-center">
-                    <div>PROCESSING</div>
-                    <h3 id="processingReports">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card card-stat">
-                <div class="card-body text-center">
-                    <div>DONE</div>
-                    <h3 id="doneReports">0</h3>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="table-container">
-
-        <div class="row mb-3">
-
-            <div class="col-md-4 mb-2">
-                <input
-                    type="text"
-                    class="form-control"
-                    id="searchBox"
-                    placeholder="Search report no">
-            </div>
-
-            <div class="col-md-8 text-md-end">
-
-                <button
-                    class="btn btn-success"
-                    onclick="showNewModal()">
-
-                    + New Report
-
-                </button>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="loadReports()">
-
-                    Refresh
-
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="table-responsive">
-
-            <table class="table table-bordered table-hover">
-
-                <thead class="table-dark">
-
-                <tr>
-                    <th>Report No</th>
-                    <th>Status</th>
-                    <th>Create By</th>
-                    <th>Create Time</th>
-                    <th>Action</th>
-                </tr>
-
-                </thead>
-
-                <tbody id="reportTable"></tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
+ <div class="box">
+  <div class="row g-2 mb-3 align-items-end">
+   <div class="col-12 col-md-4"><input id="q" class="form-control" placeholder="Tìm: số báo cáo, chủ đề, mã máy, người lập"></div>
+   <div class="col-6 col-md-2"><select id="fSt" class="form-select"><option value="ALL">Tất cả (trừ đã xóa)</option><option>NEW</option><option>PROCESSING</option><option>DONE</option><option>REJECTED</option><option value="DELETED">Đã xóa</option></select></div>
+   <div class="col-6 col-md-2"><input id="d1" type="date" class="form-control" title="Từ ngày"></div>
+   <div class="col-6 col-md-2"><input id="d2" type="date" class="form-control" title="Đến ngày"></div>
+   <div class="col-6 col-md-2 d-flex gap-1"><button class="btn btn-success flex-fill" id="bNew">+ Mới</button><button class="btn btn-primary flex-fill" id="bRef">Làm mới</button></div>
+  </div>
+  <div class="table-responsive">
+   <table class="table table-bordered table-hover">
+    <thead class="table-dark"><tr><th>Số báo cáo</th><th>Chủ đề</th><th>Mã máy</th><th>Trạng thái</th><th>Người lập</th><th>Tạo lúc</th><th>Sửa cuối</th><th>Thao tác</th></tr></thead>
+    <tbody id="tb"><tr><td colspan="8" class="text-muted">Đang tải...</td></tr></tbody>
+   </table>
+  </div>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+   <div class="small text-muted" id="info"></div>
+   <div class="d-flex align-items-center gap-2">
+    <select id="ps" class="form-select form-select-sm" style="width:auto"><option>10</option><option selected>20</option><option>50</option></select>
+    <button class="btn btn-outline-secondary btn-sm" id="pPrev">‹ Trước</button><button class="btn btn-outline-secondary btn-sm" id="pNext">Sau ›</button>
+   </div>
+  </div>
+ </div>
 </div>
 
-<!-- Modal -->
+<div class="modal fade" id="vm" tabindex="-1"><div class="modal-dialog modal-xl modal-fullscreen-md-down"><div class="modal-content">
+ <div class="modal-header py-2"><h5 class="modal-title" id="vt">Xem báo cáo</h5><a class="btn btn-sm btn-outline-primary ms-auto me-2" id="vo" target="_blank">Mở tab mới</a><button class="btn-close" data-bs-dismiss="modal"></button></div>
+ <div class="modal-body p-0"><iframe id="vf" style="width:100%;height:78vh;border:0"></iframe></div>
+</div></div></div>
 
-<div class="modal fade" id="reportModal" tabindex="-1">
-
-<div class="modal-dialog modal-fullscreen-sm-down modal-lg modal-dialog-scrollable">
-
-<div class="modal-content">
-
-<div class="modal-header">
-    <h5 class="modal-title">Report</h5>
-
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="modal">
-    </button>
-</div>
-
-<div class="modal-body">
-
-    <input type="hidden" id="editId">
-
-    <div class="mb-3">
-        <label class="form-label">Create By</label>
-        <input class="form-control" id="createby">
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Status</label>
-
-        <select class="form-select" id="status">
-            <option>NEW</option>
-            <option>PROCESSING</option>
-            <option>DONE</option>
-            <option>REJECTED</option>
-        </select>
-
-    </div>
-
-    <div class="mb-3">
-
-        <label class="form-label">
-            Content JSON
-        </label>
-
-        <textarea
-            id="content"
-            class="form-control"
-            rows="12">{}</textarea>
-
-    </div>
-
-</div>
-
-<div class="modal-footer">
-
-    <button
-        class="btn btn-secondary"
-        data-bs-dismiss="modal">
-
-        Close
-
-    </button>
-
-    <button
-        class="btn btn-success"
-        onclick="saveReport()">
-
-        Save
-
-    </button>
-
-</div>
-
-</div>
-</div>
-</div>
-
-<!-- Toast -->
-
-<div
-class="toast position-fixed top-0 end-0 m-3"
-id="liveToast">
-
-<div class="toast-header">
-
-<strong class="me-auto">
-Notification
-</strong>
-
-<button
-type="button"
-class="btn-close"
-data-bs-dismiss="toast">
-</button>
-
-</div>
-
-<div class="toast-body">
-Data updated
-</div>
-
-</div>
+<div class="toast position-fixed top-0 end-0 m-3" id="tst"><div class="toast-body" id="tm"></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STS=['NEW','PROCESSING','DONE','REJECTED'];
+const COL={NEW:'#cfe2ff',PROCESSING:'#fff3cd',DONE:'#d1e7dd',REJECTED:'#f8d7da',DELETED:'#e2e3e5'};
+const SEL='id,reportno,status,createby,createtime,modifiedby,modifiedtime,subject:content->>subject,mc:content->>mc';
+let CFG={url:'',key:'',app:'bao-cao-ky-thuat.html'},page=0,total=0,tq,tr;
 
-const SUPABASE_URL = "https://wdwwxqpdsrwcdnkyuqon.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkd3d4cXBkc3J3Y2Rua3l1cW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NzI5MDcsImV4cCI6MjEwNjU0ODkwN30.VwixiepX6GBWPsdF8ZVd2055nCnp9fK8gaZqLeeExxs"
-
-const db =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-const modal =
-new bootstrap.Modal(
-document.getElementById("reportModal")
-);
-
-function showToast(message){
-
-    document.querySelector(
-        "#liveToast .toast-body"
-    ).innerText = message;
-
-    const toast =
-    new bootstrap.Toast(
-        document.getElementById("liveToast"),
-        {
-            delay:3000
-        }
-    );
-
-    toast.show();
+function toast(m){$('tm').textContent=m;bootstrap.Toast.getOrCreateInstance($('tst'),{delay:3000}).show()}
+function warn(m){const w=$('warn');w.textContent=m||'';w.classList.toggle('d-none',!m)}
+const hdr=x=>{const h={apikey:CFG.key,'Content-Type':'application/json',...(x||{})};if(/^eyJ/.test(CFG.key))h.Authorization='Bearer '+CFG.key;return h};
+async function api(path,opt={}){
+  const r=await fetch(CFG.url+'/rest/v1/'+path,{...opt,headers:hdr(opt.headers)}),t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){}
+  if(!r.ok)throw new Error((j&&(j.message||j.hint))||('HTTP '+r.status));
+  return{j,range:r.headers.get('content-range')||''};
 }
+const appUrl=q=>new URL(CFG.app,location.href).href+(q||'');
+function fmt(v){if(!v)return'';const d=new Date(v),p=n=>String(n).padStart(2,'0'),m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' '+p(d.getDate())+'-'+m[d.getMonth()]+'-'+d.getFullYear()}
 
-function formatDate(value){
-
-    const d = new Date(value);
-
-    const m = [
-        "Jan","Feb","Mar","Apr","May","Jun",
-        "Jul","Aug","Sep","Oct","Nov","Dec"
-    ];
-
-    return (
-        String(d.getHours()).padStart(2,"0")
-        + ":" +
-        String(d.getMinutes()).padStart(2,"0")
-        + ":" +
-        String(d.getSeconds()).padStart(2,"0")
-        + " " +
-        String(d.getDate()).padStart(2,"0")
-        + "-" +
-        m[d.getMonth()]
-        + "-" +
-        d.getFullYear()
-    );
+function filters(){
+  let f='';const st=$('fSt').value;
+  f+=st==='ALL'?'&status=neq.DELETED':'&status=eq.'+st;
+  const kw=$('q').value.trim();
+  if(kw){const q='"*'+kw.replace(/[\\"]/g,'\\$&')+'*"';
+    f+='&or='+encodeURIComponent('(reportno.ilike.'+q+',createby.ilike.'+q+',content->>subject.ilike.'+q+',content->>mc.ilike.'+q+')')}
+  const a=$('d1').value,b=$('d2').value;
+  if(a)f+='&createtime=gte.'+encodeURIComponent(new Date(a+'T00:00:00').toISOString());
+  if(b)f+='&createtime=lt.'+encodeURIComponent(new Date(new Date(b+'T00:00:00').getTime()+864e5).toISOString());
+  return f;
 }
-
-function badgeClass(status){
-
-    switch(status){
-
-        case "NEW":
-            return "bg-primary";
-
-        case "PROCESSING":
-            return "bg-warning text-dark";
-
-        case "DONE":
-            return "bg-success";
-
-        case "REJECTED":
-            return "bg-danger";
-
-        default:
-            return "bg-secondary";
-    }
+async function count(f){const r=await api('reports?select=id&limit=1'+f,{headers:{Prefer:'count=exact'}});return+(r.range.split('/')[1])||0}
+async function stats(){
+  const defs=[['Tổng','&status=neq.DELETED','ALL'],...STS.map(s=>[s,'&status=eq.'+s,s])];
+  const n=await Promise.all(defs.map(d=>count(d[1])));
+  $('stats').innerHTML=defs.map((d,i)=>`<div class="col-6 col-md"><div class="card card-stat ${$('fSt').value===d[2]?'on':''}" data-st="${d[2]}"><div class="card-body text-center py-3"><div>${d[0]}</div><h3 class="m-0">${n[i]}</h3></div></div></div>`).join('');
 }
-
-async function loadStats(){
-
-    const {data} =
-    await db
-    .from("reports")
-    .select("status");
-
-    document.getElementById(
-        "totalReports"
-    ).innerText = data.length;
-
-    document.getElementById(
-        "newReports"
-    ).innerText =
-    data.filter(x=>x.status==="NEW").length;
-
-    document.getElementById(
-        "processingReports"
-    ).innerText =
-    data.filter(x=>x.status==="PROCESSING").length;
-
-    document.getElementById(
-        "doneReports"
-    ).innerText =
-    data.filter(x=>x.status==="DONE").length;
+async function load(){
+  if(!CFG.url||!CFG.key)return warn('Chưa cấu hình server: điền supabaseUrl và anonKey trong config.json (cùng thư mục với trang này).');
+  try{
+    warn('');const ps=+$('ps').value;
+    const {j,range}=await api('reports?select='+encodeURIComponent(SEL)+'&order=createtime.desc&limit='+ps+'&offset='+page*ps+filters(),{headers:{Prefer:'count=exact'}});
+    total=+(range.split('/')[1])||0;
+    $('tb').innerHTML=j.length?j.map(r=>{const del=r.status==='DELETED',opts=(del?[...STS,'DELETED']:STS);
+      return`<tr><td>${esc(r.reportno)}</td><td class="s">${esc(r.subject)}</td><td>${esc(r.mc)}</td>
+      <td><select class="form-select form-select-sm st" data-id="${esc(r.id)}" style="background:${COL[r.status]||'#fff'}">${opts.map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td>${esc(r.createby)}</td><td>${fmt(r.createtime)}</td><td class="small">${r.modifiedtime?esc(r.modifiedby)+'<br>'+fmt(r.modifiedtime):''}</td>
+      <td><button class="btn btn-info btn-sm" data-a="view" data-id="${esc(r.id)}" data-no="${esc(r.reportno)}">Xem</button>
+      <button class="btn btn-warning btn-sm" data-a="edit" data-id="${esc(r.id)}">Sửa</button>
+      <button class="btn btn-outline-secondary btn-sm" data-a="link" data-id="${esc(r.id)}">Link</button>
+      ${del?`<button class="btn btn-success btn-sm" data-a="res" data-id="${esc(r.id)}">Khôi phục</button>`:`<button class="btn btn-danger btn-sm" data-a="del" data-id="${esc(r.id)}">Xóa</button>`}</td></tr>`}).join('')
+      :'<tr><td colspan="8" class="text-muted">Không có báo cáo nào.</td></tr>';
+    const pages=Math.max(1,Math.ceil(total/ps));
+    $('info').textContent=total+' báo cáo · trang '+(page+1)+'/'+pages;
+    $('pPrev').disabled=page<=0;$('pNext').disabled=page+1>=pages;
+    stats();
+  }catch(e){warn('Không tải được danh sách: '+e.message)}
 }
-
-async function loadReports(){
-
-    const keyword =
-    document.getElementById(
-        "searchBox"
-    ).value;
-
-    let query =
-    db
-    .from("reports")
-    .select("*")
-    .order(
-        "createtime",
-        {ascending:false}
-    );
-
-    if(keyword){
-
-        query =
-        query.ilike(
-            "reportno",
-            `%${keyword}%`
-        );
-    }
-
-    const {data,error} =
-    await query;
-
-    if(error){
-        console.error(error);
-        return;
-    }
-
-    let html = "";
-
-    data.forEach(r=>{
-
-        html += `
-        <tr>
-
-            <td>${r.reportno}</td>
-
-            <td>
-                <span class="badge ${badgeClass(r.status)}">
-                    ${r.status}
-                </span>
-            </td>
-
-            <td>${r.createby}</td>
-
-            <td>${formatDate(r.createtime)}</td>
-
-            <td>
-
-                <button
-                    class="btn btn-info btn-sm"
-                    onclick='viewReport(${JSON.stringify(r)})'>
-                    View
-                </button>
-
-                <button
-                    class="btn btn-warning btn-sm"
-                    onclick='editReport(${JSON.stringify(r)})'>
-                    Edit
-                </button>
-
-                <button
-                    class="btn btn-danger btn-sm"
-                    onclick="deleteReport('${r.id}')">
-                    Delete
-                </button>
-
-            </td>
-
-        </tr>
-        `;
-    });
-
-    document.getElementById(
-        "reportTable"
-    ).innerHTML = html;
-
-    loadStats();
+async function setStatus(id,st,ask){
+  if(ask&&!confirm('Xóa báo cáo này? Báo cáo chỉ bị ẩn khỏi danh sách và có thể khôi phục.'))return load();
+  let who=$('who').value.trim()||prompt('Nhập tên của bạn (ghi vào "người sửa cuối"):');
+  if(!who)return load();
+  $('who').value=who;localStorage.fjk_operator=who;
+  try{
+    const r=await api('reports?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:st,modifiedby:who})});
+    if(!r.j||!r.j.length)throw new Error('Không cập nhật được (không tìm thấy báo cáo hoặc không có quyền)');
+    toast(st==='DELETED'?'Đã xóa (ẩn) báo cáo':'Đã đổi trạng thái: '+st);
+  }catch(e){warn('Lỗi: '+e.message)}
+  load();
 }
+async function copy(s){try{if(navigator.clipboard&&isSecureContext)await navigator.clipboard.writeText(s);else throw 0}catch(e){const a=document.createElement('textarea');a.value=s;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast('Đã sao chép link xem')}
 
-function showNewModal(){
+$('tb').addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const id=b.dataset.id,a=b.dataset.a;
+  if(a==='view'){const u=appUrl('?view='+encodeURIComponent(id));$('vt').textContent='Báo cáo '+b.dataset.no;$('vo').href=u;$('vf').src=u;bootstrap.Modal.getOrCreateInstance($('vm')).show()}
+  if(a==='edit')open(appUrl('?edit='+encodeURIComponent(id)),'_blank');
+  if(a==='link')copy(appUrl('?view='+encodeURIComponent(id)));
+  if(a==='del')setStatus(id,'DELETED',true);
+  if(a==='res')setStatus(id,'NEW');
+});
+$('tb').addEventListener('change',e=>{const s=e.target.closest('.st');if(s)setStatus(s.dataset.id,s.value)});
+$('stats').addEventListener('click',e=>{const c=e.target.closest('[data-st]');if(c){$('fSt').value=c.dataset.st;page=0;load()}});
+$('vm').addEventListener('hidden.bs.modal',()=>{$('vf').src='about:blank'});
+$('bNew').onclick=()=>open(appUrl(),'_blank');
+$('bRef').onclick=()=>load();
+$('q').oninput=()=>{clearTimeout(tq);tq=setTimeout(()=>{page=0;load()},350)};
+for(const id of ['fSt','d1','d2','ps'])$(id).onchange=()=>{page=0;load()};
+$('pPrev').onclick=()=>{page--;load()};$('pNext').onclick=()=>{page++;load()};
+$('who').onchange=()=>{localStorage.fjk_operator=$('who').value.trim()};
 
-    document.getElementById("editId").value="";
-    document.getElementById("createby").value="";
-    document.getElementById("status").value="NEW";
-    document.getElementById("content").value="{}";
-
-    modal.show();
-}
-
-function editReport(r){
-
-    document.getElementById(
-        "editId"
-    ).value = r.id;
-
-    document.getElementById(
-        "createby"
-    ).value = r.createby;
-
-    document.getElementById(
-        "status"
-    ).value = r.status;
-
-    document.getElementById(
-        "content"
-    ).value =
-    JSON.stringify(
-        r.content,
-        null,
-        2
-    );
-
-    modal.show();
-}
-
-function viewReport(r){
-
-    alert(
-        JSON.stringify(
-            r,
-            null,
-            2
-        )
-    );
-}
-
-async function saveReport(){
-
-    try{
-
-        let payload = {
-
-            status:
-            document.getElementById("status").value,
-
-            createby:
-            document.getElementById("createby").value,
-
-            content:
-            JSON.parse(
-                document.getElementById("content").value
-            )
-        };
-
-        const id =
-        document.getElementById("editId").value;
-
-        let result;
-
-        if(id){
-
-            payload.modifiedby =
-            payload.createby;
-
-            result =
-            await db
-            .from("reports")
-            .update(payload)
-            .eq("id",id);
-
-        }else{
-
-            result =
-            await db
-            .from("reports")
-            .insert(payload);
-        }
-
-        if(result.error){
-            alert(result.error.message);
-            return;
-        }
-
-        modal.hide();
-
-        loadReports();
-
-    }catch(ex){
-
-        alert(
-          "JSON không hợp lệ"
-        );
-
-    }
-}
-
-async function deleteReport(id){
-
-    if(
-        !confirm(
-            "Delete report ?"
-        )
-    ) return;
-
-    const {error} =
-    await db
-    .from("reports")
-    .delete()
-    .eq("id",id);
-
-    if(error){
-
-        alert(error.message);
-        return;
-    }
-
-    loadReports();
-}
-
-document
-.getElementById("searchBox")
-.addEventListener(
-"keyup",
-loadReports
-);
-
-db.channel("reports")
-
-.on(
-"postgres_changes",
-{
-event:"*",
-schema:"public",
-table:"reports"
-},
-() => {
-
-    loadReports();
-
-    showToast(
-      "Reports updated"
-    );
-
-}
-)
-
-.subscribe();
-
-loadReports();
-
+(async()=>{
+  $('who').value=localStorage.fjk_operator||'';
+  try{const r=await fetch('config.json',{cache:'no-cache'});if(r.ok){const j=await r.json();
+    CFG.url=(j.supabaseUrl||'').replace(/\/+$/,'');CFG.key=(j.anonKey||'').trim();if(j.appUrl)CFG.app=j.appUrl}}catch(e){}
+  await load();
+  if(CFG.url&&CFG.key){
+    if(window.supabase){try{supabase.createClient(CFG.url,CFG.key).channel('reports')
+      .on('postgres_changes',{event:'*',schema:'public',table:'reports'},()=>{clearTimeout(tr);tr=setTimeout(()=>{load();toast('Có báo cáo vừa thay đổi')},800)}).subscribe()}catch(e){}}
+    else setInterval(()=>{if(!document.hidden)load()},30000);
+  }
+})();
 </script>
-
 </body>
 </html>
