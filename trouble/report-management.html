@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reports Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#f5f6fa;
+}
+
+.card-stat{
+    border:none;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.table-container{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.table th,
+.table td{
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
+}
+
+textarea{
+    font-family:consolas;
+}
+
+@media(max-width:768px){
+
+    h2{
+        font-size:1.3rem;
+    }
+
+    .table{
+        font-size:.85rem;
+    }
+
+    .btn{
+        font-size:.8rem;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid p-3">
+
+    <h2 class="mb-3">
+        Report Management
+    </h2>
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-6 col-md-3">
+            <div class="card card-stat">
+                <div class="card-body text-center">
+                    <div>Total</div>
+                    <h3 id="totalReports">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card card-stat">
+                <div class="card-body text-center">
+                    <div>NEW</div>
+                    <h3 id="newReports">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card card-stat">
+                <div class="card-body text-center">
+                    <div>PROCESSING</div>
+                    <h3 id="processingReports">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card card-stat">
+                <div class="card-body text-center">
+                    <div>DONE</div>
+                    <h3 id="doneReports">0</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="table-container">
+
+        <div class="row mb-3">
+
+            <div class="col-md-4 mb-2">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="searchBox"
+                    placeholder="Search report no">
+            </div>
+
+            <div class="col-md-8 text-md-end">
+
+                <button
+                    class="btn btn-success"
+                    onclick="showNewModal()">
+
+                    + New Report
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="loadReports()">
+
+                    Refresh
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                <tr>
+                    <th>Report No</th>
+                    <th>Status</th>
+                    <th>Create By</th>
+                    <th>Create Time</th>
+                    <th>Action</th>
+                </tr>
+
+                </thead>
+
+                <tbody id="reportTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+
+<div class="modal fade" id="reportModal" tabindex="-1">
+
+<div class="modal-dialog modal-fullscreen-sm-down modal-lg modal-dialog-scrollable">
+
+<div class="modal-content">
+
+<div class="modal-header">
+    <h5 class="modal-title">Report</h5>
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal">
+    </button>
+</div>
+
+<div class="modal-body">
+
+    <input type="hidden" id="editId">
+
+    <div class="mb-3">
+        <label class="form-label">Create By</label>
+        <input class="form-control" id="createby">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+
+        <select class="form-select" id="status">
+            <option>NEW</option>
+            <option>PROCESSING</option>
+            <option>DONE</option>
+            <option>REJECTED</option>
+        </select>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            Content JSON
+        </label>
+
+        <textarea
+            id="content"
+            class="form-control"
+            rows="12">{}</textarea>
+
+    </div>
+
+</div>
+
+<div class="modal-footer">
+
+    <button
+        class="btn btn-secondary"
+        data-bs-dismiss="modal">
+
+        Close
+
+    </button>
+
+    <button
+        class="btn btn-success"
+        onclick="saveReport()">
+
+        Save
+
+    </button>
+
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- Toast -->
+
+<div
+class="toast position-fixed top-0 end-0 m-3"
+id="liveToast">
+
+<div class="toast-header">
+
+<strong class="me-auto">
+Notification
+</strong>
+
+<button
+type="button"
+class="btn-close"
+data-bs-dismiss="toast">
+</button>
+
+</div>
+
+<div class="toast-body">
+Data updated
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "https://wdwwxqpdsrwcdnkyuqon.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkd3d4cXBkc3J3Y2Rua3l1cW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NzI5MDcsImV4cCI6MjEwNjU0ODkwN30.VwixiepX6GBWPsdF8ZVd2055nCnp9fK8gaZqLeeExxs"
+
+const db =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const modal =
+new bootstrap.Modal(
+document.getElementById("reportModal")
+);
+
+function showToast(message){
+
+    document.querySelector(
+        "#liveToast .toast-body"
+    ).innerText = message;
+
+    const toast =
+    new bootstrap.Toast(
+        document.getElementById("liveToast"),
+        {
+            delay:3000
+        }
+    );
+
+    toast.show();
+}
+
+function formatDate(value){
+
+    const d = new Date(value);
+
+    const m = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+    return (
+        String(d.getHours()).padStart(2,"0")
+        + ":" +
+        String(d.getMinutes()).padStart(2,"0")
+        + ":" +
+        String(d.getSeconds()).padStart(2,"0")
+        + " " +
+        String(d.getDate()).padStart(2,"0")
+        + "-" +
+        m[d.getMonth()]
+        + "-" +
+        d.getFullYear()
+    );
+}
+
+function badgeClass(status){
+
+    switch(status){
+
+        case "NEW":
+            return "bg-primary";
+
+        case "PROCESSING":
+            return "bg-warning text-dark";
+
+        case "DONE":
+            return "bg-success";
+
+        case "REJECTED":
+            return "bg-danger";
+
+        default:
+            return "bg-secondary";
+    }
+}
+
+async function loadStats(){
+
+    const {data} =
+    await db
+    .from("reports")
+    .select("status");
+
+    document.getElementById(
+        "totalReports"
+    ).innerText = data.length;
+
+    document.getElementById(
+        "newReports"
+    ).innerText =
+    data.filter(x=>x.status==="NEW").length;
+
+    document.getElementById(
+        "processingReports"
+    ).innerText =
+    data.filter(x=>x.status==="PROCESSING").length;
+
+    document.getElementById(
+        "doneReports"
+    ).innerText =
+    data.filter(x=>x.status==="DONE").length;
+}
+
+async function loadReports(){
+
+    const keyword =
+    document.getElementById(
+        "searchBox"
+    ).value;
+
+    let query =
+    db
+    .from("reports")
+    .select("*")
+    .order(
+        "createtime",
+        {ascending:false}
+    );
+
+    if(keyword){
+
+        query =
+        query.ilike(
+            "reportno",
+            `%${keyword}%`
+        );
+    }
+
+    const {data,error} =
+    await query;
+
+    if(error){
+        console.error(error);
+        return;
+    }
+
+    let html = "";
+
+    data.forEach(r=>{
+
+        html += `
+        <tr>
+
+            <td>${r.reportno}</td>
+
+            <td>
+                <span class="badge ${badgeClass(r.status)}">
+                    ${r.status}
+                </span>
+            </td>
+
+            <td>${r.createby}</td>
+
+            <td>${formatDate(r.createtime)}</td>
+
+            <td>
+
+                <button
+                    class="btn btn-info btn-sm"
+                    onclick='viewReport(${JSON.stringify(r)})'>
+                    View
+                </button>
+
+                <button
+                    class="btn btn-warning btn-sm"
+                    onclick='editReport(${JSON.stringify(r)})'>
+                    Edit
+                </button>
+
+                <button
+                    class="btn btn-danger btn-sm"
+                    onclick="deleteReport('${r.id}')">
+                    Delete
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+    });
+
+    document.getElementById(
+        "reportTable"
+    ).innerHTML = html;
+
+    loadStats();
+}
+
+function showNewModal(){
+
+    document.getElementById("editId").value="";
+    document.getElementById("createby").value="";
+    document.getElementById("status").value="NEW";
+    document.getElementById("content").value="{}";
+
+    modal.show();
+}
+
+function editReport(r){
+
+    document.getElementById(
+        "editId"
+    ).value = r.id;
+
+    document.getElementById(
+        "createby"
+    ).value = r.createby;
+
+    document.getElementById(
+        "status"
+    ).value = r.status;
+
+    document.getElementById(
+        "content"
+    ).value =
+    JSON.stringify(
+        r.content,
+        null,
+        2
+    );
+
+    modal.show();
+}
+
+function viewReport(r){
+
+    alert(
+        JSON.stringify(
+            r,
+            null,
+            2
+        )
+    );
+}
+
+async function saveReport(){
+
+    try{
+
+        let payload = {
+
+            status:
+            document.getElementById("status").value,
+
+            createby:
+            document.getElementById("createby").value,
+
+            content:
+            JSON.parse(
+                document.getElementById("content").value
+            )
+        };
+
+        const id =
+        document.getElementById("editId").value;
+
+        let result;
+
+        if(id){
+
+            payload.modifiedby =
+            payload.createby;
+
+            result =
+            await db
+            .from("reports")
+            .update(payload)
+            .eq("id",id);
+
+        }else{
+
+            result =
+            await db
+            .from("reports")
+            .insert(payload);
+        }
+
+        if(result.error){
+            alert(result.error.message);
+            return;
+        }
+
+        modal.hide();
+
+        loadReports();
+
+    }catch(ex){
+
+        alert(
+          "JSON không hợp lệ"
+        );
+
+    }
+}
+
+async function deleteReport(id){
+
+    if(
+        !confirm(
+            "Delete report ?"
+        )
+    ) return;
+
+    const {error} =
+    await db
+    .from("reports")
+    .delete()
+    .eq("id",id);
+
+    if(error){
+
+        alert(error.message);
+        return;
+    }
+
+    loadReports();
+}
+
+document
+.getElementById("searchBox")
+.addEventListener(
+"keyup",
+loadReports
+);
+
+db.channel("reports")
+
+.on(
+"postgres_changes",
+{
+event:"*",
+schema:"public",
+table:"reports"
+},
+() => {
+
+    loadReports();
+
+    showToast(
+      "Reports updated"
+    );
+
+}
+)
+
+.subscribe();
+
+loadReports();
+
+</script>
+
+</body>
+</html>
