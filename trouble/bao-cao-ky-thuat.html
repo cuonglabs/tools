@@ -62,6 +62,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .sw{width:26px;height:26px;border-radius:50%;border:2px solid #ccc;display:inline-block;cursor:pointer}
 .sw.on{border:3px solid #000;box-shadow:0 0 0 2px #fff inset}
 .th .an{position:absolute;bottom:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:#7c3aed;color:#fff;text-align:center;line-height:26px;cursor:pointer;font-style:normal;font-size:14px}
+.sym{min-width:42px;height:38px;font-size:16px;padding:0 8px;font-family:Arial,'Segoe UI Symbol',sans-serif}
 .navbar .btn{padding:.3rem .5rem;font-size:14px}
 .info{flex:none;height:112px;display:flex;border:1px solid #999;border-radius:6px;overflow:hidden}
 .g12{flex:1;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:46px 1fr;min-width:0}
@@ -237,6 +238,22 @@ $('pane-form').innerHTML=
  textCard(3,'subject')+textCard(4,'desc')+textCard(5,'action')+imgCard(6,'before')+imgCard(7,'after')+textCard(8,'mats')+textCard(9,'done')+
  card(10,'Nhân sự',fld('who','Người xử lý (ngăn cách bằng dấu phẩy)','text','Ví dụ: Cường, Nam, Hải')+`<label class="form-label mb-1 mt-2">Tổng manpower (giờ)</label><div class="input-group"><input type="number" min="0" step="0.5" class="form-control" data-k="mp" placeholder="Số người × số giờ. VD: 3×2 = 6"><button class="btn btn-outline-primary" data-act="mpcalc" title="Số người × thời gian từ bắt đầu đến hoàn thành">🧮 Tự tính</button></div><div class="d-none" id="mo-who">${guide('who')}</div>`,'mo-who')+
  `<div class="cardx"><h2><span><i>11.</i>Người lập ký tên</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="sigbtn" data-act="sigtoggle">✍ Sửa</button><button class="dots" data-more="mo-sig" title="Lưu chữ ký và hướng dẫn">⋮</button></span></h2><div style="position:relative"><canvas id="sigc" width="600" height="220"></canvas><div id="sigh"></div></div><div class="d-none mt-2" id="mo-sig"><div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>${guide('sig')}</div></div>`;
+const SYM=[
+ ['Điện & đơn vị',[['Ω','Ôm'],['mΩ','Mili ôm'],['kΩ','Kilô ôm'],['MΩ','Mêga ôm'],['µ','Micro'],['µA','Micro ampe'],['µF','Micro fara'],['µV','Micro vôn'],['µs','Micro giây'],['µm','Micro mét'],['mm²','Milimét vuông'],['m³','Mét khối'],['cm³','Xentimét khối']]],
+ ['Nhiệt độ & góc',[['°','Độ'],['°C','Độ C'],['°F','Độ F'],['′','Phút (góc)'],['″','Giây (góc)'],['∠','Góc']]],
+ ['Toán học',[['±','Cộng trừ'],['×','Nhân'],['÷','Chia'],['≈','Xấp xỉ'],['≠','Khác'],['≤','Nhỏ hơn hoặc bằng'],['≥','Lớn hơn hoặc bằng'],['∞','Vô cực'],['√','Căn bậc hai'],['π','Pi'],['∑','Tổng'],['Δ','Delta (chênh lệch)'],['Ø','Đường kính']]],
+ ['Mũi tên',[['→','Sang phải'],['←','Sang trái'],['↑','Lên'],['↓','Xuống'],['↔','Hai chiều'],['⇒','Suy ra']]],
+ ['Đánh dấu',[['✓','Đạt'],['✔','Đạt (đậm)'],['✗','Không đạt'],['✘','Không đạt (đậm)'],['⚠','Cảnh báo'],['●','Chấm tròn đặc'],['○','Chấm tròn rỗng'],['■','Vuông đặc'],['□','Vuông rỗng'],['▲','Tam giác lên'],['▼','Tam giác xuống'],['★','Sao đặc'],['☆','Sao rỗng']]],
+ ['Chữ Hy Lạp',[['α','Alpha'],['β','Beta'],['γ','Gamma'],['θ','Theta'],['λ','Lambda'],['φ','Phi'],['ω','Omega nhỏ']]],
+ ['Chỉ số trên / dưới',[['⁰','Mũ 0'],['¹','Mũ 1'],['²','Mũ 2'],['³','Mũ 3'],['⁴','Mũ 4'],['⁵','Mũ 5'],['⁻','Mũ trừ'],['₀','Chỉ số 0'],['₁','Chỉ số 1'],['₂','Chỉ số 2'],['₃','Chỉ số 3'],['₄','Chỉ số 4']]],
+ ['Khác',[['‰','Phần nghìn'],['·','Dấu chấm giữa'],['•','Gạch đầu dòng'],['…','Dấu ba chấm'],['–','Gạch ngang ngắn'],['—','Gạch ngang dài']]]];
+const SYMT=['Điện','Nhiệt độ','Toán','Mũi tên','Đánh dấu','Hy Lạp','Chỉ số','Khác'];
+function symTab(i){document.querySelectorAll('[data-symtab]').forEach(b=>{const on=+b.dataset.symtab===i;b.classList.toggle('btn-primary',on);b.classList.toggle('btn-outline-primary',!on)});
+ $('symbody').innerHTML=SYM[i][1].map(([c,n])=>`<button class="btn btn-outline-secondary btn-sm sym" data-cp="${c}" title="${n}">${c}</button>`).join('')}
+$('pane-form').insertAdjacentHTML('beforeend',card(12,'Ký tự đặc biệt',
+ `<div class="d-flex gap-1 flex-nowrap overflow-auto pb-1">${SYMT.map((n,i)=>`<button class="btn btn-sm btn-outline-primary flex-shrink-0" data-symtab="${i}">${n}</button>`).join('')}</div><div class="d-flex flex-wrap gap-1 mt-2" id="symbody"></div>`+
+ `<div class="d-none" id="mo-sym"><div class="guide">Chọn nhóm ở hàng trên (vuốt ngang để xem thêm nhóm), rồi bấm vào ký tự để sao chép. Sau đó dán (Ctrl+V, hoặc chạm giữ ô nhập và chọn Dán) vào ô bạn cần, trong ứng dụng này hoặc ở nơi khác. Ký tự ghép như mΩ, µA đã gộp sẵn. Trên máy tính, rê chuột vào ký tự để xem tên. Một số ký tự (✓ ✗ ⚠ ★) có thể hiển thị khác nhau tùy font của máy.</div></div>`,'mo-sym'));
+symTab(0);
 
 function fillEN(){document.querySelectorAll('[data-en]').forEach(e=>e.value=S.en[e.dataset.en]||'')}
 function fill(){fillEN();document.querySelectorAll('[data-fs]').forEach(e=>e.value=S.fs||12);document.querySelectorAll('[data-k]').forEach(e=>e.value=S[e.dataset.k]||'');
@@ -394,6 +411,12 @@ const anEnd=()=>{if(!AN||!AN.cur)return;const s=AN.cur;AN.cur=null;
  if(Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1])>.01||(s.t==='pen'&&s.p.length>3))AN.shapes.push(s);annDraw()};
 $('annc').addEventListener('pointerup',anEnd);$('annc').addEventListener('pointercancel',anEnd);
 
+/* ---------- Sao chép ký tự đặc biệt ---------- */
+async function copyTxt(s){let ok=false;
+ try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(s);ok=true}}catch(e){}
+ if(!ok){try{const a=document.createElement('textarea');a.value=s;a.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(a);a.focus();a.select();a.setSelectionRange(0,s.length);ok=document.execCommand('copy');a.remove()}catch(e){}}
+ toast(ok?'📋 Đã sao chép: '+s:'Không sao chép được, hãy chọn và copy thủ công',2000)}
+
 /* ---------- Gợi ý mã số máy ---------- */
 const norm=s=>s.toUpperCase().replace(/[^A-Z0-9]/g,'');
 function acShow(el,focus){const k=el.dataset.ac,box=$('ac-'+k),q=norm(k==='who'?el.value.split(',').pop():el.value);
@@ -455,6 +478,8 @@ document.addEventListener('click',e=>{const t=e.target;let el;
  if(el=t.closest('[data-del]')){const[s,x]=el.dataset.del.split(':');S[s].splice(+x,1);save();render();return}
  if(el=t.closest('[data-mv]')){const[s,x]=el.dataset.mv.split(':').map((v,i)=>i?+v:v);[S[s][x-1],S[s][x]]=[S[s][x],S[s][x-1]];save();render();return}
  if(el=t.closest('[data-rot]')){const[s,x]=el.dataset.rot.split(':');rotate(s,+x);return}
+ if(el=t.closest('[data-symtab]')){symTab(+el.dataset.symtab);return}
+ if(el=t.closest('[data-cp]')){copyTxt(el.dataset.cp);return}
  if(el=t.closest('[data-lang]')){setLang(el.dataset.lang);return}
  if(el=t.closest('[data-retr]')){S.enSrc[el.dataset.retr]='';ensureEN();return}
  if(el=t.closest('[data-tool]')){if(AN){AN.tool=el.dataset.tool;annUI()}return}
