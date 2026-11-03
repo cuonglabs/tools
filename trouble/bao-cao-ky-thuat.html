@@ -739,7 +739,9 @@ async function loadAssets(){const bad=[];
  if(qv){VIEW=true;          // chế độ xem: dựng lại đúng như file HTML tải về
   try{await loadAssets();if(!sbOK())throw new Error('Chưa cấu hình server (config.json)');
    applyRow(await fetchReport(qv));fill();setTab('prev');render();await new Promise(r=>setTimeout(r,300));
-   const r=await buildViewHTML();document.open();document.write(r.html);document.close()}
+   const r=await buildViewHTML();
+   if(window.self!==window.top)location.replace(URL.createObjectURL(new Blob([r.html],{type:'text/html;charset=utf-8'})));   // trong khung (iframe): chuyển sang tài liệu mới, tránh ghi đè tài liệu đang mở
+   else{document.open();document.write(r.html);document.close()}}
   catch(e){document.documentElement.classList.remove('boot');document.body.innerHTML='<div style="padding:24px;font:16px Arial,sans-serif">Không mở được báo cáo: '+esc(e.message)+'</div>'}
   return}
  let fromServer=false;
