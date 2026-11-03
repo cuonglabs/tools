@@ -1,345 +1,680 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-bs-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>CuongLabs Dashboard</title>
+<title>CuongLabs</title>
 
-    <!-- Favicon -->
-    <link rel="icon" href="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico">
+<link rel="icon"
+href="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico">
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
 
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+rel="stylesheet">
 
-    <style>
-        body{
-            background:#f8f9fa;
-            min-height:100vh;
-            display:flex;
-            flex-direction:column;
-        }
+<style>
 
-        .navbar-brand img{
-            height:40px;
-            width:40px;
-            margin-right:10px;
-        }
+body{
+    min-height:100vh;
+    background:#f5f7fa;
+    transition:.3s;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+}
 
-        .hero{
-            background:linear-gradient(135deg,#0d6efd,#0dcaf0);
-            color:white;
-            padding:60px 0;
-            text-align:center;
-        }
+.navbar-brand img{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+}
 
-        .hero h1{
-            font-weight:700;
-        }
+.hero{
+    background:linear-gradient(135deg,#0d6efd,#0dcaf0);
+    color:white;
+    padding:60px 0;
+}
 
-        .tool-card{
-            transition:all .3s ease;
-            border:none;
-            border-radius:15px;
-            overflow:hidden;
-            box-shadow:0 4px 15px rgba(0,0,0,.08);
-        }
+.tool-card{
+    transition:.3s;
+    border:none;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
 
-        .tool-card:hover{
-            transform:translateY(-8px);
-            box-shadow:0 10px 25px rgba(0,0,0,.15);
-        }
+.tool-card:hover{
+    transform:translateY(-8px);
+}
 
-        .tool-icon{
-            font-size:4rem;
-            color:#0d6efd;
-        }
+.tool-icon{
+    font-size:60px;
+}
 
-        .card-body{
-            padding:30px;
-        }
+.avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    object-fit:cover;
+    cursor:pointer;
+}
 
-        .btn-open{
-            width:100%;
-        }
+.search-box{
+    width:320px;
+    position:relative;
+}
 
-        footer{
-            margin-top:auto;
-            background:#212529;
-            color:white;
-        }
+@media(max-width:991px){
 
-        .footer-link{
-            color:#adb5bd;
-            text-decoration:none;
-        }
+.search-box{
+    width:100%;
+    margin-top:10px;
+}
 
-        .footer-link:hover{
-            color:white;
-        }
+}
 
-        .contact-box{
-            background:white;
-            border-radius:15px;
-            padding:20px;
-            box-shadow:0 4px 15px rgba(0,0,0,.08);
-        }
-    </style>
+.search-result{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    z-index:9999;
+    display:none;
+}
+
+.search-result.show{
+    display:block;
+}
+
+footer{
+    margin-top:60px;
+}
+
+</style>
 </head>
+
 <body>
 
-<!-- HEADER -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
 
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico"
-                 alt="CuongLabs Logo">
-            <strong>CuongLabs Dashboard</strong>
-        </a>
+<div class="container">
 
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarContent">
+<a class="navbar-brand d-flex align-items-center"
+href="#">
 
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<img
+src="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico">
 
-        <div class="collapse navbar-collapse"
-             id="navbarContent">
+<span class="ms-2 fw-bold">
+CuongLabs
+</span>
 
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#tools">Công cụ</a>
-                </li>
+</a>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">Giới thiệu</a>
-                </li>
+<button class="navbar-toggler"
+data-bs-toggle="collapse"
+data-bs-target="#navbarContent">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Liên hệ</a>
-                </li>
-            </ul>
+<span class="navbar-toggler-icon"></span>
 
-        </div>
-    </div>
+</button>
+
+<div class="collapse navbar-collapse"
+id="navbarContent">
+
+<div class="mx-auto search-box">
+
+<input
+id="searchInput"
+class="form-control"
+placeholder="Tìm kiếm công cụ...">
+
+<div
+id="searchResult"
+class="dropdown-menu search-result">
+</div>
+
+</div>
+
+<ul class="navbar-nav ms-auto align-items-center">
+
+<li class="nav-item dropdown">
+
+<img
+id="avatar"
+class="avatar dropdown-toggle"
+data-bs-toggle="dropdown"
+src="https://ui-avatars.com/api/?name=User&background=0d6efd&color=fff">
+
+<ul class="dropdown-menu dropdown-menu-end">
+
+<li>
+<h6 class="dropdown-header">
+Người dùng
+</h6>
+</li>
+
+<li>
+<a class="dropdown-item"
+href="#"
+onclick="login()">
+<i class="bi bi-box-arrow-in-right"></i>
+Đăng nhập
+</a>
+</li>
+
+<li>
+<a class="dropdown-item"
+href="#"
+onclick="logout()">
+<i class="bi bi-box-arrow-right"></i>
+Đăng xuất
+</a>
+</li>
+
+<li>
+<hr class="dropdown-divider">
+</li>
+
+<li>
+<a class="dropdown-item"
+href="#"
+data-bs-toggle="modal"
+data-bs-target="#settingsModal">
+<i class="bi bi-gear"></i>
+Thiết lập
+</a>
+</li>
+
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+</div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-    <div class="container">
-        <h1>CuongLabs Tools Dashboard</h1>
-        <p class="lead">
-            Hệ thống quản lý báo cáo, đăng nhập và theo dõi sự cố kỹ thuật.
-        </p>
-    </div>
-</section>
+<div class="hero">
 
-<!-- TOOLS -->
-<section class="py-5" id="tools">
-    <div class="container">
+<div class="container text-center">
 
-        <div class="row g-4">
+<h1>CuongLabs</h1>
 
-            <!-- Tool 1 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="card tool-card h-100">
+<p class="lead">
+Hệ thống quản lý công cụ nội bộ
+</p>
 
-                    <div class="card-body text-center">
+</div>
 
-                        <i class="bi bi-file-earmark-text tool-icon"></i>
+</div>
 
-                        <h4 class="mt-3">
-                            Báo Cáo Kỹ Thuật
-                        </h4>
+<div class="container my-5">
 
-                        <p class="text-muted">
-                            Tạo và quản lý các báo cáo kỹ thuật.
-                        </p>
+<div class="row g-4">
 
-                        <a href="https://cuonglabs.github.io/tools/trouble/bao-cao-ky-thuat.html"
-                           target="_blank"
-                           class="btn btn-primary btn-open">
+<div class="col-lg-4"
+id="tool-report">
 
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            Mở công cụ
-                        </a>
+<div class="card tool-card h-100">
 
-                    </div>
-                </div>
-            </div>
+<div class="card-body text-center">
 
-            <!-- Tool 2 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="card tool-card h-100">
+<i class="bi bi-file-earmark-text text-primary tool-icon"></i>
 
-                    <div class="card-body text-center">
+<h4 class="mt-3">
+Báo Cáo Kỹ Thuật
+</h4>
 
-                        <i class="bi bi-person-lock tool-icon"></i>
+<p>
+Tạo báo cáo kỹ thuật
+</p>
 
-                        <h4 class="mt-3">
-                            Đăng Nhập Hệ Thống
-                        </h4>
+<a
+href="https://cuonglabs.github.io/tools/trouble/bao-cao-ky-thuat.html"
+target="_blank"
+class="btn btn-primary">
 
-                        <p class="text-muted">
-                            Xác thực tài khoản người dùng.
-                        </p>
+Mở
 
-                        <a href="https://cuonglabs.github.io/tools/auth/login.html"
-                           target="_blank"
-                           class="btn btn-success btn-open">
+</a>
 
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            Mở công cụ
-                        </a>
+</div>
+</div>
+</div>
 
-                    </div>
-                </div>
-            </div>
+<div class="col-lg-4"
+id="tool-management">
 
-            <!-- Tool 3 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="card tool-card h-100">
+<div class="card tool-card h-100">
 
-                    <div class="card-body text-center">
+<div class="card-body text-center">
 
-                        <i class="bi bi-clipboard-data tool-icon"></i>
+<i class="bi bi-clipboard-data tool-icon text-success"></i>
 
-                        <h4 class="mt-3">
-                            Report Management
-                        </h4>
+<h4 class="mt-3">
+Report Management
+</h4>
 
-                        <p class="text-muted">
-                            Quản lý, theo dõi và tra cứu báo cáo.
-                        </p>
+<p>
+Quản lý báo cáo
+</p>
 
-                        <a href="https://cuonglabs.github.io/tools/trouble/report-management.html"
-                           target="_blank"
-                           class="btn btn-warning btn-open">
+<a
+href="https://cuonglabs.github.io/tools/trouble/report-management.html"
+target="_blank"
+class="btn btn-success">
 
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            Mở công cụ
-                        </a>
+Mở
 
-                    </div>
-                </div>
-            </div>
+</a>
 
-        </div>
+</div>
+</div>
+</div>
 
-    </div>
-</section>
+<div class="col-lg-4"
+id="tool-overtime">
 
-<!-- ABOUT -->
-<section id="about" class="py-5 bg-white">
-    <div class="container">
+<div class="card tool-card h-100">
 
-        <div class="row">
+<div class="card-body text-center">
 
-            <div class="col-lg-8 mx-auto text-center">
+<i class="bi bi-clock-history text-danger tool-icon"></i>
 
-                <h2>Giới Thiệu</h2>
+<h4 class="mt-3">
+Overtime
+</h4>
 
-                <p class="text-muted">
-                    CuongLabs Dashboard là cổng truy cập tập trung cho các công cụ hỗ trợ
-                    quản lý sự cố, báo cáo kỹ thuật, theo dõi hệ thống và quản trị người dùng.
-                </p>
+<p>
+Quản lý tăng ca
+</p>
 
-            </div>
+<a
+href="https://cuonglabs.github.io/tools/overtime/"
+target="_blank"
+class="btn btn-danger">
 
-        </div>
+Mở
 
-    </div>
-</section>
+</a>
 
-<!-- CONTACT -->
-<section id="contact" class="py-5">
-    <div class="container">
+</div>
+</div>
+</div>
 
-        <div class="contact-box">
+</div>
 
-            <div class="row">
+</div>
 
-                <div class="col-md-6">
-                    <h4>
-                        <i class="bi bi-person-circle"></i>
-                        Thông Tin Liên Hệ
-                    </h4>
+<footer class="bg-dark text-white py-4">
 
-                    <hr>
+<div class="container">
 
-                    <p>
-                        <strong>Nguyễn Văn Cường</strong>
-                    </p>
+<div class="row">
 
-                    <p>
-                        <i class="bi bi-envelope-fill"></i>
-                        Email:
-                        <a href="mailto:cuong@cuonglabs.com">
-                            cuong@cuonglabs.com
-                        </a>
-                    </p>
+<div class="col-md-6">
 
-                    <p>
-                        <i class="bi bi-globe"></i>
-                        Website:
-                        <a href="https://github.com/cuonglabs"
-                           target="_blank">
-                            github.com/cuonglabs
-                        </a>
-                    </p>
-                </div>
+<h5>CuongLabs</h5>
 
-                <div class="col-md-6">
-                    <h4>
-                        <i class="bi bi-info-circle-fill"></i>
-                        Hệ Thống
-                    </h4>
+<p>
+Dashboard quản lý công cụ nội bộ.
+</p>
 
-                    <hr>
+</div>
 
-                    <p>✔ Bootstrap 5 Responsive</p>
-                    <p>✔ Mobile Friendly</p>
-                    <p>✔ Laptop/Desktop Friendly</p>
-                    <p>✔ GitHub Pages Ready</p>
-                </div>
+<div class="col-md-6 text-md-end">
 
-            </div>
+<p>
+Email:
+support@cuonglabs.com
+</p>
 
-        </div>
+<p>
+GitHub:
+github.com/cuonglabs
+</p>
 
-    </div>
-</section>
+</div>
 
-<!-- FOOTER -->
-<footer class="py-4">
-    <div class="container text-center">
+</div>
 
-        <img
-            src="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico"
-            width="40"
-            class="mb-2"
-            alt="logo">
+</div>
 
-        <h5>CuongLabs Dashboard</h5>
-
-        <p class="mb-1">
-            Quản lý báo cáo và hệ thống nội bộ
-        </p>
-
-        <small class="text-secondary">
-            © 2026 CuongLabs. All Rights Reserved.
-        </small>
-
-    </div>
 </footer>
 
+<div class="modal fade"
+id="settingsModal">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+Thiết lập
+</h5>
+
+<button
+class="btn-close"
+data-bs-dismiss="modal">
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="form-check mb-3">
+
+<input
+type="checkbox"
+class="form-check-input"
+id="rememberLogin">
+
+<label class="form-check-label">
+Ghi nhớ đăng nhập
+</label>
+
+</div>
+
+<div class="form-check mb-3">
+
+<input
+type="checkbox"
+class="form-check-input"
+id="darkMode">
+
+<label class="form-check-label">
+Dark Mode
+</label>
+
+</div>
+
+<hr>
+
+<label class="form-label">
+
+Ảnh nền
+
+</label>
+
+<input
+type="file"
+id="backgroundFile"
+accept="image/*"
+class="form-control">
+
+<hr>
+
+<label class="form-label">
+
+Ảnh đại diện
+
+</label>
+
+<input
+type="file"
+id="avatarFile"
+accept="image/*"
+class="form-control">
+
+</div>
+
+<div class="modal-footer">
+
+<button
+class="btn btn-secondary"
+onclick="resetSettings()">
+
+Mặc định
+
+</button>
+
+<button
+class="btn btn-primary"
+onclick="saveSettings()">
+
+Lưu
+
+</button>
+
+</div>
+
+</div>
+</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+const searchableItems=[
+{
+name:"Báo Cáo Kỹ Thuật",
+target:"#tool-report"
+},
+{
+name:"Report Management",
+target:"#tool-management"
+},
+{
+name:"Overtime",
+target:"#tool-overtime"
+}
+];
+
+const input=document.getElementById("searchInput");
+const result=document.getElementById("searchResult");
+
+let timer;
+
+input.addEventListener("input",()=>{
+
+clearTimeout(timer);
+
+timer=setTimeout(searchData,300);
+
+});
+
+function searchData(){
+
+const keyword=input.value.toLowerCase().trim();
+
+result.innerHTML="";
+
+if(!keyword){
+
+result.classList.remove("show");
+
+return;
+
+}
+
+const rows=searchableItems.filter(x=>
+x.name.toLowerCase().includes(keyword));
+
+rows.slice(0,10).forEach(item=>{
+
+const a=document.createElement("a");
+
+a.className="dropdown-item";
+
+a.href="#";
+
+a.innerText=item.name;
+
+a.onclick=e=>{
+
+e.preventDefault();
+
+result.classList.remove("show");
+
+document
+.querySelector(item.target)
+.scrollIntoView({
+behavior:"smooth"
+});
+
+};
+
+result.appendChild(a);
+
+});
+
+if(rows.length){
+
+result.classList.add("show");
+
+}else{
+
+result.classList.remove("show");
+
+}
+
+}
+
+function saveSettings(){
+
+const darkMode=
+document.getElementById("darkMode").checked;
+
+const remember=
+document.getElementById("rememberLogin").checked;
+
+localStorage.setItem(
+"darkMode",
+darkMode
+);
+
+localStorage.setItem(
+"rememberLogin",
+remember
+);
+
+document.documentElement.setAttribute(
+"data-bs-theme",
+darkMode ? "dark":"light"
+);
+
+alert("Đã lưu");
+
+}
+
+function resetSettings(){
+
+localStorage.clear();
+
+location.reload();
+
+}
+
+document.getElementById("backgroundFile")
+.addEventListener("change",function(){
+
+const file=this.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+
+localStorage.setItem(
+"background",
+e.target.result
+);
+
+document.body.style.backgroundImage=
+`url(${e.target.result})`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+document.getElementById("avatarFile")
+.addEventListener("change",function(){
+
+const file=this.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+
+localStorage.setItem(
+"avatar",
+e.target.result
+);
+
+document.getElementById("avatar").src=
+e.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+function loadSettings(){
+
+const bg=
+localStorage.getItem("background");
+
+if(bg){
+
+document.body.style.backgroundImage=
+`url(${bg})`;
+
+}
+
+const avatar=
+localStorage.getItem("avatar");
+
+if(avatar){
+
+document.getElementById("avatar").src=
+avatar;
+
+}
+
+const darkMode=
+localStorage.getItem("darkMode")==="true";
+
+document.getElementById(
+"darkMode"
+).checked=darkMode;
+
+document.documentElement
+.setAttribute(
+"data-bs-theme",
+darkMode?"dark":"light"
+);
+
+}
+
+function login(){
+
+alert("Tích hợp login.html tại đây");
+
+}
+
+function logout(){
+
+alert("Đã đăng xuất");
+
+}
+
+loadSettings();
+
+</script>
 
 </body>
 </html>
