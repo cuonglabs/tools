@@ -4,12 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Báo cáo kỹ thuật – Fujikura</title>
+<script>if(/[?&](view|edit)=/.test(location.search))document.documentElement.className="boot"</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <style>
 :root{--blue:#0b5cab}
+.boot body{visibility:hidden}
+.boot::before{content:"Đang tải báo cáo...";position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;color:#555;font:16px Arial,sans-serif;z-index:99999;visibility:visible}
 body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72px}
 @media(min-width:992px){body{padding-bottom:0}#pane-prev{position:sticky;top:70px;align-self:flex-start}}
 .form-control,.form-select{font-size:16px}
@@ -100,10 +103,10 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
    <button class="btn btn-outline-secondary" data-act="new" title="Làm báo cáo mới">➕<span class="d-none d-sm-inline"> Mới</span></button>
    <div class="btn-group" title="Ngôn ngữ báo cáo (xem trước, PDF, Excel)"><button class="btn btn-primary" data-lang="vi">VI</button><button class="btn btn-outline-primary" data-lang="en">EN</button></div>
    <div class="d-flex gap-1 position-relative">
+    <button class="btn btn-primary" data-act="srvsave" title="Lưu báo cáo lên server"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-4px"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg><span class="d-none d-sm-inline"> Lưu</span></button>
     <button class="btn btn-outline-primary" data-act="share" title="Chia sẻ PDF qua Zalo, Email..."><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span class="d-none d-sm-inline"> Gửi</span></button>
     <button class="dots" data-menu title="Menu" aria-label="Menu">⋮</button>
     <div class="dropdown-menu shadow" id="hmenu" style="right:0;left:auto;top:100%;margin-top:6px;min-width:170px">
-     <button class="dropdown-item py-2" data-act="srvsave"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> Lưu lên server</button>
      <button class="dropdown-item py-2" data-act="srvlink"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg> Sao chép link xem</button>
      <div class="dropdown-divider"></div>
      <button class="dropdown-item py-2" data-act="drafts">📂 Đã lưu</button>
@@ -180,7 +183,7 @@ const $=id=>document.getElementById(id), MAX=6;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const fd=s=>s?s.split('-').reverse().join('-'):'';
-const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',sig2:'',confirmer:'',serverId:'',reportNo:'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
+const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',sig2:'',confirmer:'',serverId:'',reportNo:'',dirty:false,srvTime:'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
 let S=blank(), busy=false, side0='before', tab='form';
 
 
@@ -226,7 +229,7 @@ function imgCard(n,s){return `<div class="cardx"><h2><span><i>${n}.</i>${SIDE[s]
 
 function sigCard(n,k,title,save){return `<div class="cardx"><h2><span><i>${n}.</i>${title}</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear" data-sk="${k}">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="b_${k}" data-act="sigtoggle" data-sk="${k}">✍ Sửa</button><button class="dots" data-more="mo-${k}" title="${save?'Lưu chữ ký và hướng dẫn':'Hướng dẫn'}">⋮</button></span></h2>${k==='sig2'?fld('confirmer','Họ và tên người xác nhận (hiện dưới chữ ký)','text','Họ và tên'):''}<div style="position:relative" class="mt-2"><canvas class="sigcv" id="c_${k}" width="600" height="220"></canvas><div class="sigh" id="h_${k}"></div></div><div class="d-none mt-2" id="mo-${k}">${save?`<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>`:''}${guide(k)}</div></div>`}
 const GD={
- info:'Mã số báo cáo do server cấp khi bấm "Lưu lên server" (dạng PLE-năm-tháng-số thứ tự); trước đó hiện mã tạm PLE-năm-tháng-ngày theo Ngày lập (mặc định hôm nay). Người lập và Mã số máy: chạm vào ô để chọn lại giá trị đã dùng, hoặc gõ vài ký tự để tìm (VD: "blk pre 03"). Máy không có trong danh sách thì cứ nhập tay. Nút VI/EN trên thanh trên cùng đổi ngôn ngữ báo cáo (xem trước, PDF, Excel); chữ bạn nhập được tự dịch sang tiếng Anh và có thể sửa trong ⋮ của từng mục.',
+ info:'Mã số báo cáo do server cấp khi bấm "Lưu lên server" (dạng PLE-năm-tháng-số thứ tự); trước đó hiện mã tạm PLE-năm-tháng-ngày theo Ngày lập (mặc định hôm nay). Người lập và Mã số máy: chạm vào ô để chọn lại giá trị đã dùng, hoặc gõ vài ký tự để tìm (VD: "blk pre 03"). Máy không có trong danh sách thì cứ nhập tay. Nút VI/EN trên thanh trên cùng đổi ngôn ngữ báo cáo (xem trước, PDF, Excel); chữ bạn nhập được tự dịch sang tiếng Anh và có thể sửa trong ⋮ của từng mục. Chất lượng ảnh khi lưu lên server mặc định 96 dpi: ảnh được thu nhỏ vừa với khung hiển thị để nhẹ, ảnh vốn nhỏ hơn thì giữ nguyên; đổi ở ô "Chất lượng ảnh" phía trên.',
  time:'Chọn ngày giờ bắt đầu và hoàn thành (24 giờ). Thời gian stop tự tính từ hai mốc này: dưới 60 phút hiện phút, từ 60 phút trở lên hiện giờ (VD: 90 phút = 1,5 giờ). Nếu thực tế khác, nhập số phút vào ô phía trên.',
  subject:'Ghi ngắn gọn trong 1 dòng: việc đã làm + tên máy. VD: Thay sensor máy FV-BLK-PRE-03.',
  desc:'Mô tả vấn đề: máy/vị trí, hiện tượng, thời điểm phát hiện, ảnh hưởng đến sản xuất. Mỗi ý một dòng cho dễ đọc.',
@@ -241,7 +244,7 @@ const card=(n,t,b,m)=>`<div class="cardx"><h2><span><i>${n}.</i>${t}</span>${m?`
 const fld=(k,l,ty='text',ph='')=>{const ac=/^(mc|name|who|confirmer)$/.test(k);return `<label class="form-label mb-1 mt-2">${l}</label>`+(ac?'<div class="position-relative">':'')+`<input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}"${ac?` data-ac="${k}" autocomplete="off"`:''}>`+(ac?`<div class="ac" id="ac-${k}"></div></div>`:'')};
 const bl='<div class="mt-2 p-2 rounded" style="background:#eef5ff">';
 $('pane-form').innerHTML=
- card(1,'Thông tin chung',`<label class="form-label mb-1">Ngày lập báo cáo</label><input type="date" class="form-control" data-k="date">`+fld('name','Người lập báo cáo','text','Họ và tên')+fld('mc','Mã số máy','text','Gõ để tìm hoặc tự nhập')+`<div class="d-none" id="mo-code">${bl}Mã số báo cáo: <b id="codeshow"></b></div><label class="form-label mb-1 mt-2 small">Cỡ chữ nội dung báo cáo</label><select class="form-select" data-fs><option value="12">12 pt (chuẩn)</option><option value="11">11 pt (nhiều chữ hơn)</option><option value="10">10 pt (nhiều nhất)</option></select>${guide('info')}</div>`,'mo-code')+
+ card(1,'Thông tin chung',`<label class="form-label mb-1">Ngày lập báo cáo</label><input type="date" class="form-control" data-k="date">`+fld('name','Người lập báo cáo','text','Họ và tên')+fld('mc','Mã số máy','text','Gõ để tìm hoặc tự nhập')+`<div class="d-none" id="mo-code">${bl}Mã số báo cáo: <b id="codeshow"></b></div><label class="form-label mb-1 mt-2 small">Cỡ chữ nội dung báo cáo</label><select class="form-select" data-fs><option value="12">12 pt (chuẩn)</option><option value="11">11 pt (nhiều chữ hơn)</option><option value="10">10 pt (nhiều nhất)</option></select><label class="form-label mb-1 mt-2 small">Chất lượng ảnh khi lưu lên server</label><select class="form-select" data-dpi><option value="96">96 dpi – nhẹ nhất (đề xuất)</option><option value="150">150 dpi – nét hơn</option><option value="200">200 dpi – nét cao</option><option value="0">Giữ nguyên chất lượng gốc</option></select>${guide('info')}</div>`,'mo-code')+
  card(2,'Thời gian',fld('t1','Ngày - giờ bắt đầu','datetime-local')+fld('t2','Ngày - giờ hoàn thành','datetime-local')+`<div class="warn" id="w-t">⚠ Giờ hoàn thành đang sớm hơn giờ bắt đầu.</div><div class="d-none" id="mo-stop">${bl}Thời gian stop: <b id="stopshow"></b></div><label class="form-label mb-1 mt-2 small">Tự nhập thời gian stop (phút), để trống = tự tính</label><input type="number" min="0" class="form-control" data-k="stopMan">${guide('time')}</div>`,'mo-stop')+
  textCard(3,'subject')+textCard(4,'desc')+textCard(5,'action')+imgCard(6,'before')+imgCard(7,'after')+textCard(8,'mats')+textCard(9,'done')+
  card(10,'Nhân sự',fld('who','Người xử lý (ngăn cách bằng dấu phẩy)','text','Ví dụ: Cường, Nam, Hải')+`<label class="form-label mb-1 mt-2">Tổng manpower (giờ)</label><div class="input-group"><input type="number" min="0" step="0.5" class="form-control" data-k="mp" placeholder="Số người × số giờ. VD: 3×2 = 6"><button class="btn btn-outline-primary" data-act="mpcalc" title="Số người × thời gian từ bắt đầu đến hoàn thành">🧮 Tự tính</button></div><div class="d-none" id="mo-who">${guide('who')}</div>`,'mo-who')+
@@ -264,7 +267,7 @@ $('pane-form').insertAdjacentHTML('beforeend',card(13,'Ký tự đặc biệt',
 symTab(0);
 
 function fillEN(){document.querySelectorAll('[data-en]').forEach(e=>e.value=S.en[e.dataset.en]||'')}
-function fill(){fillEN();document.querySelectorAll('[data-fs]').forEach(e=>e.value=S.fs||12);document.querySelectorAll('[data-k]').forEach(e=>e.value=S[e.dataset.k]||'');
+function fill(){fillEN();document.querySelectorAll('[data-fs]').forEach(e=>e.value=S.fs||12);document.querySelectorAll('[data-dpi]').forEach(e=>e.value=ls('fjk_dpi')||'96');document.querySelectorAll('[data-k]').forEach(e=>e.value=S[e.dataset.k]||'');
  document.querySelectorAll('[data-lay]').forEach(e=>e.value=S.lay[e.dataset.lay]);
  document.querySelectorAll('[data-fit]').forEach(e=>e.value=S.fit[e.dataset.fit])}
 
@@ -301,11 +304,12 @@ const anyOver=()=>Object.keys(TXT).some(overflow);
 let st;
 const isEmpty=()=>!(S.subject||S.desc||S.action||S.mats||S.done||S.mc||S.who||S.before.length||S.after.length);
 const flush=async()=>{clearTimeout(st);if(VIEW)return;if(!isEmpty()){S.updated=Date.now();await dbPut(S)}};
-function save(){if(VIEW)return;ls('fjk_cur',S.id);clearTimeout(st);st=setTimeout(flush,600)}
+function save(){if(VIEW)return;S.dirty=true;ls('fjk_cur',S.id);clearTimeout(st);st=setTimeout(flush,600)}
 
 document.addEventListener('input',e=>{const d=e.target.dataset||{};
  if(d.lay||d.fit){(d.lay?S.lay:S.fit)[d.lay||d.fit]=e.target.value;save();render();return}
- if(d.fs){S.fs=+e.target.value;save();render();return}
+ if('fs' in d){S.fs=+e.target.value;save();render();return}
+ if('dpi' in d){ls('fjk_dpi',e.target.value);toast('Đã đổi chất lượng ảnh khi lưu lên server',1800);return}
  if(d.en){S.en[d.en]=e.target.value;S.enSrc[d.en]=S[d.en];save();render();return}
  if(!d.k)return;S[d.k]=e.target.value;if(S.lang==='en'&&TXT[d.k]){clearTimeout(trT);trT=setTimeout(()=>ensureEN(true),1500)}if(d.k==='name')ls('fjk_name',S.name);save();render();if(d.ac)acShow(e.target)});
 
@@ -683,25 +687,38 @@ const sbOK=()=>!!(CFG.url&&CFG.key);
 async function sb(path,opt={}){const h={apikey:CFG.key,'Content-Type':'application/json',...(opt.headers||{})};if(/^eyJ/.test(CFG.key))h.Authorization='Bearer '+CFG.key;
  const r=await fetch(CFG.url+'/rest/v1/'+path,{...opt,headers:h}),tx=await r.text();let j=null;try{j=tx?JSON.parse(tx):null}catch(e){}
  if(!r.ok)throw new Error((j&&(j.message||j.hint||j.details))||('HTTP '+r.status));return j}
-const payload=()=>{const c=JSON.parse(JSON.stringify(S));for(const k of ['id','updated','serverId','reportNo'])delete c[k];return c};
-function applyRow(row){S=Object.assign(blank(),row.content||{});S.serverId=row.id;S.reportNo=row.reportno;S.id='s_'+row.id}
+const payload=()=>{const c=JSON.parse(JSON.stringify(S));for(const k of ['id','updated','serverId','reportNo','dirty','srvTime'])delete c[k];return c};
+function applyRow(row){S=Object.assign(blank(),row.content||{});S.serverId=row.id;S.reportNo=row.reportno;S.id='s_'+row.id;S.srvTime=row.modifiedtime||row.createtime;S.dirty=false}
 async function fetchReport(id){const r=await sb('reports?id=eq.'+encodeURIComponent(id)+'&select=*');if(!r||!r[0])throw new Error('Không tìm thấy báo cáo "'+id+'"');return r[0]}
+const DPI=()=>+(ls('fjk_dpi')||96);
+async function shrink(src,sc,q){const i=await loadI(src),c=document.createElement('canvas');c.width=Math.max(1,Math.round(i.width*sc));c.height=Math.max(1,Math.round(i.height*sc));
+ const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(i,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)}
+async function optimizedPayload(){const c=payload(),dpi=DPI();if(!dpi)return c;const k=dpi/96;     // 0 = giữ nguyên chất lượng gốc
+ for(const s of ['before','after']){const sl=slots(c[s].length,c.lay[s]),cover=c.fit[s]==='cover';
+  for(let n=0;n<c[s].length;n++){const im=c[s][n],q=sl[n],sw=q[2]*AW-6,sh=q[3]*AH-6;
+   const sc=(cover?Math.max(sw/im.w,sh/im.h):Math.min(sw/im.w,sh/im.h))*k;      // tỉ lệ cần để đủ nét ở khung hiển thị
+   if(sc>=.98)continue;                                                          // ảnh vốn nhỏ hơn mức cần: giữ nguyên
+   im.src=await shrink(im.src,sc,.82);if(im.orig)im.orig=await shrink(im.orig,sc,.82);
+   im.w=Math.max(1,Math.round(im.w*sc));im.h=Math.max(1,Math.round(im.h*sc))}}
+ return c}
 async function saveServer(){
  if(busy)return;
  if(!sbOK())return toast('Chưa cấu hình server: điền anonKey trong file config.json',5000);
  if(!S.name.trim())return toast('Hãy nhập "Người lập báo cáo" (mục 1) trước khi lưu lên server',4000);
- busy=true;toast('☁ Đang lưu lên server...');
+ busy=true;toast('☁ Đang nén ảnh và lưu lên server...');
  try{
   if(stale().length)await ensureEN(true);
-  const body=payload();
-  if(!S.serverId){let row=null;
-   for(let i=0;i<3&&!row;i++){try{row=(await sb('reports',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({reportno:'',content:body,createby:S.name.trim()})}))[0]}
+  const body=await optimizedPayload(),MB=(JSON.stringify(body).length/1048576).toFixed(2),COLS='select=id,reportno,createtime,modifiedtime';   // chỉ lấy lại vài cột nhẹ
+  let row=null;
+  if(!S.serverId){
+   for(let i=0;i<3&&!row;i++){try{row=(await sb('reports?'+COLS,{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({reportno:'',content:body,createby:S.name.trim()})}))[0]}
     catch(e){if(!/already exists|duplicate/i.test(e.message)||i===2)throw e}}
    const old=S.id;S.serverId=row.id;S.reportNo=row.reportno;S.id='s_'+row.id;ls('fjk_cur',S.id);await dbDel(old);
    try{history.replaceState(null,'','?edit='+row.id)}catch(e){}}
-  else{const r=await sb('reports?id=eq.'+encodeURIComponent(S.serverId),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({content:body,modifiedby:S.name.trim()})});
-   if(!r||!r.length)throw new Error('Không tìm thấy báo cáo trên server (id '+S.serverId+')')}
-  await flush();render();toast('✅ Đã lưu lên server: '+S.reportNo,4000)}
+  else{const r=await sb('reports?id=eq.'+encodeURIComponent(S.serverId)+'&'+COLS,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({content:body,modifiedby:S.name.trim()})});
+   if(!r||!r.length)throw new Error('Không tìm thấy báo cáo trên server (id '+S.serverId+')');row=r[0]}
+  S.srvTime=row.modifiedtime||row.createtime;S.dirty=false;
+  await flush();render();toast('✅ Đã lưu lên server: '+S.reportNo+' ('+MB+' MB)',4500)}
  catch(e){toast('❌ Không lưu được: '+e.message,6000)}
  busy=false}
 function srvLink(){if(!S.serverId)return toast('Hãy lưu lên server trước để có link',3500);copyTxt(location.href.split(/[?#]/)[0]+'?view='+S.serverId)}
@@ -719,23 +736,25 @@ async function loadAssets(){const bad=[];
  if(bad.length)toast('Không tải được: '+bad.join(', ')+'. Hãy mở trang bằng web server (http/https), không mở trực tiếp file.',7000)}
 (async()=>{DB=await idb();
  const qv=QS.get('view'),qe=QS.get('edit');
- if(qv){VIEW=true;document.body.style.visibility='hidden';          // chế độ xem: dựng lại đúng như file HTML tải về
+ if(qv){VIEW=true;          // chế độ xem: dựng lại đúng như file HTML tải về
   try{await loadAssets();if(!sbOK())throw new Error('Chưa cấu hình server (config.json)');
    applyRow(await fetchReport(qv));fill();setTab('prev');render();await new Promise(r=>setTimeout(r,300));
    const r=await buildViewHTML();document.open();document.write(r.html);document.close()}
-  catch(e){document.body.style.visibility='visible';document.body.innerHTML='<div style="padding:24px;font:16px Arial,sans-serif">Không mở được báo cáo: '+esc(e.message)+'</div>'}
+  catch(e){document.documentElement.classList.remove('boot');document.body.innerHTML='<div style="padding:24px;font:16px Arial,sans-serif">Không mở được báo cáo: '+esc(e.message)+'</div>'}
   return}
  let fromServer=false;
  if(qe){await loadAssets();
   try{if(!sbOK())throw new Error('Chưa cấu hình server (config.json)');
-   const row=await fetchReport(qe),loc=await dbGet('s_'+row.id),srvT=Date.parse(row.modifiedtime||row.createtime)||0;
-   if(loc&&loc.updated>srvT&&confirm('Trên máy có bản chỉnh sửa mới hơn bản trên server. Dùng bản trên máy?')){S=Object.assign(blank(),loc);S.serverId=row.id;S.reportNo=row.reportno}
+   const row=await fetchReport(qe),loc=await dbGet('s_'+row.id),stime=row.modifiedtime||row.createtime;
+   if(loc&&loc.dirty){const moved=loc.srvTime&&loc.srvTime!==stime;
+    if(confirm((moved?'Báo cáo trên server đã được sửa kể từ lần bạn mở trước, và trên máy còn thay đổi chưa lưu lên server.':'Trên máy còn thay đổi chưa lưu lên server.')+'\nOK = dùng bản trên máy, Cancel = dùng bản trên server.')){S=Object.assign(blank(),loc);S.serverId=row.id;S.reportNo=row.reportno}
+    else applyRow(row)}
    else applyRow(row);
    ls('fjk_cur',S.id);fromServer=true}
   catch(e){toast('❌ Không mở được báo cáo để sửa: '+e.message,6000)}}
  if(!fromServer){const cur=ls('fjk_cur'),d=cur&&await dbGet(cur);
   if(d)S=Object.assign(blank(),d);else{try{Object.assign(S,JSON.parse(ls('fjk_rpt')||'{}'))}catch(e){}}}
- fill();setTab('form');render();drawSig();if(!qe)loadAssets()})();
+ fill();setTab('form');render();drawSig();if(!qe)loadAssets();document.documentElement.classList.remove('boot')})();
 </script>
 </body>
 </html>
