@@ -64,5 +64,5 @@ function logout(){
     );
 
     location.href =
-        "login.html";
+        "https://cuonglabs.github.io/tools/auth/login.html";
 }
