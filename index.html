@@ -86,6 +86,7 @@ footer{margin-top:auto}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cuonglabs.github.io/tools/auth/auth.js"></script>
 <script>
 const BASE='https://cuonglabs.github.io/tools/';
 const TOOLS=[
@@ -94,18 +95,18 @@ const TOOLS=[
  {name:'Đăng Nhập',desc:'Tài khoản người dùng',icon:'bi-person-lock',color:'warning',url:BASE+'auth/login.html'},
  {name:'Overtime',desc:'Công cụ Overtime',icon:'bi-clock-history',color:'danger',url:BASE+'overtime/'}
 ];
-/* Người dùng: trang đăng nhập cần ghi localStorage.cl_user = JSON {"name":"Họ và tên","avatar":"(tùy chọn)"} */
+/* Người dùng lấy từ phiên đăng nhập chung (auth/auth.js) */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const LS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase();
-const user=()=>{try{return JSON.parse(LS.get('cl_user')||'null')}catch(e){return null}};
+const user=()=>{const s=window.CL&&CL.getSession();return s?{name:s.fullname||s.username,role:s.role}:null};
 const initials=n=>n.trim().split(/\s+/).slice(-2).map(w=>w[0]).join('').toUpperCase()||'?';
 const avatarSVG=n=>'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="#0b5cab"/><text x="40" y="53" font-size="34" font-family="Arial" fill="#fff" text-anchor="middle">'+esc(initials(n))+'</text></svg>');
 
 function renderUser(){
   const u=user(),n=(u&&u.name)||'';
-  $('uName').textContent=n||'Khách (chưa đăng nhập)';
+  $('uName').textContent=n?n+(u.role?' · '+u.role:''):'Khách (chưa đăng nhập)';
   $('hello').textContent=n?'Xin chào, '+n:'Chào mừng đến CuongLabs';
   $('sub').textContent=TOOLS.length+' công cụ';
   $('avatar').src=LS.get('cl_avatar')||(u&&u.avatar)||avatarSVG(n||'Khách');
@@ -140,10 +141,11 @@ function imgFile(f,max,sq){return new Promise((ok,no)=>{const u=URL.createObject
     const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(i,sx,sy,sw,sh,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.85))};
   i.onerror=()=>no();i.src=u})}
 
-$('loginLink').href=BASE+'auth/login.html';
+$('loginLink').href=BASE+'auth/login.html?next='+encodeURIComponent(location.pathname+location.search);
 $('statsLink').href=BASE+'trouble/report-management.html';
 $('quick').innerHTML=TOOLS.map(t=>`<a class="text-decoration-none" href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join('');
-$('btnLogout').onclick=()=>{LS.del('cl_user');renderUser()};
+$('btnLogout').onclick=()=>{if(window.CL)CL.logout(false);renderUser()};
+addEventListener('storage',renderUser);
 $('searchInput').oninput=renderTools;
 $('searchInput').onkeydown=e=>{if(e.key==='Enter'){const l=renderTools();if(l[0])open(l[0].url,'_blank')}};
 $('darkMode').onchange=e=>{LS.set('cl_dark',e.target.checked?'1':'0');applyLook()};
