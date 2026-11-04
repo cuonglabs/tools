@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Báo cáo kỹ thuật – Fujikura</title>
 <script>if(/[?&](view|edit)=/.test(location.search))document.documentElement.className="boot"</script>
+<script src="https://cuonglabs.github.io/tools/auth/auth.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -115,6 +116,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
      <button class="dropdown-item py-2" data-act="xlsx">📊 Excel</button>
      <button class="dropdown-item py-2" data-act="html" title="Lưu phần xem trước thành 1 file HTML có cả VI và EN, mở được khi không có mạng"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg> HTML</button>
      <button class="dropdown-item py-2" data-act="dlcur" title="Tải file .json của báo cáo đang sửa để mang sang máy khác">💾 JSON</button>
+     <button class="dropdown-item py-2" id="hmAuth" data-act="auth"></button>
     </div>
    </div>
   </div>
@@ -183,7 +185,7 @@ const $=id=>document.getElementById(id), MAX=6;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const fd=s=>s?s.split('-').reverse().join('-'):'';
-const blank=()=>({id:'r'+Date.now(),date:today(),name:ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',sig2:'',confirmer:'',serverId:'',reportNo:'',dirty:false,srvTime:'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
+const blank=()=>({id:'r'+Date.now(),date:today(),name:(window.CL&&CL.getSession()&&CL.userName())||ls('fjk_name')||'',mc:'',t1:'',t2:'',stopMan:'',who:'',mp:'',sig:ls('fjk_sig')||'',sig2:'',confirmer:'',serverId:'',reportNo:'',dirty:false,srvTime:'',lang:ls('fjk_lang')||'vi',en:{},enSrc:{},fs:12,subject:'',desc:'',action:'',mats:'',done:'',before:[],after:[],lay:{before:'auto',after:'auto'},fit:{before:'cover',after:'cover'}});
 let S=blank(), busy=false, side0='before', tab='form';
 
 
@@ -516,6 +518,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(a==='html')run('⏳ Đang tạo file HTML...',exportHTML);
   if(a==='srvsave')saveServer();
   if(a==='srvlink')srvLink();
+  if(a==='auth'){if(CL.getSession()){CL.logout(false);authUI()}else CL.requireLogin()}
   if(a==='share')run('⏳ Đang tạo PDF để chia sẻ...',()=>exportPDF(1));
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
   if(a==='new')newRep();
@@ -701,8 +704,10 @@ async function optimizedPayload(){const c=payload(),dpi=DPI();if(!dpi)return c;c
    im.src=await shrink(im.src,sc,.82);if(im.orig)im.orig=await shrink(im.orig,sc,.82);
    im.w=Math.max(1,Math.round(im.w*sc));im.h=Math.max(1,Math.round(im.h*sc))}}
  return c}
+const who=()=>(window.CL&&CL.getSession()&&CL.userName())||S.name.trim();
 async function saveServer(){
  if(busy)return;
+ if(window.CL&&!CL.getSession()){if(confirm('Cần đăng nhập để lưu lên server.\nChuyển tới trang đăng nhập? (Báo cáo đang soạn vẫn được giữ trên máy.)')){await flush();CL.requireLogin()}return}
  if(!sbOK())return toast('Chưa cấu hình server: điền anonKey trong file config.json',5000);
  if(!S.name.trim())return toast('Hãy nhập "Người lập báo cáo" (mục 1) trước khi lưu lên server',4000);
  busy=true;toast('☁ Đang nén ảnh và lưu lên server...');
@@ -711,11 +716,11 @@ async function saveServer(){
   const body=await optimizedPayload(),MB=(JSON.stringify(body).length/1048576).toFixed(2),COLS='select=id,reportno,createtime,modifiedtime';   // chỉ lấy lại vài cột nhẹ
   let row=null;
   if(!S.serverId){
-   for(let i=0;i<3&&!row;i++){try{row=(await sb('reports?'+COLS,{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({reportno:'',content:body,createby:S.name.trim()})}))[0]}
+   for(let i=0;i<3&&!row;i++){try{row=(await sb('reports?'+COLS,{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({reportno:'',content:body,createby:who()})}))[0]}
     catch(e){if(!/already exists|duplicate/i.test(e.message)||i===2)throw e}}
    const old=S.id;S.serverId=row.id;S.reportNo=row.reportno;S.id='s_'+row.id;ls('fjk_cur',S.id);await dbDel(old);
    try{history.replaceState(null,'','?edit='+row.id)}catch(e){}}
-  else{const r=await sb('reports?id=eq.'+encodeURIComponent(S.serverId)+'&'+COLS,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({content:body,modifiedby:S.name.trim()})});
+  else{const r=await sb('reports?id=eq.'+encodeURIComponent(S.serverId)+'&'+COLS,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({content:body,modifiedby:who()})});
    if(!r||!r.length)throw new Error('Không tìm thấy báo cáo trên server (id '+S.serverId+')');row=r[0]}
   S.srvTime=row.modifiedtime||row.createtime;S.dirty=false;
   await flush();render();toast('✅ Đã lưu lên server: '+S.reportNo+' ('+MB+' MB)',4500)}
@@ -723,6 +728,8 @@ async function saveServer(){
  busy=false}
 function srvLink(){if(!S.serverId)return toast('Hãy lưu lên server trước để có link',3500);copyTxt(location.href.split(/[?#]/)[0]+'?view='+S.serverId)}
 const QS=new URLSearchParams(location.search);
+function authUI(){const b=$('hmAuth');if(!b)return;if(!window.CL){b.style.display='none';return}const s=CL.getSession();b.textContent=s?'Đăng xuất ('+CL.userName()+')':'Đăng nhập'}
+addEventListener('storage',authUI);
 const fitBox=(w,h,bw,bh)=>{const s=Math.min(bw/w,bh/h);return[Math.round(w*s),Math.round(h*s)]};
 const rd=b=>new Promise(ok=>{const f=new FileReader();f.onload=()=>ok(f.result);f.readAsDataURL(b)});
 async function loadAssets(){const bad=[];
@@ -745,7 +752,7 @@ async function loadAssets(){const bad=[];
   catch(e){document.documentElement.classList.remove('boot');document.body.innerHTML='<div style="padding:24px;font:16px Arial,sans-serif">Không mở được báo cáo: '+esc(e.message)+'</div>'}
   return}
  let fromServer=false;
- if(qe){await loadAssets();
+ if(qe){if(window.CL&&!CL.requireLogin())return;await loadAssets();
   try{if(!sbOK())throw new Error('Chưa cấu hình server (config.json)');
    const row=await fetchReport(qe),loc=await dbGet('s_'+row.id),stime=row.modifiedtime||row.createtime;
    if(loc&&loc.dirty){const moved=loc.srvTime&&loc.srvTime!==stime;
@@ -756,7 +763,7 @@ async function loadAssets(){const bad=[];
   catch(e){toast('❌ Không mở được báo cáo để sửa: '+e.message,6000)}}
  if(!fromServer){const cur=ls('fjk_cur'),d=cur&&await dbGet(cur);
   if(d)S=Object.assign(blank(),d);else{try{Object.assign(S,JSON.parse(ls('fjk_rpt')||'{}'))}catch(e){}}}
- fill();setTab('form');render();drawSig();if(!qe)loadAssets();document.documentElement.classList.remove('boot')})();
+ fill();setTab('form');render();drawSig();if(!qe)loadAssets();authUI();document.documentElement.classList.remove('boot')})();
 </script>
 </body>
 </html>
