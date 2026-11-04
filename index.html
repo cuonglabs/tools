@@ -3,649 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
 <title>CuongLabs</title>
-
-<link rel="icon"
-href="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico">
-
+<link rel="icon" href="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico">
+<script>try{if(localStorage.cl_dark==='1'||(localStorage.cl_dark==null&&localStorage.darkMode==='true'))document.documentElement.setAttribute('data-bs-theme','dark')}catch(e){}</script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
 <style>
-
-:root{
---primary:#0d6efd;
-}
-
-body{
-background:#f4f6f9;
-min-height:100vh;
-display:flex;
-flex-direction:column;
-transition:.3s;
-background-size:cover;
-background-position:center;
-}
-
-/* Header */
-
-.navbar-brand img{
-width:40px;
-height:40px;
-border-radius:50%;
-}
-
-.search-wrapper{
-max-width:420px;
-width:100%;
-position:relative;
-}
-
-#searchResult{
-position:absolute;
-left:0;
-right:0;
-top:100%;
-display:none;
-z-index:2000;
-max-height:350px;
-overflow:auto;
-}
-
-#searchResult.show{
-display:block;
-}
-
-.avatar{
-width:42px;
-height:42px;
-border-radius:50%;
-object-fit:cover;
-border:2px solid #fff;
-cursor:pointer;
-}
-
-.hero{
-padding:60px 0;
-background:
-linear-gradient(135deg,#0066ff,#00c3ff);
-color:white;
-}
-
-.kpi-card{
-border:none;
-border-radius:15px;
-box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-
-.tool-card{
-border:none;
-border-radius:20px;
-transition:.3s;
-box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-
-.tool-card:hover{
-transform:translateY(-8px);
-}
-
-.tool-icon{
-font-size:4rem;
-}
-
-footer{
-margin-top:auto;
-}
-
-.quick-link{
-text-decoration:none;
-font-weight:600;
-}
-
+:root{--blue:#0b5cab;--page:#f5f6fa}
+[data-bs-theme=dark]{--blue:#6ea8fe;--page:#14181f}
+body{background:var(--page);font-family:Arial,Helvetica,sans-serif;min-height:100vh;display:flex;flex-direction:column;background-size:cover;background-position:center;background-attachment:fixed}
+.navbar-brand{color:var(--blue)!important;font-weight:700}
+.navbar-brand img{width:36px;height:36px;border-radius:50%}
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--bs-border-color);cursor:pointer}
+.box,.tool,.kpi{border:0;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);background:var(--bs-body-bg)}
+.tool{transition:transform .2s,box-shadow .2s}
+.tool:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.14)}
+.ico{width:60px;height:60px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.8rem}
+.kpi h3{margin:0;color:var(--blue)}
+footer{margin-top:auto}
 </style>
 </head>
-
 <body>
 
-<!-- HEADER -->
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-
-<div class="container">
-
-<a href="#"
-class="navbar-brand d-flex align-items-center">
-
-<img src="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico">
-
-<span class="ms-2 fw-bold">
-CuongLabs
-</span>
-
-</a>
-
-<button class="navbar-toggler"
-data-bs-toggle="collapse"
-data-bs-target="#navbarMain">
-
-<span class="navbar-toggler-icon"></span>
-
-</button>
-
-<div id="navbarMain"
-class="collapse navbar-collapse">
-
-<ul class="navbar-nav me-3">
-
-<li class="nav-item">
-<a class="nav-link"
-href="#tool-report">
-Báo Cáo
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link"
-href="#tool-management">
-Report
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link"
-href="#tool-overtime">
-Overtime
-</a>
-</li>
-
-</ul>
-
-<div class="search-wrapper mx-auto">
-
-<input
-id="searchInput"
-class="form-control"
-placeholder="Tìm kiếm công cụ...">
-
-<div
-id="searchResult"
-class="dropdown-menu w-100">
-</div>
-
-</div>
-
-<div class="dropdown ms-3">
-
-<a
-href="#"
-data-bs-toggle="dropdown">
-
-<img
-id="avatar"
-class="avatar"
-src="https://ui-avatars.com/api/?name=User">
-
-</a>
-
-<ul class="dropdown-menu dropdown-menu-end">
-
-<li>
-<h6 class="dropdown-header">
-Nguyen Van Cuong
-</h6>
-</li>
-
-<li>
-<a class="dropdown-item"
-href="https://cuonglabs.github.io/tools/auth/login.html">
-
-<i class="bi bi-box-arrow-in-right"></i>
-Đăng nhập
-
-</a>
-</li>
-
-<li>
-<a class="dropdown-item"
-href="#">
-
-<i class="bi bi-box-arrow-right"></i>
-Đăng xuất
-
-</a>
-</li>
-
-<li><hr></li>
-
-<li>
-<a class="dropdown-item"
-data-bs-toggle="modal"
-data-bs-target="#settingModal"
-href="#">
-
-<i class="bi bi-gear"></i>
-Thiết lập
-
-</a>
-</li>
-
-</ul>
-
-</div>
-
-</div>
-</div>
+<nav class="navbar bg-body shadow-sm sticky-top">
+ <div class="container">
+  <a href="#" class="navbar-brand d-flex align-items-center gap-2">
+   <img src="https://raw.githubusercontent.com/cuonglabs/tools/main/favicon.ico" alt="" onerror="this.style.display='none'">CuongLabs
+  </a>
+  <div class="dropdown">
+   <button type="button" class="btn p-0 border-0" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản"><img id="avatar" class="avatar" alt=""></button>
+   <ul class="dropdown-menu dropdown-menu-end shadow">
+    <li><h6 class="dropdown-header" id="uName"></h6></li>
+    <li><hr class="dropdown-divider"></li>
+    <li id="miLogin"><a class="dropdown-item" id="loginLink"><i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập</a></li>
+    <li id="miLogout"><button type="button" class="dropdown-item" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</button></li>
+    <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#settingModal"><i class="bi bi-gear me-2"></i>Thiết lập</button></li>
+   </ul>
+  </div>
+ </div>
 </nav>
 
-<!-- HERO -->
-
-<section class="hero">
-
-<div class="container text-center">
-
-<h1>CuongLabs</h1>
-
-<p class="lead">
-Tools Dashboard
-</p>
-
-</div>
-
-</section>
-
-<!-- KPI -->
-
-<div class="container mt-4">
-
-<div class="row g-3">
-
-<div class="col-md-3">
-<div class="card kpi-card">
-<div class="card-body text-center">
-<h3>4</h3>
-Tools
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card kpi-card">
-<div class="card-body text-center">
-<h3>12</h3>
-Reports
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card kpi-card">
-<div class="card-body text-center">
-<h3>3</h3>
-Favorites
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card kpi-card">
-<div class="card-body text-center">
-<h3>8</h3>
-Recent
-</div>
-</div>
-</div>
-
-</div>
-
-</div>
-
-<!-- TOOLS -->
-
-<div class="container my-5">
-
-<div class="row g-4">
-
-<div class="col-md-3" id="tool-report">
-
-<div class="card tool-card">
-
-<div class="card-body text-center">
-
-<i class="bi bi-file-earmark-text tool-icon text-primary"></i>
-
-<h5 class="mt-3">
-Báo Cáo Kỹ Thuật
-</h5>
-
-<a
-target="_blank"
-href="https://cuonglabs.github.io/tools/trouble/bao-cao-ky-thuat.html"
-class="btn btn-primary">
-
-Mở
-
-</a>
-
-</div>
-</div>
-</div>
-
-<div class="col-md-3" id="tool-management">
-
-<div class="card tool-card">
-
-<div class="card-body text-center">
-
-<i class="bi bi-clipboard-data tool-icon text-success"></i>
-
-<h5 class="mt-3">
-Report Management
-</h5>
-
-<a
-target="_blank"
-href="https://cuonglabs.github.io/tools/trouble/report-management.html"
-class="btn btn-success">
-
-Mở
-
-</a>
-
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-
-<div class="card tool-card">
-
-<div class="card-body text-center">
-
-<i class="bi bi-person-lock tool-icon text-warning"></i>
-
-<h5 class="mt-3">
-Login
-</h5>
-
-<a
-target="_blank"
-href="https://cuonglabs.github.io/tools/auth/login.html"
-class="btn btn-warning">
-
-Mở
-
-</a>
-
-</div>
-</div>
-</div>
-
-<div class="col-md-3" id="tool-overtime">
-
-<div class="card tool-card">
-
-<div class="card-body text-center">
-
-<i class="bi bi-clock-history tool-icon text-danger"></i>
-
-<h5 class="mt-3">
-Overtime
-</h5>
-
-<a
-target="_blank"
-href="https://cuonglabs.github.io/tools/overtime/"
-class="btn btn-danger">
-
-Mở
-
-</a>
-
-</div>
-</div>
-</div>
-
-</div>
-
-</div>
-
-<!-- SETTINGS -->
-
-<div class="modal fade" id="settingModal">
-
-<div class="modal-dialog">
-
-<div class="modal-content">
-
-<div class="modal-header">
-
-<h5>Thiết lập</h5>
-
-<button
-class="btn-close"
-data-bs-dismiss="modal">
-</button>
-
-</div>
-
-<div class="modal-body">
-
-<div class="form-check mb-3">
-
-<input
-id="rememberLogin"
-class="form-check-input"
-type="checkbox">
-
-<label class="form-check-label">
-Ghi nhớ đăng nhập
-</label>
-
-</div>
-
-<div class="form-check mb-3">
-
-<input
-id="darkMode"
-class="form-check-input"
-type="checkbox">
-
-<label class="form-check-label">
-Dark Mode
-</label>
-
-</div>
-
-<hr>
-
-<label>Ảnh nền</label>
-
-<input
-type="file"
-id="backgroundFile"
-class="form-control">
-
-<hr>
-
-<label>Avatar</label>
-
-<input
-type="file"
-id="avatarFile"
-class="form-control">
-
-</div>
-
-<div class="modal-footer">
-
-<button
-class="btn btn-secondary"
-onclick="localStorage.clear();location.reload();">
-
-Reset
-
-</button>
-
-<button
-class="btn btn-primary"
-onclick="saveSetting()">
-
-Lưu
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- FOOTER -->
-
-<footermanagement.html">
-Report Management
-</a>
-
-<a class="d-block text-white quick-link"
-href="https://cuonglabs.github.io/tools/overtime/">
-Overtime
-</a>
-
-</div>
-
-<div class="col-md-4">
-
-<h6>Liên hệ</h6>
-
-<p>Email: support@cuonglabs.com</p>
-
-<p>GitHub: github.com/cuonglabs</p>
-
-<p>Version: v2.0</p>
-
-</div>
-
-</div>
-
-<hr>
-
-<div class="text-center">
-© 2026 CuongLabs
-</div>
-
-</div>
-
+<main class="container my-4">
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+  <div><h4 class="m-0" id="hello"></h4><div class="text-muted small" id="sub"></div></div>
+  <input id="searchInput" class="form-control" style="max-width:340px" placeholder="Tìm công cụ..." autocomplete="off">
+ </div>
+
+ <a class="text-decoration-none text-reset" id="statsLink" target="_blank" rel="noopener">
+  <div class="row g-3 mb-4">
+   <div class="col-6 col-md-3"><div class="card kpi"><div class="card-body text-center py-3"><div>Tổng báo cáo</div><h3 id="kTotal">–</h3></div></div></div>
+   <div class="col-6 col-md-3"><div class="card kpi"><div class="card-body text-center py-3"><div>NEW</div><h3 id="kNew">–</h3></div></div></div>
+   <div class="col-6 col-md-3"><div class="card kpi"><div class="card-body text-center py-3"><div>PROCESSING</div><h3 id="kProc">–</h3></div></div></div>
+   <div class="col-6 col-md-3"><div class="card kpi"><div class="card-body text-center py-3"><div>DONE</div><h3 id="kDone">–</h3></div></div></div>
+  </div>
+ </a>
+
+ <div class="row g-3" id="tools"></div>
+</main>
+
+<footer class="bg-body border-top py-3 small">
+ <div class="container d-flex flex-wrap justify-content-between gap-2">
+  <div id="quick" class="d-flex flex-wrap gap-3"></div>
+  <div class="text-muted">support@cuonglabs.com · github.com/cuonglabs · v2.0 · © 2026 CuongLabs</div>
+ </div>
 </footer>
 
-https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.jsscript>
+<div class="modal fade" id="settingModal" tabindex="-1">
+ <div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Thiết lập</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+   <div class="form-check form-switch mb-3"><input id="darkMode" class="form-check-input" type="checkbox"><label class="form-check-label" for="darkMode">Chế độ tối (Dark mode)</label></div>
+   <label class="form-label">Ảnh nền</label>
+   <div class="input-group mb-3"><input type="file" id="bgFile" class="form-control" accept="image/*"><button class="btn btn-outline-secondary" id="bgDel" type="button">Xóa</button></div>
+   <label class="form-label">Ảnh đại diện</label>
+   <div class="input-group"><input type="file" id="avFile" class="form-control" accept="image/*"><button class="btn btn-outline-secondary" id="avDel" type="button">Xóa</button></div>
+  </div>
+  <div class="modal-footer">
+   <button class="btn btn-outline-danger me-auto" id="btnReset">Đặt lại thiết lập</button>
+   <button class="btn btn-primary" data-bs-dismiss="modal">Đóng</button>
+  </div>
+ </div></div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-
-const items=[
-{
-name:"Báo Cáo Kỹ Thuật",
-target:"#tool-report"
-},
-{
-name:"Report Management",
-target:"#tool-management"
-},
-{
-name:"Overtime",
-target:"#tool-overtime"
-}
+const BASE='https://cuonglabs.github.io/tools/';
+const TOOLS=[
+ {name:'Báo Cáo Kỹ Thuật',desc:'Lập báo cáo; xuất PDF, Excel, HTML',icon:'bi-file-earmark-text',color:'primary',url:BASE+'trouble/bao-cao-ky-thuat.html'},
+ {name:'Quản Lý Báo Cáo',desc:'Xem, lọc, đổi trạng thái báo cáo',icon:'bi-clipboard-data',color:'success',url:BASE+'trouble/report-management.html'},
+ {name:'Đăng Nhập',desc:'Tài khoản người dùng',icon:'bi-person-lock',color:'warning',url:BASE+'auth/login.html'},
+ {name:'Overtime',desc:'Công cụ Overtime',icon:'bi-clock-history',color:'danger',url:BASE+'overtime/'}
 ];
+/* Người dùng: trang đăng nhập cần ghi localStorage.cl_user = JSON {"name":"Họ và tên","avatar":"(tùy chọn)"} */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase();
+const user=()=>{try{return JSON.parse(LS.get('cl_user')||'null')}catch(e){return null}};
+const initials=n=>n.trim().split(/\s+/).slice(-2).map(w=>w[0]).join('').toUpperCase()||'?';
+const avatarSVG=n=>'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="#0b5cab"/><text x="40" y="53" font-size="34" font-family="Arial" fill="#fff" text-anchor="middle">'+esc(initials(n))+'</text></svg>');
 
-const input=document.getElementById("searchInput");
-const result=document.getElementById("searchResult");
-
-let timer;
-
-input.addEventListener("input",()=>{
-
-clearTimeout(timer);
-
-timer=setTimeout(()=>{
-
-const keyword=input.value.toLowerCase();
-
-result.innerHTML="";
-
-if(!keyword){
-
-result.classList.remove("show");
-return;
-
+function renderUser(){
+  const u=user(),n=(u&&u.name)||'';
+  $('uName').textContent=n||'Khách (chưa đăng nhập)';
+  $('hello').textContent=n?'Xin chào, '+n:'Chào mừng đến CuongLabs';
+  $('sub').textContent=TOOLS.length+' công cụ';
+  $('avatar').src=LS.get('cl_avatar')||(u&&u.avatar)||avatarSVG(n||'Khách');
+  $('miLogin').classList.toggle('d-none',!!u);
+  $('miLogout').classList.toggle('d-none',!u);
 }
-
-items.filter(x=>x.name.toLowerCase().includes(keyword))
-.slice(0,10)
-.forEach(x=>{
-
-const a=document.createElement("a");
-
-a.className="dropdown-item";
-a.href="#";
-a.innerText=x.name;
-
-a.onclick=(e)=>{
-
-e.preventDefault();
-
-document.querySelector(x.target)
-.scrollIntoView({
-behavior:"smooth"
-});
-
-result.classList.remove("show");
-
-};
-
-result.appendChild(a);
-
-});
-
-result.classList.add("show");
-
-},300);
-
-});
-
-function saveSetting(){
-
-const dark=
-document.getElementById("darkMode").checked;
-
-localStorage.setItem("darkMode",dark);
-
-document.documentElement.setAttribute(
-"data-bs-theme",
-dark?"dark":"light"
-);
-
-alert("Đã lưu");
-
+function applyLook(){
+  const dark=LS.get('cl_dark')==='1'||(LS.get('cl_dark')==null&&LS.get('darkMode')==='true');
+  document.documentElement.setAttribute('data-bs-theme',dark?'dark':'light');
+  $('darkMode').checked=dark;
+  const bg=LS.get('cl_bg');document.body.style.backgroundImage=bg?`url(${bg})`:'';
 }
+function renderTools(){
+  const k=norm($('searchInput').value.trim()),list=TOOLS.filter(t=>norm(t.name+' '+t.desc).includes(k));
+  $('tools').innerHTML=list.length?list.map(t=>`<div class="col-6 col-md-4 col-lg-3"><a class="card tool text-decoration-none h-100" href="${esc(t.url)}" target="_blank" rel="noopener"><div class="card-body text-center py-4"><div class="ico bg-${t.color}-subtle text-${t.color}-emphasis"><i class="bi ${t.icon}"></i></div><h6 class="mt-3 mb-1 text-body">${esc(t.name)}</h6><div class="small text-muted">${esc(t.desc)}</div></div></a></div>`).join('')
+    :'<div class="col-12 text-center text-muted py-4">Không tìm thấy công cụ.</div>';
+  return list;
+}
+async function loadStats(){
+  try{
+    const c=await(await fetch(BASE+'trouble/config.json',{cache:'no-cache'})).json(),U=(c.supabaseUrl||'').replace(/\/+$/,''),K=(c.anonKey||'').trim();
+    if(!U||!K)throw 0;
+    const H={apikey:K,Prefer:'count=exact'};if(/^eyJ/.test(K))H.Authorization='Bearer '+K;
+    const cnt=async f=>{const r=await fetch(U+'/rest/v1/reports?select=id&limit=1'+f,{headers:H});if(!r.ok)throw 0;return+(r.headers.get('content-range')||'').split('/')[1]||0};
+    const[a,b,p,d]=await Promise.all([cnt('&status=neq.DELETED'),cnt('&status=eq.NEW'),cnt('&status=eq.PROCESSING'),cnt('&status=eq.DONE')]);
+    $('kTotal').textContent=a;$('kNew').textContent=b;$('kProc').textContent=p;$('kDone').textContent=d;
+  }catch(e){}   // chưa cấu hình hoặc không kết nối được: giữ dấu –
+}
+function imgFile(f,max,sq){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),i=new Image();
+  i.onload=()=>{let sw=i.width,sh=i.height,sx=0,sy=0,w,h;
+    if(sq){const m=Math.min(sw,sh);sx=(sw-m)/2;sy=(sh-m)/2;sw=sh=m;w=h=max}else{const k=Math.min(1,max/Math.max(sw,sh));w=Math.round(sw*k);h=Math.round(sh*k)}
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(i,sx,sy,sw,sh,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.85))};
+  i.onerror=()=>no();i.src=u})}
 
-window.onload=()=>{
+$('loginLink').href=BASE+'auth/login.html';
+$('statsLink').href=BASE+'trouble/report-management.html';
+$('quick').innerHTML=TOOLS.map(t=>`<a class="text-decoration-none" href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join('');
+$('btnLogout').onclick=()=>{LS.del('cl_user');renderUser()};
+$('searchInput').oninput=renderTools;
+$('searchInput').onkeydown=e=>{if(e.key==='Enter'){const l=renderTools();if(l[0])open(l[0].url,'_blank')}};
+$('darkMode').onchange=e=>{LS.set('cl_dark',e.target.checked?'1':'0');applyLook()};
+$('bgFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{if(!LS.set('cl_bg',await imgFile(f,1600,false)))alert('Bộ nhớ trình duyệt đầy, hãy chọn ảnh nhỏ hơn');applyLook()}catch(x){alert('Không đọc được ảnh')}};
+$('avFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{LS.set('cl_avatar',await imgFile(f,160,true));renderUser()}catch(x){alert('Không đọc được ảnh')}};
+$('bgDel').onclick=()=>{LS.del('cl_bg');applyLook()};
+$('avDel').onclick=()=>{LS.del('cl_avatar');renderUser()};
+$('btnReset').onclick=()=>{if(confirm('Đặt lại chế độ tối, ảnh nền và ảnh đại diện?')){['cl_dark','darkMode','cl_bg','cl_avatar'].forEach(LS.del);applyLook();renderUser()}};   // chỉ xóa thiết lập của trang này, không đụng dữ liệu các công cụ khác
 
-const dark=
-localStorage.getItem("darkMode")==="true";
-
-document.getElementById("darkMode").checked=dark;
-
-document.documentElement.setAttribute(
-"data-bs-theme",
-dark?"dark":"light"
-);
-
-};
-
+renderUser();applyLook();renderTools();loadStats();
 </script>
-
 </body>
 </html>
