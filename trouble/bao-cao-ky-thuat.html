@@ -56,7 +56,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .dr{display:flex;gap:6px;align-items:center;border:1px solid #ddd;border-radius:8px;padding:8px;margin-bottom:6px}
 .dr.cur{border-color:var(--blue);background:#f1f7ff}
 
-.sigcv{width:100%;aspect-ratio:600/220;border:2px dashed #b9c9de;border-radius:10px;background:#fff;touch-action:pan-y;display:block}
+.sigcv{width:100%;aspect-ratio:520/320;border:2px dashed #b9c9de;border-radius:10px;background:#fff;touch-action:pan-y;display:block}
 .sigcv.on{touch-action:none;border:2px solid var(--blue)}
 .sigh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9ab;pointer-events:none}
 .dots{border:0;background:none;font-size:24px;line-height:1;padding:0 8px;color:#555}
@@ -69,6 +69,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .sw.on{border:3px solid #000;box-shadow:0 0 0 2px #fff inset}
 .th .an{position:absolute;bottom:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:#7c3aed;color:#fff;text-align:center;line-height:26px;cursor:pointer;font-style:normal;font-size:14px}
 .sym{min-width:42px;height:38px;font-size:16px;padding:0 8px;font-family:Arial,'Segoe UI Symbol',sans-serif}
+.dz.req-bad{border-color:#dc3545;background:#fff5f5}
 .navbar .btn{padding:.3rem .5rem;font-size:14px}
 .info{flex:none;height:112px;display:flex;border:1px solid #999;border-radius:6px;overflow:hidden}
 .g12{flex:1;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:46px 1fr;min-width:0}
@@ -80,11 +81,11 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .sgs{display:flex;flex:none;width:240px}
 .sn{font-size:13.33px;line-height:1.2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:16px}
 .sg{flex:1;min-width:0;border-left:1px solid #999;padding:3px 8px;text-align:center;display:flex;flex-direction:column;align-items:center}
-#p-sig,#p-sig2{max-height:62px;max-width:100%;margin:auto;display:none}
+#p-sig,#p-sig2{max-height:64px;max-width:104px;margin:auto;display:none}
 @page{size:A4 portrait;margin:0}
 @media print{
  html,body{width:210mm;height:297mm;margin:0!important;padding:0!important;overflow:hidden;background:#fff!important}
- .navbar,#tabs,#pane-form,.ov,#toast,.noexp{display:none!important}
+ .navbar,#tabs,#pane-form,.ov,#toast,.noexp,#cl-footer{display:none!important}
  .container-fluid{padding:0!important;margin:0!important;max-width:none!important}
  .row{display:block!important;margin:0!important}
  #pane-prev{display:block!important;position:static!important;width:210mm!important;max-width:none!important;flex:none!important;padding:5mm!important;margin:0!important}
@@ -100,7 +101,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 <body>
 <nav class="navbar bg-white shadow-sm sticky-top">
  <div class="container-fluid">
-  <span class="navbar-brand fw-bold d-none d-sm-inline" style="color:var(--blue)">📋 Báo cáo kỹ thuật</span>
+  <span id="cl-brand" data-title="Báo cáo kỹ thuật" data-compact></span>
   <div class="d-flex gap-1 flex-fill flex-sm-grow-0 justify-content-between align-items-center">
    <button class="btn btn-outline-secondary" data-act="new" title="Làm báo cáo mới">➕<span class="d-none d-sm-inline"> Mới</span></button>
    <div class="btn-group" title="Ngôn ngữ báo cáo (xem trước, PDF, Excel)"><button class="btn btn-primary" data-lang="vi">VI</button><button class="btn btn-outline-primary" data-lang="en">EN</button></div>
@@ -117,9 +118,9 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
      <button class="dropdown-item py-2" data-act="xlsx">📊 Excel</button>
      <button class="dropdown-item py-2" data-act="html" title="Lưu phần xem trước thành 1 file HTML có cả VI và EN, mở được khi không có mạng"><svg width="18" height="18" viewBox="0 0 24 24" fill="#4a6785" style="vertical-align:-4px;margin-right:2px"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg> HTML</button>
      <button class="dropdown-item py-2" data-act="dlcur" title="Tải file .json của báo cáo đang sửa để mang sang máy khác">💾 JSON</button>
-     <button class="dropdown-item py-2" id="hmAuth" data-act="auth"></button>
     </div>
    </div>
+   <div id="cl-account" class="ms-1"></div>
   </div>
  </div>
 </nav>
@@ -161,6 +162,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
  </div>
 </div>
 
+<div id="cl-footer"></div>
 <div class="d-lg-none fixed-bottom bg-white border-top d-flex" id="tabs">
  <button class="btn flex-fill py-3 rounded-0" data-tab="form">✏️ Nhập liệu</button>
  <button class="btn flex-fill py-3 rounded-0" data-tab="prev">👁 Xem trước</button>
@@ -175,6 +177,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
  <div style="text-align:center"><canvas id="annc" style="touch-action:none;max-width:100%;border:1px solid #ccc;border-radius:6px;cursor:crosshair"></canvas></div>
  <div class="d-flex gap-2 mt-2"><button class="btn btn-outline-secondary" data-act="annundo">↶ Hoàn tác</button><button class="btn btn-outline-secondary" data-act="annclear">🧹 Xóa hết</button><button class="btn btn-outline-secondary ms-auto" data-act="anncancel">Hủy</button><button class="btn btn-primary" data-act="anndone">✔ Xong</button></div>
 </div></div>
+<div class="ov" id="chk"><div class="pn" style="max-width:420px;width:100%"><div class="fw-bold mb-2">⚠ Chưa thể gửi lên server</div><div class="small text-muted mb-2">Còn thiếu hoặc chưa hợp lệ (chữ ký không bắt buộc). Báo cáo vẫn được lưu trên máy.</div><ul id="chkl" class="mb-3"></ul><button class="btn btn-primary w-100" data-act="chkclose">Đã hiểu, quay lại điền</button></div></div>
 <input type="file" id="fj" accept=".json,application/json" hidden>
 <input type="file" id="fi" accept="image/*" multiple hidden>
 <input type="file" id="fc" accept="image/*" capture="environment" hidden>
@@ -230,9 +233,9 @@ function imgCard(n,s){return `<div class="cardx"><h2><span><i>${n}.</i>${SIDE[s]
   <div class="guide">${s==='before'?'Ảnh chụp hiện trạng trước khi xử lý.':'Ảnh chụp kết quả sau khi xử lý.'} Tối đa ${MAX} ảnh. Nút tím ✎ để vẽ, đánh dấu lên ảnh. Chạm vào ảnh nhỏ để kéo chọn vùng cắt. ◀ đưa ảnh lên trước (ảnh đầu là ảnh lớn nhất), ↻ xoay ảnh, × xóa ảnh.</div>
  </div></div>`}
 
-function sigCard(n,k,title,save){return `<div class="cardx"><h2><span><i>${n}.</i>${title}</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear" data-sk="${k}">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="b_${k}" data-act="sigtoggle" data-sk="${k}">✍ Sửa</button><button class="dots" data-more="mo-${k}" title="${save?'Lưu chữ ký và hướng dẫn':'Hướng dẫn'}">⋮</button></span></h2>${k==='sig2'?fld('confirmer','Họ và tên người xác nhận (hiện dưới chữ ký)','text','Họ và tên'):''}<div style="position:relative" class="mt-2"><canvas class="sigcv" id="c_${k}" width="600" height="220"></canvas><div class="sigh" id="h_${k}"></div></div><div class="d-none mt-2" id="mo-${k}">${save?`<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>`:''}${guide(k)}</div></div>`}
+function sigCard(n,k,title,save){return `<div class="cardx"><h2><span><i>${n}.</i>${title}</span><span class="d-flex gap-1 align-items-center"><button class="btn btn-sm btn-outline-secondary" data-act="sigclear" data-sk="${k}">Ký lại</button><button class="btn btn-sm btn-outline-primary" id="b_${k}" data-act="sigtoggle" data-sk="${k}">✍ Sửa</button><button class="dots" data-more="mo-${k}" title="${save?'Lưu chữ ký và hướng dẫn':'Hướng dẫn'}">⋮</button></span></h2>${k==='sig2'?fld('confirmer','Họ và tên người xác nhận (hiện dưới chữ ký)','text','Họ và tên'):''}<div style="position:relative" class="mt-2"><canvas class="sigcv" id="c_${k}" width="520" height="320"></canvas><div class="sigh" id="h_${k}"></div></div><div class="d-none mt-2" id="mo-${k}">${save?`<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" data-act="sigsave">💾 Lưu chữ ký</button><button class="btn btn-outline-danger flex-fill" data-act="sigdel">🗑 Xóa chữ ký đã lưu</button></div>`:''}${guide(k)}</div></div>`}
 const GD={
- info:'Mã số báo cáo do server cấp khi bấm "Lưu lên server" (dạng PLE-năm-tháng-số thứ tự); trước đó hiện mã tạm PLE-năm-tháng-ngày theo Ngày lập (mặc định hôm nay). Người lập và Mã số máy: chạm vào ô để chọn lại giá trị đã dùng, hoặc gõ vài ký tự để tìm (VD: "blk pre 03"). Máy không có trong danh sách thì cứ nhập tay. Nút VI/EN trên thanh trên cùng đổi ngôn ngữ báo cáo (xem trước, PDF, Excel); chữ bạn nhập được tự dịch sang tiếng Anh và có thể sửa trong ⋮ của từng mục. Chất lượng ảnh khi lưu lên server mặc định 96 dpi: ảnh được thu nhỏ vừa với khung hiển thị để nhẹ, ảnh vốn nhỏ hơn thì giữ nguyên; đổi ở ô "Chất lượng ảnh" phía trên.',
+ info:'Mã số báo cáo do server cấp khi bấm "Lưu lên server" (dạng PLE-năm-tháng-số thứ tự); trước đó hiện mã tạm PLE-năm-tháng-??? theo Ngày lập. Người lập và Mã số máy: chạm vào ô để chọn lại giá trị đã dùng, hoặc gõ vài ký tự để tìm (VD: "blk pre 03"). Máy không có trong danh sách thì cứ nhập tay. Nút VI/EN trên thanh trên cùng đổi ngôn ngữ báo cáo (xem trước, PDF, Excel); chữ bạn nhập được tự dịch sang tiếng Anh và có thể sửa trong ⋮ của từng mục. Chất lượng ảnh khi lưu lên server mặc định 96 dpi: ảnh được thu nhỏ vừa với khung hiển thị để nhẹ, ảnh vốn nhỏ hơn thì giữ nguyên; đổi ở ô "Chất lượng ảnh" phía trên.',
  time:'Chọn ngày giờ bắt đầu và hoàn thành (24 giờ). Thời gian stop tự tính từ hai mốc này: dưới 60 phút hiện phút, từ 60 phút trở lên hiện giờ (VD: 90 phút = 1,5 giờ). Nếu thực tế khác, nhập số phút vào ô phía trên.',
  subject:'Ghi ngắn gọn trong 1 dòng: việc đã làm + tên máy. VD: Thay sensor máy FV-BLK-PRE-03.',
  desc:'Mô tả vấn đề: máy/vị trí, hiện tượng, thời điểm phát hiện, ảnh hưởng đến sản xuất. Mỗi ý một dòng cho dễ đọc.',
@@ -313,11 +316,12 @@ document.addEventListener('input',e=>{const d=e.target.dataset||{};
  if(d.lay||d.fit){(d.lay?S.lay:S.fit)[d.lay||d.fit]=e.target.value;save();render();return}
  if('fs' in d){S.fs=+e.target.value;save();render();return}
  if('dpi' in d){ls('fjk_dpi',e.target.value);toast('Đã đổi chất lượng ảnh khi lưu lên server',1800);return}
+ if(e.target.classList)e.target.classList.remove('is-invalid');
  if(d.en){S.en[d.en]=e.target.value;S.enSrc[d.en]=S[d.en];save();render();return}
  if(!d.k)return;S[d.k]=e.target.value;if(S.lang==='en'&&TXT[d.k]){clearTimeout(trT);trT=setTimeout(()=>ensureEN(true),1500)}if(d.k==='name')ls('fjk_name',S.name);save();render();if(d.ac)acShow(e.target)});
 
 /* ---------- Mã số, thời gian ---------- */
-const code=()=>S.reportNo||('PLE-'+(S.date||'yyyy-mm-dd'));
+const code=()=>S.reportNo||('PLE-'+(S.date?S.date.slice(0,7):'yyyy-mm')+'-???');
 const fdt=v=>v?v.slice(0,10).split('-').reverse().join('-')+' '+v.slice(11,16):'';
 const durMin=()=>{if(!S.t1||!S.t2)return null;const m=Math.round((new Date(S.t2)-new Date(S.t1))/60000);return m>=0?m:null};
 const stopMin=()=>(S.stopMan!==''&&!isNaN(+S.stopMan))?+S.stopMan:durMin();
@@ -334,7 +338,7 @@ const tx=(m,fn)=>new Promise(ok=>{if(!DB)return ok(null);try{const t=DB.transact
 const dbPut=o=>tx('readwrite',s=>s.put(o)),dbDel=id=>tx('readwrite',s=>s.delete(id)),dbGet=id=>tx('readonly',s=>s.get(id)),dbAll=()=>tx('readonly',s=>s.getAll());
 const closeD=()=>$('drafts').style.display='none';
 async function openDrafts(){await flush();const a=((await dbAll())||[]).sort((x,y)=>y.updated-x.updated);
- $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">${esc(d.reportNo||'PLE-'+d.date)} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-secondary" data-dl="${d.id}" title="Tải xuống file để mang sang máy khác">⬇</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
+ $('dlist').innerHTML=a.length?a.map(d=>`<div class="dr ${d.id===S.id?'cur':''}"><div class="flex-fill" style="min-width:0"><b>${esc(d.subject||'(Chưa có chủ đề)')}</b><div class="small text-muted">${esc(d.reportNo||'PLE-'+String(d.date||'').slice(0,7)+'-???')} · ${new Date(d.updated).toLocaleString('vi-VN')}${d.id===S.id?' · đang mở':''}</div></div><button class="btn btn-sm btn-primary" data-open="${d.id}">Mở</button><button class="btn btn-sm btn-outline-secondary" data-dl="${d.id}" title="Tải xuống file để mang sang máy khác">⬇</button><button class="btn btn-sm btn-outline-danger" data-rm="${d.id}">Xóa</button></div>`).join(''):'<div class="text-muted p-3">Chưa có báo cáo nào được lưu. Báo cáo tự động lưu khi bạn nhập.</div>';
  $('drafts').style.display='flex'}
 async function openRep(id){await flush();const d=await dbGet(id);if(d){S=Object.assign(blank(),d);ls('fjk_cur',S.id);fill();render();drawSig()}closeD();setTab('form')}
 async function newRep(){await flush();if(!isEmpty()){remember();toast('Báo cáo vừa rồi đã được lưu trong mục 📂 Đã lưu',3000)}for(const k in SIGS)SIGS[k].on=false;S=blank();ls('fjk_cur',S.id);fill();render();drawSig();closeD();setTab('form')}
@@ -370,13 +374,13 @@ const SIGS={sig:{on:false,dw:false},sig2:{on:false,dw:false}};
 for(const k in SIGS){const p=SIGS[k];p.cv=$('c_'+k);p.g=p.cv.getContext('2d');
  const pos=e=>{const r=p.cv.getBoundingClientRect();return[(e.clientX-r.left)*p.cv.width/r.width,(e.clientY-r.top)*p.cv.height/r.height]};
  p.cv.addEventListener('pointerdown',e=>{if(!p.on)return;e.preventDefault();p.dw=true;p.cv.setPointerCapture(e.pointerId);const[x,y]=pos(e),g=p.g;
-  g.lineWidth=4;g.lineCap=g.lineJoin='round';g.strokeStyle='#111';g.beginPath();g.moveTo(x,y);g.lineTo(x+.1,y+.1);g.stroke();g.beginPath();g.moveTo(x,y)});
+  g.lineWidth=6;g.lineCap=g.lineJoin='round';g.strokeStyle='#111';g.beginPath();g.moveTo(x,y);g.lineTo(x+.1,y+.1);g.stroke();g.beginPath();g.moveTo(x,y)});
  p.cv.addEventListener('pointermove',e=>{if(!p.dw)return;const[x,y]=pos(e),g=p.g;g.lineTo(x,y);g.stroke();g.beginPath();g.moveTo(x,y)});
  const end=()=>{if(!p.dw)return;p.dw=false;S[k]=p.cv.toDataURL('image/png');save();render()};
  p.cv.addEventListener('pointerup',end);p.cv.addEventListener('pointercancel',end)}
 function sigUI(){for(const k in SIGS){const p=SIGS[k];p.cv.classList.toggle('on',p.on);$('b_'+k).textContent=p.on?'✔ Xong':'✍ Sửa';
  const h=$('h_'+k);h.textContent='Bấm "Sửa" để ký';h.style.display=(!p.on&&!S[k])?'flex':'none'}}
-async function drawSig(){for(const k in SIGS){const p=SIGS[k];p.g.clearRect(0,0,p.cv.width,p.cv.height);if(S[k]){try{p.g.drawImage(await loadI(S[k]),0,0)}catch(e){}}}}
+async function drawSig(){for(const k in SIGS){const p=SIGS[k];p.g.clearRect(0,0,p.cv.width,p.cv.height);if(S[k]){try{const im=await loadI(S[k]),sc=Math.min(p.cv.width/im.width,p.cv.height/im.height),w=im.width*sc,h=im.height*sc;p.g.drawImage(im,(p.cv.width-w)/2,(p.cv.height-h)/2,w,h)}catch(e){}}}}
 
 /* ---------- Ngôn ngữ báo cáo & dịch ---------- */
 function applyLang(){const d=I18N[S.lang||'vi'];document.querySelectorAll('[data-i]').forEach(e=>e.textContent=d[e.dataset.i]);
@@ -470,6 +474,7 @@ const comp=f=>new Promise((ok,no)=>{const u=URL.createObjectURL(f),i=new Image()
   ok({src:c.toDataURL('image/jpeg',.82),w,h})};
  i.onerror=()=>no(new Error('Không đọc được ảnh'));i.src=u});
 async function addFiles(s,files){
+ document.querySelectorAll('.req-bad').forEach(x=>x.classList.remove('req-bad'));
  const fs=[...files].filter(f=>f.type.startsWith('image/')),room=MAX-S[s].length;
  if(!fs.length)return toast('Chỉ nhận file ảnh',2500);
  if(fs.length>room)toast(`Mỗi mục tối đa ${MAX} ảnh, chỉ thêm ${Math.max(room,0)} ảnh`,3000);
@@ -523,6 +528,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(a==='share')run('⏳ Đang tạo PDF để chia sẻ...',()=>exportPDF(1));
   if(a==='xlsx')run('⏳ Đang tạo Excel...',exportXLSX);
   if(a==='new')newRep();
+  if(a==='chkclose'){$('chk').style.display='none';goFirst()}
   if(a==='upl')$('fj').click();
   if(a==='dlcur')dlCur();
   if(a==='annundo'&&AN){AN.shapes.pop();annDraw()}
@@ -556,7 +562,7 @@ let tt;function toast(m,ms=0){const t=$('toast');t.textContent=m;t.style.display
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'').slice(0,30);
 const clean=s=>s.replace(/[\\/:*?"<>|\r\n\t]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80);
 function fnameOf(d){const sj=(d.lang==='en'&&d.en&&d.en.subject&&d.enSrc&&d.enSrc.subject===d.subject)?d.en.subject:d.subject;
- return (d.reportNo||'PLE-'+(d.date||'yyyy-mm-dd'))+(sj&&clean(sj)?'_'+clean(sj):'')}
+ return (d.reportNo||'PLE-'+(d.date?d.date.slice(0,7):'yyyy-mm')+'-xxx')+(sj&&clean(sj)?'_'+clean(sj):'')}
 const fname=()=>fnameOf(S);
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 async function run(msg,fn){
@@ -706,8 +712,19 @@ async function optimizedPayload(){const c=payload(),dpi=DPI();if(!dpi)return c;c
    im.w=Math.max(1,Math.round(im.w*sc));im.h=Math.max(1,Math.round(im.h*sc))}}
  return c}
 const who=()=>(window.CL&&CL.getSession()&&CL.userName())||S.name.trim();
+const REQ=[['date','Ngày lập báo cáo'],['name','Người lập báo cáo'],['mc','Mã số máy'],['t1','Ngày giờ bắt đầu'],['t2','Ngày giờ hoàn thành'],['subject','Chủ đề'],['desc','Mô tả nội dung'],['action','Hành động'],['before','Hình ảnh trước'],['after','Hình ảnh sau'],['mats','Vật tư & Nguyên liệu'],['done','Hoàn thành & Áp dụng'],['who','Người xử lý'],['mp','Tổng manpower'],['confirmer','Họ và tên người xác nhận']];
+function reqMissing(){const m=[];
+ for(const[k,l]of REQ){const v=k==='who'?whoTxt():S[k],ok=Array.isArray(v)?v.length>0:String(v==null?'':v).trim()!=='';if(!ok)m.push([k,l])}
+ if(S.t1&&S.t2&&new Date(S.t2)<new Date(S.t1))m.push(['t2','Giờ hoàn thành sớm hơn giờ bắt đầu']);
+ return m}
+function markMissing(m){document.querySelectorAll('.is-invalid,.req-bad').forEach(x=>x.classList.remove('is-invalid','req-bad'));
+ for(const[k]of m){const el=document.querySelector('[data-k="'+k+'"]');if(el)el.classList.add('is-invalid');
+  else{const th=$('th-'+k);if(th){const z=th.closest('.cardx').querySelector('.dz');if(z)z.classList.add('req-bad')}}}}
+function showMissing(m){setTab('form');markMissing(m);$('chkl').innerHTML=m.map(x=>'<li>'+esc(x[1])+'</li>').join('');$('chk').style.display='flex';$('chk').dataset.first=m[0][0]}
+function goFirst(){const k=$('chk').dataset.first,el=document.querySelector('[data-k="'+k+'"]')||($('th-'+k)&&$('th-'+k).closest('.cardx'));if(el){el.scrollIntoView({block:'center',behavior:'smooth'});if(el.focus&&el.matches('input,textarea'))setTimeout(()=>el.focus({preventScroll:true}),400)}}
 async function saveServer(){
  if(busy)return;
+ {const m=reqMissing();if(m.length){await flush();showMissing(m);return}}          // interlock: đủ thông tin mới gửi; vẫn lưu trên máy
  if(window.CL&&!CL.getSession()){if(confirm('Cần đăng nhập để lưu lên server.\nChuyển tới trang đăng nhập? (Báo cáo đang soạn vẫn được giữ trên máy.)')){await flush();CL.requireLogin()}return}
  if(!sbOK())return toast('Chưa cấu hình server: điền anonKey trong file config.json',5000);
  if(!S.name.trim())return toast('Hãy nhập "Người lập báo cáo" (mục 1) trước khi lưu lên server',4000);
