@@ -17,6 +17,13 @@ body{background:var(--page);font-family:Arial,Helvetica,sans-serif}
 .table th,.table td{vertical-align:middle;white-space:nowrap;text-align:center}
 .table td.s{white-space:normal;min-width:180px;max-width:320px;text-align:left}
 .st{min-width:120px;font-weight:600}
+.fb{display:grid;grid-template-columns:repeat(12,1fr);border:1px solid #999;border-radius:6px;overflow:hidden;max-width:780px;text-align:left;background:var(--bs-body-bg)}
+.fc{padding:4px 10px;border-right:1px solid var(--bs-border-color);border-bottom:1px solid var(--bs-border-color);min-height:50px;min-width:0}
+.fc small{display:block;font-size:12px;line-height:1.3;color:var(--bs-secondary-color)}
+.fc span{display:block;font-size:16px;line-height:1.3;word-break:break-word}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s6{grid-column:span 6}
+.fc:nth-child(3),.fc:nth-child(6){border-right:0}.fc:nth-child(n+4){border-bottom:0}
+@media(max-width:576px){.fb{grid-template-columns:repeat(2,1fr)}.s3,.s4,.s6{grid-column:span 1}.fc,.fc:nth-child(3),.fc:nth-child(6){border-right:1px solid var(--bs-border-color);border-bottom:1px solid var(--bs-border-color)}.fc:nth-child(2n){border-right:0}.fc:nth-child(n+5){border-bottom:0}}
 @media(max-width:768px){h2{font-size:1.3rem}.table{font-size:.85rem}.btn{font-size:.8rem}}
 </style>
 </head>
@@ -37,7 +44,10 @@ body{background:var(--page);font-family:Arial,Helvetica,sans-serif}
    <div class="col-6 col-md-2"><select id="fSt" class="form-select"><option value="ALL">Tất cả (trừ đã xóa)</option><option>NEW</option><option>PROCESSING</option><option>DONE</option><option>REJECTED</option><option value="DELETED">Đã xóa</option></select></div>
    <div class="col-6 col-md-2"><input id="d1" type="date" class="form-control" title="Từ ngày"></div>
    <div class="col-6 col-md-2"><input id="d2" type="date" class="form-control" title="Đến ngày"></div>
-   <div class="col-6 col-md-2 d-flex gap-1"><button class="btn btn-success flex-fill" id="bNew">+ Mới</button><button class="btn btn-primary flex-fill" id="bRef">Làm mới</button></div>
+  </div>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" id="swDet"><label class="form-check-label" for="swDet">Hiện chi tiết (thông tin cuối báo cáo)</label></div>
+   <div class="d-flex gap-2"><button class="btn btn-outline-success" id="bXls">Tải Excel</button><button class="btn btn-primary" id="bRef">Làm mới</button><button class="btn btn-success" id="bNew">+ Mới</button></div>
   </div>
   <div class="table-responsive">
    <table class="table table-bordered table-hover">
@@ -66,13 +76,14 @@ body{background:var(--page);font-family:Arial,Helvetica,sans-serif}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cuonglabs.github.io/tools/layout.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const STS=['NEW','PROCESSING','DONE','REJECTED'];
 const COL={NEW:'#cfe2ff',PROCESSING:'#fff3cd',DONE:'#d1e7dd',REJECTED:'#f8d7da',DELETED:'#e2e3e5'};
-const SEL='id,reportno,status,createby,createtime,modifiedby,modifiedtime,subject:content->>subject,mc:content->>mc';
+const SEL='id,reportno,status,createby,createtime,modifiedby,modifiedtime,subject:content->>subject,mc:content->>mc,t1:content->>t1,t2:content->>t2,stopman:content->>stopMan,who:content->>who,mp:content->>mp,lang:content->>lang';
 let CFG={url:'',key:'',app:'bao-cao-ky-thuat.html'},page=0,total=0,tq,tr;
 const P={st:false,del:false,ed:false,cr:false};   // quyền theo vai trò (xem auth.js)
 
@@ -88,6 +99,46 @@ const appUrl=q=>new URL(CFG.app,location.href).href+(q||'');
 function fmt(v){if(!v)return'';const d=new Date(v),p=n=>String(n).padStart(2,'0'),m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' '+p(d.getDate())+'-'+m[d.getMonth()]+'-'+d.getFullYear()}
 
+const fdt=v=>v?String(v).slice(0,10).split('-').reverse().join('-')+' '+String(v).slice(11,16):'';
+const whoTxt=v=>String(v||'').split(',').map(x=>x.trim()).filter(Boolean).join(', ');
+const hasNum=v=>v!==''&&v!=null&&!isNaN(+v);
+function stopMin(r){if(hasNum(r.stopman))return+r.stopman;if(!r.t1||!r.t2)return null;const m=Math.round((new Date(r.t2)-new Date(r.t1))/60000);return m>=0?m:null}
+function footBlock(r){   // giống khung thông tin cuối báo cáo; theo ngôn ngữ của chính báo cáo
+  const en=r.lang==='en',L=en?{mc:'Machine code',st:'Start date/time',fi:'Completion date/time',dt:'Downtime',who:'Handled by',mp:'Total manpower',min:'min',hr:'h'}
+    :{mc:'Mã số máy',st:'Ngày giờ bắt đầu',fi:'Ngày giờ hoàn thành',dt:'Thời gian stop',who:'Người xử lý',mp:'Tổng manpower',min:'phút',hr:'giờ'};
+  const num=x=>en?String(x):String(x).replace('.',',');
+  const m=stopMin(r),dt=m===null?'':m<60?m+' '+L.min:num(+(m/60).toFixed(2))+' '+L.hr;
+  const mp=hasNum(r.mp)?num(+r.mp)+' '+L.hr:'';
+  const c=(k,l,v)=>`<div class="fc ${k}"><small>${l}</small><span>${esc(v)}</span></div>`;
+  return`<div class="fb">${c('s4',L.mc,r.mc)}${c('s4',L.st,fdt(r.t1))}${c('s4',L.fi,fdt(r.t2))}${c('s3',L.dt,dt)}${c('s6',L.who,whoTxt(r.who))}${c('s3',L.mp,mp)}</div>`;
+}
+async function exportXls(){
+  if(!window.ExcelJS)return warn('Không tải được thư viện Excel (cần Internet).');
+  const b=$('bXls'),t0=b.textContent;b.disabled=true;b.textContent='Đang xuất...';
+  try{
+    warn('');const rows=[];
+    for(let off=0;;off+=1000){const{j}=await api('reports?select='+encodeURIComponent(SEL)+'&order=createtime.desc&limit=1000&offset='+off+filters());rows.push(...j);if(j.length<1000)break}
+    if(!rows.length)return warn('Không có báo cáo nào để xuất (theo bộ lọc hiện tại).');
+    const loc=v=>{if(!v)return null;const d=new Date(v);return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds()))};   // ExcelJS ghi theo UTC nên đổi sang giờ địa phương
+    const ldt=v=>{const m=String(v||'').match(/^(\d+)-(\d+)-(\d+)T(\d+):(\d+)/);return m?new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5])):null};
+    const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet('Báo cáo'),D1='dd-mm-yyyy hh:mm:ss',D2='dd-mm-yyyy hh:mm';
+    ws.columns=[{header:'Số báo cáo',key:'no',width:18},{header:'Chủ đề',key:'sj',width:42},{header:'Mã máy',key:'mc',width:22},{header:'Trạng thái',key:'st',width:14},
+      {header:'Người lập',key:'by',width:22},{header:'Tạo lúc',key:'ct',width:20,style:{numFmt:D1}},{header:'Sửa bởi',key:'mb',width:22},{header:'Sửa lúc',key:'mt',width:20,style:{numFmt:D1}},
+      {header:'Bắt đầu',key:'t1',width:18,style:{numFmt:D2}},{header:'Hoàn thành',key:'t2',width:18,style:{numFmt:D2}},{header:'Thời gian stop (phút)',key:'dt',width:20},
+      {header:'Người xử lý',key:'who',width:30},{header:'Manpower (giờ)',key:'mp',width:16}];
+    rows.forEach(r=>ws.addRow({no:r.reportno,sj:r.subject||'',mc:r.mc||'',st:r.status,by:r.createby||'',ct:loc(r.createtime),mb:r.modifiedby||'',mt:loc(r.modifiedtime),
+      t1:ldt(r.t1),t2:ldt(r.t2),dt:stopMin(r),who:whoTxt(r.who),mp:hasNum(r.mp)?+r.mp:null}));
+    ws.eachRow(r=>r.eachCell(c=>{c.font={name:'Arial',size:11};c.alignment={vertical:'middle',wrapText:true}}));
+    const hr=ws.getRow(1);hr.height=24;hr.eachCell(c=>{c.font={name:'Arial',size:11,bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF212529'}};c.alignment={vertical:'middle',horizontal:'center',wrapText:true}});
+    ws.views=[{state:'frozen',ySplit:1}];ws.autoFilter={from:{row:1,column:1},to:{row:1,column:ws.columns.length}};
+    const buf=await wb.xlsx.writeBuffer(),n=new Date(),p=x=>String(x).padStart(2,'0');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    a.download='Danh-sach-bao-cao_'+n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())+'_'+p(n.getHours())+p(n.getMinutes())+'.xlsx';
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+    toast('Đã xuất '+rows.length+' báo cáo ra Excel');
+  }catch(e){warn('Không xuất được Excel: '+e.message)}
+  finally{b.disabled=false;b.textContent=t0}
+}
 function filters(){
   let f='';const st=$('fSt').value;
   f+=st==='ALL'?'&status=neq.DELETED':'&status=eq.'+st;
@@ -111,14 +162,14 @@ async function load(){
     warn('');const ps=+$('ps').value;
     const {j,range}=await api('reports?select='+encodeURIComponent(SEL)+'&order=createtime.desc&limit='+ps+'&offset='+page*ps+filters(),{headers:{Prefer:'count=exact'}});
     total=+(range.split('/')[1])||0;
-    $('tb').innerHTML=j.length?j.map(r=>{const del=r.status==='DELETED',opts=(del?[...STS,'DELETED']:STS);
-      return`<tr><td>${esc(r.reportno)}</td><td class="s">${esc(r.subject)}</td><td>${esc(r.mc)}</td>
+    $('tb').innerHTML=j.length?j.map(r=>{const del=r.status==='DELETED',opts=(del?[...STS,'DELETED']:STS),show=$('swDet').checked;
+      return`<tr><td><button class="btn btn-sm btn-link p-0 me-1 tg" data-a="tg" title="Chi tiết">${show?'▾':'▸'}</button>${esc(r.reportno)}</td><td class="s">${esc(r.subject)}</td><td>${esc(r.mc)}</td>
       <td><select class="form-select form-select-sm st" ${P.st?'':'disabled'} data-id="${esc(r.id)}" style="background:${COL[r.status]||'#fff'}">${opts.map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}</select></td>
       <td class="small">${esc(r.createby)}<br>${fmt(r.createtime)}</td><td class="small">${r.modifiedtime?esc(r.modifiedby)+'<br>'+fmt(r.modifiedtime):''}</td>
       <td><button class="btn btn-info btn-sm" data-a="view" data-id="${esc(r.id)}" data-no="${esc(r.reportno)}">Xem</button>
       ${P.ed?`<button class="btn btn-warning btn-sm" data-a="edit" data-id="${esc(r.id)}">Sửa</button>`:''}
       <button class="btn btn-outline-secondary btn-sm" data-a="link" data-id="${esc(r.id)}">Link</button>
-      ${!P.del?'':del?`<button class="btn btn-success btn-sm" data-a="res" data-id="${esc(r.id)}">Khôi phục</button>`:`<button class="btn btn-danger btn-sm" data-a="del" data-id="${esc(r.id)}">Xóa</button>`}</td></tr>`}).join('')
+      ${!P.del?'':del?`<button class="btn btn-success btn-sm" data-a="res" data-id="${esc(r.id)}">Khôi phục</button>`:`<button class="btn btn-danger btn-sm" data-a="del" data-id="${esc(r.id)}">Xóa</button>`}</td></tr><tr class="det ${show?'':'d-none'}"><td colspan="7" class="bg-body-tertiary">${footBlock(r)}</td></tr>`}).join('')
       :'<tr><td colspan="7" class="text-muted">Không có báo cáo nào.</td></tr>';
     const pages=Math.max(1,Math.ceil(total/ps));
     $('info').textContent=total+' báo cáo · trang '+(page+1)+'/'+pages;
@@ -142,6 +193,7 @@ async function copy(s){try{if(navigator.clipboard&&isSecureContext)await navigat
 
 $('tb').addEventListener('click',e=>{
   const b=e.target.closest('[data-a]');if(!b)return;const id=b.dataset.id,a=b.dataset.a;
+  if(a==='tg'){const row=b.closest('tr').nextElementSibling;if(row&&row.classList.contains('det')){row.classList.toggle('d-none');b.textContent=row.classList.contains('d-none')?'▸':'▾'}return}
   if(a==='view'){const u=appUrl('?view='+encodeURIComponent(id));$('vt').textContent='Báo cáo '+b.dataset.no;$('vo').href=u;$('vf').src=u;bootstrap.Modal.getOrCreateInstance($('vm')).show()}
   if(a==='edit')open(appUrl('?edit='+encodeURIComponent(id)),'_blank');
   if(a==='link')copy(appUrl('?view='+encodeURIComponent(id)));
@@ -153,11 +205,14 @@ $('stats').addEventListener('click',e=>{const c=e.target.closest('[data-st]');if
 $('vm').addEventListener('hidden.bs.modal',()=>{$('vf').src='about:blank'});
 $('bNew').onclick=()=>open(appUrl(),'_blank');
 $('bRef').onclick=()=>load();
+$('bXls').onclick=exportXls;
+$('swDet').onchange=()=>{localStorage.cl_det=$('swDet').checked?'1':'0';load()};
 $('q').oninput=()=>{clearTimeout(tq);tq=setTimeout(()=>{page=0;load()},350)};
 for(const id of ['fSt','d1','d2','ps'])$(id).onchange=()=>{page=0;load()};
 $('pPrev').onclick=()=>{page--;load()};$('pNext').onclick=()=>{page++;load()};
 
 (async()=>{
+  $('swDet').checked=localStorage.cl_det==='1';
   if(!window.CL){warn('Không tải được module đăng nhập (auth.js). Trang quản lý tạm khóa.');$('tb').innerHTML='';return}
   const s=CL.getSession();if(!s)return;                       // auth.js đã chuyển sang trang đăng nhập
   $('who').value=CL.userName();
