@@ -177,7 +177,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
  <div style="text-align:center"><canvas id="annc" style="touch-action:none;max-width:100%;border:1px solid #ccc;border-radius:6px;cursor:crosshair"></canvas></div>
  <div class="d-flex gap-2 mt-2"><button class="btn btn-outline-secondary" data-act="annundo">↶ Hoàn tác</button><button class="btn btn-outline-secondary" data-act="annclear">🧹 Xóa hết</button><button class="btn btn-outline-secondary ms-auto" data-act="anncancel">Hủy</button><button class="btn btn-primary" data-act="anndone">✔ Xong</button></div>
 </div></div>
-<div class="ov" id="chk"><div class="pn" style="max-width:420px;width:100%"><div class="fw-bold mb-2">⚠ Chưa thể gửi lên server</div><div class="small text-muted mb-2">Còn thiếu hoặc chưa hợp lệ (chữ ký không bắt buộc). Báo cáo vẫn được lưu trên máy.</div><ul id="chkl" class="mb-3"></ul><button class="btn btn-primary w-100" data-act="chkclose">Đã hiểu, quay lại điền</button></div></div>
+<div class="ov" id="chk"><div class="pn" style="max-width:420px;width:100%"><div class="fw-bold mb-2">⚠ Chưa thể gửi lên server</div><div class="small text-muted mb-2">Còn thiếu hoặc chưa hợp lệ. Chữ ký và thông tin người xác nhận không bắt buộc khi gửi. Báo cáo vẫn được lưu trên máy.</div><ul id="chkl" class="mb-3"></ul><button class="btn btn-primary w-100" data-act="chkclose">Đã hiểu, quay lại điền</button></div></div>
 <input type="file" id="fj" accept=".json,application/json" hidden>
 <input type="file" id="fi" accept="image/*" multiple hidden>
 <input type="file" id="fc" accept="image/*" capture="environment" hidden>
@@ -244,7 +244,7 @@ const GD={
  done:'Ghi kết quả sau xử lý và phạm vi áp dụng. Chọn mẫu "máy hoạt động bình thường từ giờ hoàn thành" để tự điền thời gian.',
  who:'Người xử lý: nhập tên, ngăn cách bằng dấu phẩy (VD: Cường, Nam). Tổng manpower (giờ) = số người × số giờ làm; VD: 3 người làm 2 giờ = 6 giờ. Bấm "Tự tính" để máy tính theo giờ bắt đầu và hoàn thành.',
  sig:'Bấm "Sửa" rồi ký bằng ngón tay hoặc chuột, ký xong bấm "Xong". "Ký lại" xóa chữ ký hiện tại. "Lưu chữ ký" để mọi báo cáo mới tự có sẵn chữ ký này. Họ tên hiện dưới chữ ký lấy từ mục 1 (Người lập báo cáo).',
- sig2:'Người xác nhận (ví dụ trưởng nhóm, giám sát) đọc lại nội dung báo cáo rồi ký tại đây. Bấm "Sửa" để ký, ký xong bấm "Xong"; "Ký lại" xóa chữ ký. Chữ ký này không được lưu sẵn cho báo cáo mới.'};
+ sig2:'Người xác nhận (ví dụ trưởng nhóm, giám sát) ký sau khi báo cáo đã được gửi lên server: mở báo cáo bằng link sửa (?edit=), kiểm tra, ký tại đây rồi bấm Lưu. Không bắt buộc khi gửi. Bấm "Sửa" để ký, ký xong bấm "Xong"; "Ký lại" xóa chữ ký. Chữ ký này không được lưu sẵn cho báo cáo mới.'};
 const guide=k=>`<div class="guide">${GD[k]}</div>`;
 const card=(n,t,b,m)=>`<div class="cardx"><h2><span><i>${n}.</i>${t}</span>${m?`<button class="dots" data-more="${m}" title="Tùy chọn, gợi ý và hướng dẫn">⋮</button>`:''}</h2>${b}</div>`;
 const fld=(k,l,ty='text',ph='')=>{const ac=/^(mc|name|who|confirmer)$/.test(k);return `<label class="form-label mb-1 mt-2">${l}</label>`+(ac?'<div class="position-relative">':'')+`<input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}"${ac?` data-ac="${k}" autocomplete="off"`:''}>`+(ac?`<div class="ac" id="ac-${k}"></div></div>`:'')};
@@ -568,7 +568,7 @@ function dl(blob,name){const a=document.createElement('a');a.href=URL.createObje
 async function run(msg,fn){
  if(busy)return;
  if(S.lang==='en'&&stale().length){const ok=await ensureEN();if(!ok&&!confirm('Chưa dịch được sang tiếng Anh. Vẫn xuất (giữ tiếng Việt)?'))return}
- const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()],['Mã số máy',S.mc.trim()],['Thời gian bắt đầu/hoàn thành',S.t1&&S.t2],['Người xử lý',whoTxt()],['Người lập ký tên',S.sig],['Người xác nhận ký tên',S.sig2],['Tên người xác nhận',S.confirmer.trim()]].filter(x=>!x[1]).map(x=>x[0]);
+ const miss=[['Chủ đề',S.subject.trim()],['Mô tả',S.desc.trim()],['Ảnh trước',S.before.length],['Ảnh sau',S.after.length],['Hành động',S.action.trim()],['Hoàn thành & Áp dụng',S.done.trim()],['Mã số máy',S.mc.trim()],['Thời gian bắt đầu/hoàn thành',S.t1&&S.t2],['Người xử lý',whoTxt()],['Người lập ký tên',S.sig]].filter(x=>!x[1]).map(x=>x[0]);
  if(miss.length&&!confirm('Báo cáo còn thiếu: '+miss.join(', ')+'.\nVẫn xuất file?'))return;
  if(anyOver()&&!confirm('Có ô chữ quá dài (viền đỏ), phần cuối sẽ bị cắt. Vẫn xuất file?'))return;
  busy=true;toast(msg);const prev=tab;footTs=new Date();render();
@@ -712,7 +712,7 @@ async function optimizedPayload(){const c=payload(),dpi=DPI();if(!dpi)return c;c
    im.w=Math.max(1,Math.round(im.w*sc));im.h=Math.max(1,Math.round(im.h*sc))}}
  return c}
 const who=()=>(window.CL&&CL.getSession()&&CL.userName())||S.name.trim();
-const REQ=[['date','Ngày lập báo cáo'],['name','Người lập báo cáo'],['mc','Mã số máy'],['t1','Ngày giờ bắt đầu'],['t2','Ngày giờ hoàn thành'],['subject','Chủ đề'],['desc','Mô tả nội dung'],['action','Hành động'],['before','Hình ảnh trước'],['after','Hình ảnh sau'],['mats','Vật tư & Nguyên liệu'],['done','Hoàn thành & Áp dụng'],['who','Người xử lý'],['mp','Tổng manpower'],['confirmer','Họ và tên người xác nhận']];
+const REQ=[['date','Ngày lập báo cáo'],['name','Người lập báo cáo'],['mc','Mã số máy'],['t1','Ngày giờ bắt đầu'],['t2','Ngày giờ hoàn thành'],['subject','Chủ đề'],['desc','Mô tả nội dung'],['action','Hành động'],['before','Hình ảnh trước'],['after','Hình ảnh sau'],['mats','Vật tư & Nguyên liệu'],['done','Hoàn thành & Áp dụng'],['who','Người xử lý'],['mp','Tổng manpower']];
 function reqMissing(){const m=[];
  for(const[k,l]of REQ){const v=k==='who'?whoTxt():S[k],ok=Array.isArray(v)?v.length>0:String(v==null?'':v).trim()!=='';if(!ok)m.push([k,l])}
  if(S.t1&&S.t2&&new Date(S.t2)<new Date(S.t1))m.push(['t2','Giờ hoàn thành sớm hơn giờ bắt đầu']);
