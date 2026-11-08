@@ -28,6 +28,8 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .th em{position:absolute;bottom:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#555;color:#fff;text-align:center;line-height:26px;cursor:pointer;font-style:normal;font-size:15px}
 .th u{position:absolute;top:-8px;left:-8px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;text-align:center;line-height:26px;cursor:pointer;text-decoration:none;font-size:12px}
 .chip{display:inline-block;border:1px solid #e3b505;background:#fff9e0;border-radius:16px;padding:5px 12px;font-size:14px;margin:0 6px 6px 0;cursor:pointer;text-align:left;white-space:pre-line}
+.chip.dim{opacity:.45;text-decoration:line-through}
+.chip .x{margin-left:8px;color:#c1121f;cursor:pointer;font-weight:700}
 .warn{color:#c1121f;font-size:14px;margin-top:4px;display:none}
 #holder{position:relative;margin:0 auto;overflow:hidden;box-shadow:0 2px 12px #0003;background:#fff}
 .sheet{position:absolute;left:0;top:0;width:756px;height:1085px;transform-origin:0 0;background:#fff;padding:0;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;font:16px/1.3 Arial,Helvetica,sans-serif;color:#000}
@@ -60,7 +62,7 @@ body{background:#e9eef5;font-family:Arial,Helvetica,sans-serif;padding-bottom:72
 .sigcv.on{touch-action:none;border:2px solid var(--blue)}
 .sigh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9ab;pointer-events:none}
 .dots{border:0;background:none;font-size:24px;line-height:1;padding:0 8px;color:#555}
-.sgbox{max-height:170px;overflow:auto}
+.sgbox{max-height:290px;overflow:auto}
 .ac{position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:1px solid #9bb8dc;border-radius:8px;box-shadow:0 4px 14px #0003;max-height:230px;overflow:auto;display:none;margin-top:2px}
 .ac div{padding:10px 12px;border-bottom:1px solid #eee;cursor:pointer}
 .ac div:last-child{border-bottom:0}
@@ -200,13 +202,119 @@ const TXT={
  mats:['Vật tư & Nguyên liệu','Ví dụ: Tên vật tư, số lượng đã dùng (mỗi loại 1 dòng)...',3],
  done:['Hoàn thành & Áp dụng','Ví dụ: Kết quả sau khi xử lý, áp dụng khi nào...',3]};
 const SG={
- subject:['Sự cố — <tên lỗi, sự cố, hiện trạng> — <tên máy, khu vực>','Cải tiến — <nội dung> — <máy/khu vực>','Thay thế — <nội dung> — <máy/khu vực>','Vệ sinh — <nội dung> — <máy/khu vực>','Hiệu chỉnh — <nội dung> — <máy/khu vực>','Kiểm tra — <nội dung> — <máy/khu vực>','Lắp đặt — <nội dung> — <máy/khu vực>'],
- desc:['Vị trí xảy ra: \nHiện tượng: \nThời điểm phát hiện: \nẢnh hưởng sản xuất: ','Vị trí thực hiện: \nTình trạng: \nThời điểm phát hiện: \nẢnh hưởng sản xuất: '],
- action:['Bước 1: ... → ...\nBước 2: ... → ...\nBước 3: ... → ...\nBước 4: ... → ...\nBước 5: ... → ...\nNguyên nhân gốc: ... → ...'],
- mats:['1. Tên vật tư: ... — SL: ... — Model: ...\n2. Tên vật tư: ... — SL: ... — Model: ...','Không sử dụng vật tư.'],
- done:['Sau khi thực hiện hành động, máy đã hoạt động bình thường và áp dụng sản xuất từ {T}','Áp dụng cho các máy cùng loại trong xưởng.','Tiếp tục theo dõi trong 1 tuần.','Đã hướng dẫn lại cho người vận hành.','Đã bàn giao máy cho sản xuất.','Đã cập nhật vào lịch bảo trì.','Cần theo dõi thêm, chưa khắc phục triệt để.','Đề xuất dự phòng vật tư thay thế.']};
-const TPL={};
-const TPLN={};
+ "subject": {
+  "tpl": [
+   [
+    "Sự cố",
+    "Sự cố — <tên lỗi, sự cố, hiện trạng> — <tên máy, khu vực>"
+   ],
+   [
+    "Cải tiến",
+    "Cải tiến — <nội dung> — <máy/khu vực>"
+   ],
+   [
+    "Thay thế",
+    "Thay thế — <nội dung> — <máy/khu vực>"
+   ],
+   [
+    "Vệ sinh",
+    "Vệ sinh — <nội dung> — <máy/khu vực>"
+   ],
+   [
+    "Hiệu chỉnh",
+    "Hiệu chỉnh — <nội dung> — <máy/khu vực>"
+   ],
+   [
+    "Kiểm tra",
+    "Kiểm tra — <nội dung> — <máy/khu vực>"
+   ],
+   [
+    "Lắp đặt",
+    "Lắp đặt — <nội dung> — <máy/khu vực>"
+   ]
+  ],
+  "add": []
+ },
+ "desc": {
+  "tpl": [
+   [
+    "Sự cố",
+    "Vị trí xảy ra: \nHiện tượng: \nThời điểm phát hiện: \nẢnh hưởng sản xuất: "
+   ],
+   [
+    "Cải tiến / công việc",
+    "Vị trí thực hiện: \nTình trạng: \nThời điểm phát hiện: \nẢnh hưởng sản xuất: "
+   ]
+  ],
+  "add": [
+   "Máy dừng đột ngột, báo lỗi trên màn hình.",
+   "Sản phẩm bị lỗi, không đạt tiêu chuẩn.",
+   "Máy có tiếng ồn, rung lạ khi hoạt động.",
+   "Máy chạy chậm, không đạt tốc độ cài đặt.",
+   "Sensor không nhận tín hiệu.",
+   "Phát hiện rò rỉ dầu, khí hoặc nước.",
+   "Nhiệt độ vượt mức cho phép.",
+   "Dây curoa, xích bị mòn hoặc trượt."
+  ]
+ },
+ "action": {
+  "tpl": [
+   [
+    "Các bước + nguyên nhân gốc",
+    "Bước 1: ... → ...\nBước 2: ... → ...\nBước 3: ... → ...\nBước 4: ... → ...\nBước 5: ... → ...\nNguyên nhân gốc: ... → ..."
+   ],
+   [
+    "5 bước đơn giản",
+    "Bước 1: \nBước 2: \nBước 3: \nBước 4: \nBước 5: "
+   ]
+  ],
+  "add": [
+   "Đã tắt nguồn, khóa an toàn (LOTO) trước khi xử lý.",
+   "Đã kiểm tra, xác định nguyên nhân hỏng hóc.",
+   "Đã vệ sinh khu vực bị lỗi.",
+   "Đã thay linh kiện hỏng bằng linh kiện mới.",
+   "Đã siết chặt, căn chỉnh lại các chi tiết.",
+   "Đã bôi trơn các điểm chuyển động.",
+   "Đã cài đặt lại thông số máy.",
+   "Đã chạy thử, máy hoạt động bình thường."
+  ]
+ },
+ "mats": {
+  "tpl": [
+   [
+    "Danh sách vật tư (kèm Model)",
+    "1. Tên vật tư: ... — SL: ... — Model: ...\n2. Tên vật tư: ... — SL: ... — Model: ..."
+   ]
+  ],
+  "add": [
+   "Không sử dụng vật tư.",
+   "Dầu mỡ bôi trơn.",
+   "Vòng bi, dây curoa.",
+   "Sensor, cảm biến.",
+   "Cầu chì, relay, contactor.",
+   "Ống, co nối, gioăng phớt.",
+   "Vật tư vệ sinh (giẻ, dung dịch)."
+  ]
+ },
+ "done": {
+  "tpl": [
+   [
+    "Máy chạy bình thường từ giờ hoàn thành",
+    "Sau khi thực hiện hành động, máy đã hoạt động bình thường và áp dụng sản xuất từ {T}"
+   ]
+  ],
+  "add": [
+   "Áp dụng cho các máy cùng loại trong xưởng.",
+   "Tiếp tục theo dõi trong 1 tuần.",
+   "Đã hướng dẫn lại cho người vận hành.",
+   "Đã bàn giao máy cho sản xuất.",
+   "Đã cập nhật vào lịch bảo trì.",
+   "Cần theo dõi thêm, chưa khắc phục triệt để.",
+   "Đề xuất dự phòng vật tư thay thế."
+  ]
+ }
+};
+const PHX=/<[^<>\n]+>|(^|[\s:—→])\.\.\.($|[\s—→])/;   // chỗ chưa điền của mẫu: <...> hoặc ...
 let MC=[];
 const SIDE={before:'Hình ảnh trước',after:'Hình ảnh sau'};
 const AW=360,AH=280;                       // vùng ảnh mỗi bên (px), khớp xem trước/PDF/Excel
@@ -222,7 +330,7 @@ const txt=k=>(S.lang==='en'&&S.en[k]&&S.enSrc[k]===S[k])?S.en[k]:S[k];
 const LAYS={auto:'Tự động',row:'Xếp ngang (1 hàng)',col:'Xếp dọc (1 cột)',g2:'Lưới 2 cột',g3:'Lưới 3 cột',hero:'1 ảnh lớn + ảnh nhỏ'};
 
 function textCard(n,k){const[t,ph,r]=TXT[k];
- return `<div class="cardx"><h2><span><i>${n}.</i>${t}</span><button class="dots" data-more="mo-${k}" title="Gợi ý và hướng dẫn">⋮</button></h2><textarea class="form-control" rows="${r}" data-k="${k}" placeholder="${ph}"></textarea><div class="warn" id="w-${k}">⚠ Chữ quá dài, phần cuối sẽ bị cắt trong báo cáo. Hãy viết ngắn lại.</div><div class="d-none mt-2" id="mo-${k}"><div class="small fw-bold mb-1">💡 Gợi ý – chạm để điền</div><div class="sgbox" id="sg-${k}"></div><div class="mt-2"><label class="small fw-bold">🌐 Bản tiếng Anh (tự dịch bằng Google, có thể sửa)</label><textarea class="form-control" rows="2" data-en="${k}"></textarea><button class="btn btn-sm btn-outline-secondary mt-1" data-retr="${k}">🔄 Dịch lại</button></div><div class="guide">${GD[k]}</div></div></div>`}
+ return `<div class="cardx"><h2><span><i>${n}.</i>${t}</span><button class="dots" data-more="mo-${k}" title="Gợi ý và hướng dẫn">⋮</button></h2><textarea class="form-control" rows="${r}" data-k="${k}" placeholder="${ph}"></textarea><div class="warn" id="w-${k}">⚠ Chữ quá dài, phần cuối sẽ bị cắt trong báo cáo. Hãy viết ngắn lại.</div><div class="d-none mt-2" id="mo-${k}"><div class="small fw-bold mb-1">💡 Gợi ý</div><div class="sgbox" id="sg-${k}"></div><div class="mt-2"><label class="small fw-bold">🌐 Bản tiếng Anh (tự dịch bằng Google, có thể sửa)</label><textarea class="form-control" rows="2" data-en="${k}"></textarea><button class="btn btn-sm btn-outline-secondary mt-1" data-retr="${k}">🔄 Dịch lại</button></div><div class="guide">${GD[k]}</div></div></div>`}
 function imgCard(n,s){return `<div class="cardx"><h2><span><i>${n}.</i>${SIDE[s]}</span><button class="dots" data-more="mo-${s}" title="Tùy chọn và hướng dẫn">⋮</button></h2>
  <div class="dz" data-side="${s}">🖼 <b>Bấm hoặc kéo thả ảnh vào đây</b></div>
  <div class="d-flex flex-wrap gap-3 mt-3" id="th-${s}"></div>
@@ -245,6 +353,7 @@ const GD={
  who:'Người xử lý: nhập tên, ngăn cách bằng dấu phẩy (VD: Cường, Nam). Tổng manpower (giờ) = số người × số giờ làm; VD: 3 người làm 2 giờ = 6 giờ. Bấm "Tự tính" để máy tính theo giờ bắt đầu và hoàn thành.',
  sig:'Bấm "Sửa" rồi ký bằng ngón tay hoặc chuột, ký xong bấm "Xong". "Ký lại" xóa chữ ký hiện tại. "Lưu chữ ký" để mọi báo cáo mới tự có sẵn chữ ký này. Họ tên hiện dưới chữ ký lấy từ mục 1 (Người lập báo cáo).',
  sig2:'Người xác nhận (ví dụ trưởng nhóm, giám sát) ký sau khi báo cáo đã được gửi lên server: mở báo cáo bằng link sửa (?edit=), kiểm tra, ký tại đây rồi bấm Lưu. Không bắt buộc khi gửi. Bấm "Sửa" để ký, ký xong bấm "Xong"; "Ký lại" xóa chữ ký. Chữ ký này không được lưu sẵn cho báo cáo mới.'};
+for(const k of ['subject','desc','action','mats','done'])GD[k]+=' Mẫu format: chọn mẫu rồi điền vào chỗ &lt;...&gt; hoặc ..., bấm ⇥ "Ô kế tiếp" để nhảy nhanh. Bấm ✎ Quản lý để xóa lịch sử, ẩn mẫu có sẵn; "Lưu nội dung thành mẫu" để dùng lại về sau.';
 const guide=k=>`<div class="guide">${GD[k]}</div>`;
 const card=(n,t,b,m)=>`<div class="cardx"><h2><span><i>${n}.</i>${t}</span>${m?`<button class="dots" data-more="${m}" title="Tùy chọn, gợi ý và hướng dẫn">⋮</button>`:''}</h2>${b}</div>`;
 const fld=(k,l,ty='text',ph='')=>{const ac=/^(mc|name|who|confirmer)$/.test(k);return `<label class="form-label mb-1 mt-2">${l}</label>`+(ac?'<div class="position-relative">':'')+`<input type="${ty}" class="form-control" data-k="${k}" placeholder="${ph}"${ac?` data-ac="${k}" autocomplete="off"`:''}>`+(ac?`<div class="ac" id="ac-${k}"></div></div>`:'')};
@@ -453,13 +562,54 @@ document.addEventListener('mousedown',e=>{if(e.target.closest&&e.target.closest(
 let CH={};
 const recents=k=>{try{return(JSON.parse(ls('fjk_rc')||'{}')[k])||[]}catch(e){return[]}};
 function pushHist(k,v){v=(v||'').trim();if(!v||v.length>200)return;let o={};try{o=JSON.parse(ls('fjk_rc')||'{}')}catch(e){}
- o[k]=[v,...(o[k]||[]).filter(x=>x!==v)].slice(0,8);ls('fjk_rc',JSON.stringify(o))}
-function remember(){for(const k of [...Object.keys(TXT),'mc','who','name','confirmer'])pushHist(k,k==='who'?whoTxt():S[k])}
-function buildSg(k){const box=$('sg-'+k);CH[k]=[...SG[k],...recents(k)];
- box.innerHTML=CH[k].map((t,i)=>`<span class="chip" data-ins="${k}:${i}">${i===0&&TPL[k]?(TPLN[k]||'📝 Điền mẫu'):i<SG[k].length?'＋ '+t.trim():'🕘 '+t.slice(0,60)}</span>`).join('')}
-function insert(k,i){const t=CH[k][i].replace('{T}',fdt(S.t2)||'dd-mm-yyyy HH:mm'),f=document.querySelector(`[data-k="${k}"]`);
- S[k]=(!S[k]||k==='subject')?t:S[k].replace(/\s+$/,'')+'\n'+t;
- f.value=S[k];save();render();f.focus();f.setSelectionRange(S[k].length,S[k].length)}
+ o[k]=[v,...(o[k]||[]).filter(x=>x!==v)].slice(0,20);ls('fjk_rc',JSON.stringify(o))}
+function remember(){for(const k of [...Object.keys(TXT),'mc','who','name','confirmer']){const v=k==='who'?whoTxt():S[k];if(TXT[k]&&PHX.test(v||''))continue;pushHist(k,v)}}
+/* Gợi ý: mẫu format (thay nội dung), câu thêm nhanh (nối cuối), mẫu của tôi, lịch sử; có chế độ quản lý */
+const hsh=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return(h>>>0).toString(36)};
+const jget=(key,def)=>{try{return JSON.parse(ls(key)||'')||def}catch(e){return def}};
+const jset=(key,o)=>ls(key,JSON.stringify(o));
+const SGM={};
+function sgItems(k){
+ const hid=jget('fjk_hd',{})[k]||[],cu=jget('fjk_cu',{})[k]||[],D=SG[k]||{tpl:[],add:[]},out=[];
+ D.tpl.forEach(([n,tx])=>{const id=hsh(tx);out.push({src:'def',kind:'tpl',name:n,text:tx,id,hidden:hid.includes(id)})});
+ D.add.forEach(tx=>{const id=hsh(tx);out.push({src:'def',kind:'add',name:tx,text:tx,id,hidden:hid.includes(id)})});
+ cu.forEach((c,i)=>out.push({src:'cus',kind:c.k,name:c.n||c.t,text:c.t,idx:i}));
+ recents(k).forEach(tx=>out.push({src:'his',kind:'his',name:tx,text:tx}));
+ return out}
+function buildSg(k){
+ const box=$('sg-'+k),mg=!!SGM[k],all=sgItems(k);CH[k]=all;
+ const chip=(it,i)=>{const lab=it.kind==='tpl'?'📋 '+it.name:it.kind==='his'?'🕘 '+it.name.slice(0,60):'＋ '+it.name.slice(0,60);
+  return `<span class="chip${it.hidden?' dim':''}" data-ins="${k}:${i}" title="${esc(it.text)}">${esc(lab)}${mg?`<b class="x" data-sgx="${k}:${i}">${it.src==='def'&&it.hidden?'↺':'×'}</b>`:''}</span>`};
+ const sec=(title,kind)=>{const L=all.map((it,i)=>[it,i]).filter(([it])=>it.kind===kind&&(mg||!it.hidden));
+  return L.length?`<div class="small text-muted mt-2 mb-1">${title}</div>`+L.map(([it,i])=>chip(it,i)).join(''):''};
+ box.innerHTML=sec('Mẫu format (thay nội dung)','tpl')+sec('Câu thêm nhanh (nối vào cuối)','add')+sec('Lịch sử đã nhập','his')+
+  `<div class="mt-2 d-flex flex-wrap gap-1"><button class="btn btn-sm btn-outline-secondary" data-sga="ph:${k}">⇥ Ô kế tiếp</button>`+
+  `<button class="btn btn-sm btn-outline-primary" data-sga="save:${k}">💾 Lưu nội dung thành mẫu</button><button class="btn btn-sm btn-outline-primary" data-sga="add:${k}">＋ Thêm câu mới</button>`+
+  `<button class="btn btn-sm ${mg?'btn-secondary':'btn-outline-secondary'}" data-sga="mg:${k}">✎ ${mg?'Xong':'Quản lý'}</button>`+
+  (mg?`<button class="btn btn-sm btn-outline-danger" data-sga="clr:${k}">🗑 Xóa lịch sử mục này</button><button class="btn btn-sm btn-outline-secondary" data-sga="rst:${k}">↺ Hiện lại mẫu đã ẩn</button>`:'')+`</div>`}
+function selectPh(f,from){const re=new RegExp(PHX.source.replace('(^|[\\s:—→])','()').replace('($|[\\s—→])','()')+'|\\{T\\}','g');
+ re.lastIndex=from;let m=re.exec(f.value);if(!m){re.lastIndex=0;m=re.exec(f.value)}
+ f.focus();if(m)f.setSelectionRange(m.index,m.index+m[0].length);else f.setSelectionRange(f.value.length,f.value.length)}
+function insert(k,i){const it=CH[k][i];if(!it)return;
+ const f=document.querySelector(`[data-k="${k}"]`),tx=it.text.replace('{T}',fdt(S.t2)||'dd-mm-yyyy HH:mm'),cur=S[k]||'';
+ if(it.kind==='tpl'){if(cur.trim()&&!confirm('Thay nội dung hiện tại bằng mẫu này?'))return;S[k]=tx}
+ else S[k]=(!cur||k==='subject')?tx:cur.replace(/\s+$/,'')+'\n'+tx;
+ f.value=S[k];save();render();
+ if(it.kind==='tpl')selectPh(f,0);else{f.focus();f.setSelectionRange(S[k].length,S[k].length)}}
+function sgAdd(k,it){const o=jget('fjk_cu',{}),a=o[k]||[];if(!a.some(x=>x.t===it.t&&x.k===it.k))a.push(it);o[k]=a;jset('fjk_cu',o)}
+function sgDel(s){const[k,i]=s.split(':'),it=CH[k][+i];if(!it)return;
+ if(it.src==='his'){const o=jget('fjk_rc',{});o[k]=(o[k]||[]).filter(x=>x!==it.text);jset('fjk_rc',o)}
+ else if(it.src==='cus'){const o=jget('fjk_cu',{});(o[k]||[]).splice(it.idx,1);jset('fjk_cu',o)}
+ else{const o=jget('fjk_hd',{}),a=o[k]||[];o[k]=it.hidden?a.filter(x=>x!==it.id):[...a,it.id];jset('fjk_hd',o)}
+ buildSg(k)}
+function sgAct(s){const[a,k]=s.split(':'),f=document.querySelector(`[data-k="${k}"]`);
+ if(a==='ph')return selectPh(f,f.selectionEnd||0);
+ if(a==='mg'){SGM[k]=!SGM[k];return buildSg(k)}
+ if(a==='save'){const tx=(S[k]||'').trim();if(!tx)return toast('Ô này đang trống, hãy nhập nội dung trước',2500);
+  const n=prompt('Đặt tên cho mẫu này:');if(!n||!n.trim())return;sgAdd(k,{k:'tpl',n:n.trim(),t:tx});toast('Đã lưu mẫu: '+n.trim(),2000);return buildSg(k)}
+ if(a==='add'){const tx=prompt('Nhập câu muốn thêm vào gợi ý:');if(!tx||!tx.trim())return;sgAdd(k,{k:'add',n:'',t:tx.trim()});return buildSg(k)}
+ if(a==='clr'){if(confirm('Xóa toàn bộ lịch sử đã nhập của mục này?')){const o=jget('fjk_rc',{});delete o[k];jset('fjk_rc',o);buildSg(k)}return}
+ if(a==='rst'){const o=jget('fjk_hd',{});delete o[k];jset('fjk_hd',o);buildSg(k)}}
 
 /* ---------- Xoay ảnh ---------- */
 async function rotate(s,x){const im=S[s][x],i=await loadI(im.src),c=document.createElement('canvas');c.width=im.h;c.height=im.w;
@@ -513,6 +663,8 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(k==='who'){const p=f.value.split(',');p[p.length-1]=' '+v;v=p.join(',').replace(/^\s+/,'')+', '}
   S[k]=v;f.value=v;if(k==='name')ls('fjk_name',v);$('ac-'+k).style.display='none';save();render();document.activeElement.blur();return}
  if(el=t.closest('[data-more]')){const id=el.dataset.more,open=!$(id).classList.toggle('d-none'),k=id.slice(3);if(open&&SG[k])buildSg(k);return}
+ if(el=t.closest('[data-sgx]')){sgDel(el.dataset.sgx);return}
+ if(el=t.closest('[data-sga]')){sgAct(el.dataset.sga);return}
  if(el=t.closest('[data-ins]')){const[k,i]=el.dataset.ins.split(':');return insert(k,+i)}
  if(el=t.closest('[data-cam]'))return pick(el.dataset.cam,1);
  if(el=t.closest('[data-pick]'))return pick(el.dataset.pick);
@@ -715,6 +867,7 @@ const who=()=>(window.CL&&CL.getSession()&&CL.userName())||S.name.trim();
 const REQ=[['date','Ngày lập báo cáo'],['name','Người lập báo cáo'],['mc','Mã số máy'],['t1','Ngày giờ bắt đầu'],['t2','Ngày giờ hoàn thành'],['subject','Chủ đề'],['desc','Mô tả nội dung'],['action','Hành động'],['before','Hình ảnh trước'],['after','Hình ảnh sau'],['mats','Vật tư & Nguyên liệu'],['done','Hoàn thành & Áp dụng'],['who','Người xử lý'],['mp','Tổng manpower']];
 function reqMissing(){const m=[];
  for(const[k,l]of REQ){const v=k==='who'?whoTxt():S[k],ok=Array.isArray(v)?v.length>0:String(v==null?'':v).trim()!=='';if(!ok)m.push([k,l])}
+ for(const k of Object.keys(TXT)){const v=S[k]||'';if(v.trim()&&PHX.test(v))m.push([k,TXT[k][0]+' còn chỗ chưa điền (<...> hoặc ...)'])}
  if(S.t1&&S.t2&&new Date(S.t2)<new Date(S.t1))m.push(['t2','Giờ hoàn thành sớm hơn giờ bắt đầu']);
  return m}
 function markMissing(m){document.querySelectorAll('.is-invalid,.req-bad').forEach(x=>x.classList.remove('is-invalid','req-bad'));
