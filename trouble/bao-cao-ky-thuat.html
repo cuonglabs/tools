@@ -194,19 +194,19 @@ let S=blank(), busy=false, side0='before', tab='form';
 
 
 const TXT={
- subject:['Chủ đề','Ví dụ: Sự cố — Kẹt băng tải máy cắt số 3 - Máy cắt số 1 MTR',2],
+ subject:['Chủ đề','Ví dụ: Sự cố — Kẹt băng tải máy cắt số 3 — Máy cắt số 1 MTR',2],
  desc:['Mô tả nội dung','Ví dụ: Vấn đề xảy ra ở đâu, lúc nào, hiện tượng ra sao...',4],
  action:['Hành động','Ví dụ: Đã làm những việc gì để xử lý (ghi từng bước)...',5],
  mats:['Vật tư & Nguyên liệu','Ví dụ: Tên vật tư, số lượng đã dùng (mỗi loại 1 dòng)...',3],
  done:['Hoàn thành & Áp dụng','Ví dụ: Kết quả sau khi xử lý, áp dụng khi nào...',3]};
 const SG={
- subject:['Sự cố — <tên lỗi, sự cố, hiện trạng> - <tên máy, khu vực>','Cải tiến — <nội dung> — <máy/khu vực>','Thay thế — <nội dung> — <máy/khu vực>','Vệ sinh — <nội dung> — <máy/khu vực>','Hiệu chỉnh — <nội dung> — <máy/khu vực>','Kiểm tra — <nội dung> — <máy/khu vực>','Lắp đặt — <nội dung> — <máy/khu vực>'],
+ subject:['Sự cố — <tên lỗi, sự cố, hiện trạng> — <tên máy, khu vực>','Cải tiến — <nội dung> — <máy/khu vực>','Thay thế — <nội dung> — <máy/khu vực>','Vệ sinh — <nội dung> — <máy/khu vực>','Hiệu chỉnh — <nội dung> — <máy/khu vực>','Kiểm tra — <nội dung> — <máy/khu vực>','Lắp đặt — <nội dung> — <máy/khu vực>'],
  desc:['Vị trí xảy ra: \nHiện tượng: \nThời điểm phát hiện: \nẢnh hưởng sản xuất: ','Vị trí thực hiện: \nTình trạng: \nThời điểm phát hiện: \nẢnh hưởng sản xuất: '],
  action:['Bước 1: ... → ...\nBước 2: ... → ...\nBước 3: ... → ...\nBước 4: ... → ...\nBước 5: ... → ...\nNguyên nhân gốc: ... → ...','Đã tắt nguồn, khóa an toàn (LOTO) trước khi xử lý.','Đã kiểm tra, xác định nguyên nhân hỏng hóc.','Đã vệ sinh khu vực bị lỗi.','Đã thay linh kiện hỏng bằng linh kiện mới.','Đã siết chặt, căn chỉnh lại các chi tiết.','Đã bôi trơn các điểm chuyển động.','Đã cài đặt lại thông số máy.','Đã chạy thử, máy hoạt động bình thường.'],
- mats:['1. Tên vật tư: ... – SL: ... - Model: ...\n2. Tên vật tư: ... – SL: ... - Model: ...','Không sử dụng vật tư.'],
+ mats:['1. Tên vật tư: ... — SL: ... — Model: ...\n2. Tên vật tư: ... — SL: ... — Model: ...','Không sử dụng vật tư.'],
  done:['Sau khi thực hiện hành động, máy đã hoạt động bình thường và áp dụng sản xuất từ {T}','Áp dụng cho các máy cùng loại trong xưởng.','Tiếp tục theo dõi trong 1 tuần.','Đã hướng dẫn lại cho người vận hành.','Đã bàn giao máy cho sản xuất.','Đã cập nhật vào lịch bảo trì.','Cần theo dõi thêm, chưa khắc phục triệt để.','Đề xuất dự phòng vật tư thay thế.']};
-const TPL={desc:1,action:1,mats:1,done:1};
-const TPLN={desc:'📝 Mẫu số 1',action:'📝 Mẫu số 1',mats:'📝 Mẫu số 1',done:'📝 Mẫu số 1'};
+const TPL={};
+const TPLN={};
 let MC=[];
 const SIDE={before:'Hình ảnh trước',after:'Hình ảnh sau'};
 const AW=360,AH=280;                       // vùng ảnh mỗi bên (px), khớp xem trước/PDF/Excel
